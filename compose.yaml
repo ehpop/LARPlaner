@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  frontend:
+    image: frontend-next
+    build:
+      context: ./frontend-next
+      dockerfile: Dockerfile
+    volumes:
+        - .:/app
+        - /app/node_modules
+        - /app/.next
+    ports:
+      - "3000:3000"
