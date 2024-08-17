@@ -27,4 +27,8 @@ replay_pid*
 *.idea
 
 # package-json
+*/package*.json
+
+# node modules
 */node_modules
+
