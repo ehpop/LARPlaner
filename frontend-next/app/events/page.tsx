@@ -48,7 +48,7 @@ function EventsPage() {
     return (
         <div>
             <EventsDisplay list={[]} title="Aktualne wydarzenia"/>
-            <EventsDisplay list={newList} title="Nadchodzące wydarzenia"/>
+            <EventsDisplay list={newList} title="Nadchodzące wydarzenia" canAddNewEvent={true}/>
             <EventsDisplay list={list} title="Wydarzenia historyczne"/>
         </div>
     );

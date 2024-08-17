@@ -2,11 +2,16 @@ import {Input, Pagination} from "@nextui-org/react";
 import {Event} from "./event";
 import {ChangeEvent, useEffect, useState} from "react";
 import {SearchIcon} from "@/components/icons";
+import {Link} from "@nextui-org/link";
+import {Button} from "@nextui-org/button";
 
 const EVENTS_PER_PAGE = 3;
-const EVENTS_PER_SMALL_PAGE = 1;
 
-export const EventsDisplay = ({list, title}: { list: any[], title: string }) => {
+export const EventsDisplay = ({list, title, canAddNewEvent = false}: {
+    list: any[],
+    title: string,
+    canAddNewEvent?: boolean
+}) => {
     const getAmountOfPages = (list: any[]) => {
         return Math.ceil(list.length / EVENTS_PER_PAGE);
     };
@@ -43,7 +48,7 @@ export const EventsDisplay = ({list, title}: { list: any[], title: string }) => 
 
     const EventsElement = (
         <>
-            <div className={`gap-4 grid grid-cols-${EVENTS_PER_SMALL_PAGE} sm:grid-cols-${EVENTS_PER_PAGE}`}>
+            <div className={`gap-4 grid sm:grid-cols-3 grid-cols-1`}>
                 {pages[currentPage - 1]?.map((item: any) => (
                     <Event key={Math.random()} event={item}/>
                 ))}
@@ -66,8 +71,9 @@ export const EventsDisplay = ({list, title}: { list: any[], title: string }) => 
     );
 
     return (
-        <div className="w-full border-small px-5 py-5 my-5 rounded-small border-default-200 dark:border-default-100">
-            <div className="w-full flex justify-between py-3">
+        <div
+            className="w-full border-small px-5 py-5 space-y-3 rounded-small border-default-200 dark:border-default-100">
+            <div className="w-full flex justify-between">
                 <p className="text-3xl">{title}</p>
                 <Input
                     classNames={{
@@ -86,6 +92,12 @@ export const EventsDisplay = ({list, title}: { list: any[], title: string }) => 
                 />
             </div>
             {filteredList.length > 0 ? EventsElement : NoEventsElement}
+            {canAddNewEvent &&
+                <Link href={"/events/new"}>
+                    <Button variant="solid" color="success">
+                        Dodaj nowe wydarzenie
+                    </Button>
+                </Link>}
         </div>
     );
 };
