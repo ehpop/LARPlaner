@@ -3,13 +3,13 @@
 import {Button, DatePicker, Input, Textarea} from "@nextui-org/react";
 import UniqueMultiSelect from "@/components/unique-multi-select";
 import MultiSelect from "@/components/multi-select";
+import {Link} from "@nextui-org/link";
 
-const roles: string[] = [
-    "mag",
-    "wojownik",
-    "złodziej",
-    "czarodziej",
-    "kapłan",
+const scenarios: string[] = [
+    "Scenario 1",
+    "Scenario 2",
+    "Scenario 3",
+    "Scenario 4",
 ]
 
 function ScenariosPage() {
@@ -19,52 +19,29 @@ function ScenariosPage() {
                 <p className="text-3xl">Scenarios Page</p>
             </div>
             <div className="space-y-10 border-1 p-3">
-                <div className="w-full flex justify-center">
+                <div className="w-full flex flex-col space-y-3">
                     <p id="add-event-modal" className="text-3xl">
-                        Dodaj scenariusz
+                        Scenariusze:
                     </p>
-                </div>
-                <Input
-                    isClearable={true}
-                    variant="underlined"
-                    className="w-full"
-                    label="Nazwa"
-                    placeholder="Wprowadź nazwę scenariusza..."
-                />
-                <Textarea
-                    variant="underlined"
-                    className="w-full"
-                    label="Opis"
-                    placeholder="Wprowadź opis scenariusza"
-                />
-                <Input
-                    isClearable={true}
-                    variant="underlined"
-                    className="w-full"
-                    label="Max liczba uczestników"
-                    placeholder="Wprowadź liczbę uczestników..."
-                    type="number"
-                    min="0"
-                />
-                <div className="w-full flex justify-between items-baseline space-x-3">
-                    <Button color="success">
-                        Dodaj nowy scenariusz
-                    </Button>
-                    <Button color="warning">
-                        Edytuj scenariusz
-                    </Button>
-                </div>
-
-                <div className="w-full flex justify-end">
-                    <div className="flex justify-between space-x-3">
-                        <Button color="danger" variant="bordered" size="lg">
-                            Anuluj
-                        </Button>
-                        <Button color="success" size="lg">
-                            Zapisz
-                        </Button>
+                    <div className="w-full flex flex-col items-center space-y-3">
+                        {
+                            scenarios.map((scenario) => {
+                                return (
+                                    <div key={scenario} className="w-1/2 border-1 p-3 space-y-3">
+                                        <p>{scenario}</p>
+                                    </div>
+                                )
+                            })
+                        }
                     </div>
                 </div>
+            </div>
+            <div className="w-full flex justify-center">
+                <Link href={"/scenarios/new"}>
+                    <Button color="success" size="lg">
+                        Dodaj nowy scenariusz
+                    </Button>
+                </Link>
             </div>
         </div>
 
