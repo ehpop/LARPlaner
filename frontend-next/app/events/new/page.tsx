@@ -11,6 +11,7 @@ export default function AddEventModal() {
 
     const selectScenario = (
         <Select
+            size="lg"
             items={scenarios}
             label="Scenariusz"
             placeholder="Wybierz scenariusz..."
@@ -29,6 +30,7 @@ export default function AddEventModal() {
                 </p>
             </div>
             <Input
+                size="lg"
                 isClearable={true}
                 variant="underlined"
                 className="w-full"
@@ -37,27 +39,31 @@ export default function AddEventModal() {
             />
             <div className="w-full">
                 <div className="flex justify-between space-x-3">
-                    <Input
-                        variant="underlined"
-                        className="w-1/2"
-                        label="Czas"
-                        type="time"
-                    />
                     <DatePicker
+                        size="lg"
                         variant="underlined"
                         className="w-1/2 "
                         label="Data"
                         showMonthAndYearPickers
                     />
+                    <Input
+                        size="lg"
+                        variant="underlined"
+                        className="w-1/2"
+                        label="Czas"
+                        type="time"
+                    />
                 </div>
             </div>
             <Textarea
+                size="lg"
                 variant="underlined"
                 className="w-full"
                 label="Opis"
                 placeholder="Wprowadź opis wydarzenia"
             />
             <Input
+                size="lg"
                 isClearable={true}
                 variant="underlined"
                 className="w-full"

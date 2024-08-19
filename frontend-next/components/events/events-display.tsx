@@ -65,7 +65,7 @@ export const EventsDisplay = ({list, title, canAddNewEvent = false}: {
     );
 
     const NoEventsElement = (
-        <div className="py-10">
+        <div className="w-full py-10 text-center">
             <p className="text-2xl">No events available</p>
         </div>
     );
@@ -93,11 +93,14 @@ export const EventsDisplay = ({list, title, canAddNewEvent = false}: {
             </div>
             {filteredList.length > 0 ? EventsElement : NoEventsElement}
             {canAddNewEvent &&
-                <Link href={"/events/new"}>
-                    <Button variant="solid" color="success">
-                        Dodaj nowe wydarzenie
-                    </Button>
-                </Link>}
+                <div className="w-full flex justify-center">
+                    <Link href={"/events/new"}>
+                        <Button variant="solid" color="success">
+                            Dodaj nowe wydarzenie
+                        </Button>
+                    </Link>
+                </div>
+            }
         </div>
     );
 };
