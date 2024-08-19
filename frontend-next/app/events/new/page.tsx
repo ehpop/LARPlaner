@@ -1,6 +1,8 @@
 "use client";
 
 import {Button, DatePicker, Input, Select, SelectItem, Textarea} from "@nextui-org/react";
+import {useState} from "react";
+import {Link} from "@nextui-org/link";
 
 export default function AddEventModal() {
     const scenarios = [
@@ -8,6 +10,8 @@ export default function AddEventModal() {
         {key: "scenario2", name: "Scenario 2"},
         {key: "scenario3", name: "Scenario 3"},
     ];
+
+    const [selectedScenario, setSelectedScenario] = useState();
 
     const selectScenario = (
         <Select
@@ -17,6 +21,7 @@ export default function AddEventModal() {
             placeholder="Wybierz scenariusz..."
             variant="underlined"
             className="w-1/2"
+            onSelectionChange={setSelectedScenario}
         >
             {(scenario) => <SelectItem key={scenario.key}>{scenario.name}</SelectItem>}
         </Select>
@@ -74,10 +79,10 @@ export default function AddEventModal() {
             />
             <div className="w-full flex justify-between items-baseline space-x-3">
                 {selectScenario}
-                <Button color="success">
+                <Button color="success" href={"/scenarios/new"} as={Link}>
                     Dodaj nowy scenariusz
                 </Button>
-                <Button color="warning">
+                <Button color="warning" isDisabled={!selectedScenario}>
                     Edytuj scenariusz
                 </Button>
             </div>
