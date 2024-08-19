@@ -1,8 +1,6 @@
 "use client";
 
-import {Button, DatePicker, Input, Textarea} from "@nextui-org/react";
-import UniqueMultiSelect from "@/components/unique-multi-select";
-import MultiSelect from "@/components/multi-select";
+import {Button} from "@nextui-org/react";
 import {Link} from "@nextui-org/link";
 
 const scenarios: string[] = [
@@ -27,9 +25,9 @@ function ScenariosPage() {
                         {
                             scenarios.map((scenario) => {
                                 return (
-                                    <div key={scenario} className="w-1/2 border-1 p-3 space-y-3">
+                                    <Link href={"/scenarios/1"} key={scenario} className="w-1/2 border-1 p-3 space-y-3">
                                         <p>{scenario}</p>
-                                    </div>
+                                    </Link>
                                 )
                             })
                         }
