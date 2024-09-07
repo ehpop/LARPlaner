@@ -2,6 +2,8 @@
 
 import {Button, Select, SelectItem, Input} from "@nextui-org/react";
 import {useState} from "react";
+import ItemCreator from "@/components/scenarios/item-creator";
+import ItemDisplay from "@/components/scenarios/item-display";
 
 const scenarioData = {
     name: "Przykładowy Scenariusz",
@@ -10,16 +12,32 @@ const scenarioData = {
         {name: "mag", count: 1},
         {name: "wojownik", count: 2},
     ],
+    items: [
+        {
+            name: "Magic Sword",
+            description: "A powerful sword imbued with magical properties.",
+            skills: [{name: "Siła", level: 20}, {name: "Magia", level: 10}],
+            querks: ["Zwinny", "Mądry", "Odważny"],
+        },
+        {
+            name: "Healing Potion",
+            description: "A potion that heals the user's wounds.",
+            skills: [{name: "Inteligencja", level: 10}, {name: "Magia", level: 5}],
+            querks: ["Mądry"],
+        }
+    ],
 };
 
-export default function ScenarioDisplayPage() {
+export default function ScenarioDisplayPage({params}: any) {
     const [scenario, setScenario] = useState(scenarioData);
+    const skills = ["Magia", "Walka", "Strzelectwo"]; // Example skills
+    const querks = ["Odważny", "Zwinny", "Mądry"];   // Example quirks
 
     return (
         <div className="space-y-10 border-1 p-3">
             <div className="w-full flex justify-center">
                 <p id="display-scenario-modal" className="text-3xl">
-                    Wyświetl scenariusz
+                    Scenariusz {params.id}
                 </p>
             </div>
             <div className="space-y-3">
@@ -60,6 +78,10 @@ export default function ScenarioDisplayPage() {
                         </div>
                     ))}
                 </div>
+            </div>
+            <div className="border-1 p-3 space-y-3">
+                <p className="text-xl font-bold">Przedmioty w scenariuszu:</p>
+                <ItemDisplay items={scenarioData.items}/>
             </div>
             <div className="w-full flex justify-end">
                 <div className="flex justify-between space-x-3">

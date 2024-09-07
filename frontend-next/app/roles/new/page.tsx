@@ -22,7 +22,7 @@ export default function RolesPage() {
 
     const onAttributeChange = (index: number, key: string, value: string) => {
         const updatedAttributes = [...attributes];
-        updatedAttributes[index] = {key, value: Number(value)};
+        updatedAttributes[index] = {key: name, value: Number(value)};
         setAttributes(updatedAttributes);
     }
 

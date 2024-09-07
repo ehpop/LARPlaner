@@ -1,18 +1,17 @@
 "use client";
 
-import {Button} from "@nextui-org/react";
+import {Button, Input, Select, SelectItem} from "@nextui-org/react";
 import {useState} from "react";
 
 export default function RoleDisplayPage() {
-    // Assuming this state represents the role details captured from the form
     const [role, setRole] = useState({
         name: "Example Role Name",
         description: "This is a description of the role.",
         attributes: [
-            {key: "Strength", value: 75},
-            {key: "Agility", value: 60}
+            {name: "Strength", value: 75},
+            {name: "Agility", value: 60},
         ],
-        querks: ["Brave", "Impulsive"]
+        querks: ["Brave", "Impulsive"],
     });
 
     return (
@@ -20,42 +19,86 @@ export default function RoleDisplayPage() {
             <div className="w-full flex justify-center">
                 <p className="text-3xl">Wyświetl postać</p>
             </div>
+
             <div className="space-y-3">
-                <p className="text-xl font-bold">Nazwa:</p>
-                <p>{role.name}</p>
+                <Input
+                    label="Nazwa"
+                    value={role.name}
+                    size="lg"
+                    isDisabled={true}
+                    variant="underlined"
+                />
             </div>
+
             <div className="space-y-3">
-                <p className="text-xl font-bold">Opis:</p>
-                <p>{role.description}</p>
+                <Input
+                    label="Opis"
+                    value={role.description}
+                    size="lg"
+                    isDisabled={true}
+                    variant="underlined"
+                />
             </div>
+
             <div className="border-1 p-3 space-y-3">
                 <p className="text-xl font-bold">Atrybuty:</p>
-                <ul className="list-disc list-inside">
-                    {role.attributes.map((attribute, index) => (
-                        <li key={index}>
-                            <span className="font-semibold">{attribute.key}: </span>
-                            <span>{attribute.value}</span>
-                        </li>
-                    ))}
-                </ul>
+                {role.attributes.map((attribute, index) => (
+                    <div
+                        key={index}
+                        className="w-1/2 flex flex-row space-x-3 items-baseline"
+                    >
+                        <Select
+                            key={index}
+                            defaultSelectedKeys={[attribute.name]}
+                            isDisabled={true}
+                            variant="underlined"
+                            className="w-3/4"
+                            label="Atrybut"
+                        >
+                            <SelectItem key={attribute.name} value={attribute.name}>
+                                {attribute.name}
+                            </SelectItem>
+                        </Select>
+                        <Input
+                            value={attribute.value.toString()}
+                            isDisabled={true}
+                            label="Wartość"
+                            size="sm"
+                            variant="underlined"
+                            type="number"
+                            className="w-1/4"
+                        />
+                    </div>
+                ))}
             </div>
+
             <div className="border-1 p-3 space-y-3">
                 <p className="text-xl font-bold">Querki postaci:</p>
-                <ul className="list-disc list-inside">
-                    {role.querks.map((querk, index) => (
-                        <li key={index}>{querk}</li>
-                    ))}
-                </ul>
-            </div>
-            <div className="w-full flex justify-end">
-                <div className="flex justify-between space-x-3">
-                    <Button color="danger" size="lg">
-                        Usuń
-                    </Button>
-                    <Button color="warning" size="lg">
-                        Edytuj
-                    </Button>
+                <div className="w-1/2">
+                    <Select
+                        placeholder="Wybierz querki"
+                        isDisabled={true}
+                        variant="underlined"
+                        defaultSelectedKeys={role.querks}
+                        selectionMode="multiple"
+                        className="w-3/4"
+                    >
+                        {role.querks.map((querk) => (
+                            <SelectItem key={querk} value={querk}>
+                                {querk}
+                            </SelectItem>
+                        ))}
+                    </Select>
                 </div>
+            </div>
+
+            <div className="w-full flex justify-end space-x-3">
+                <Button color="danger" size="lg">
+                    Usuń
+                </Button>
+                <Button color="warning" size="lg">
+                    Edytuj
+                </Button>
             </div>
         </div>
     );
