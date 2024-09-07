@@ -3,7 +3,27 @@
 import {Button, Input, Select, SelectItem} from "@nextui-org/react";
 import React, {useState} from "react";
 
-const MultiSelect = ({roles}: any) => {
+interface MultiSelectProps {
+    options: string[];
+    addButtonLabel: string;
+    removeButtonLabel: string;
+    selectLabel: string;
+    counterLabel: string;
+    minCounterValue: number;
+    maxCounterValue?: number;
+    defaultCounterValue: string;
+}
+
+const MultiSelect = ({
+                         options,
+                         addButtonLabel,
+                         removeButtonLabel,
+                         selectLabel,
+                         counterLabel,
+                         minCounterValue,
+                         maxCounterValue,
+                         defaultCounterValue,
+                     }: MultiSelectProps) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
     const handleSelectChange = (index: number, event: any) => {
@@ -14,7 +34,7 @@ const MultiSelect = ({roles}: any) => {
     };
 
     const addSelect = () => {
-        if (selectedOptions?.length < roles.length) {
+        if (selectedOptions?.length < options.length) {
             setSelectedOptions([...selectedOptions, ""]);
         }
     };
@@ -26,26 +46,27 @@ const MultiSelect = ({roles}: any) => {
     };
 
     const getAvailableOptions = (currentSelection: string) => {
-        return roles.filter(
+        return options.filter(
             (role: string) => !selectedOptions.includes(role) || role === currentSelection
         );
     };
 
 
     return (
-        <div className="w-full space-y-10 lg:space-y-3 max-h-[250px] overflow-y-auto">
+        <div className="w-full space-y-10 lg:space-y-3 overflow-y-auto">
             {
                 selectedOptions.map((selectedOption, index) => (
-                    <div className="lg:w-1/2 w-full flex justify-between items-baseline">
+                    <div className="lg:w-3/4 w-full flex justify-between items-baseline">
                         <Select
                             className="w-1/2"
-                            label="Rola"
+                            label={selectLabel}
                             size="sm"
+                            variant="bordered"
                             onChange={(e) => handleSelectChange(index, e)}
                         >
-                            {getAvailableOptions(selectedOption).map((role: string) => (
-                                <SelectItem key={role} value={role}>
-                                    {role}
+                            {getAvailableOptions(selectedOption).map((option: string) => (
+                                <SelectItem key={option} value={option}>
+                                    {option}
                                 </SelectItem>
                             ))}
                         </Select>
@@ -53,10 +74,10 @@ const MultiSelect = ({roles}: any) => {
                             size="sm"
                             variant="underlined"
                             className="w-1/4"
-                            label="Ilość postaci"
-                            placeholder="Ilość..."
-                            defaultValue="1"
-                            min={1}
+                            label={counterLabel}
+                            defaultValue={defaultCounterValue}
+                            min={minCounterValue}
+                            max={maxCounterValue}
                             type="number"/>
                         <Button
                             color="danger"
@@ -64,7 +85,7 @@ const MultiSelect = ({roles}: any) => {
                             size="sm"
                             variant="bordered"
                         >
-                            Usuń postać
+                            {removeButtonLabel}
                         </Button>
                     </div>
                 ))}
@@ -73,7 +94,7 @@ const MultiSelect = ({roles}: any) => {
                 onClick={addSelect}
                 size="sm"
             >
-                Dodaj postać
+                {addButtonLabel}
             </Button>
         </div>
     );
