@@ -22,7 +22,7 @@ export default function RolesPage() {
 
     const onAttributeChange = (index: number, key: string, value: string) => {
         const updatedAttributes = [...attributes];
-        updatedAttributes[index] = {key: name, value: Number(value)};
+        updatedAttributes[index] = {key: key, value: Number(value)};
         setAttributes(updatedAttributes);
     }
 
@@ -68,8 +68,8 @@ export default function RolesPage() {
                 <p>Atrybuty</p>
                 {
                     attributes.map((attribute, index) => (
-                        <div key={index} className="w-1/2 flex flex-col space-y-3">
-                            <div className="w-full flex flex-row space-x-3 items-baseline">
+                        <div key={index} className="lg:w-1/2 w-full flex flex-col space-y-3">
+                            <div className="flex flex-row space-x-3 items-baseline">
                                 <Input
                                     isClearable
                                     variant="underlined"
@@ -107,11 +107,11 @@ export default function RolesPage() {
                 <p>Querki postaci</p>
                 {
                     querks.map((querk, index) => (
-                        <div key={index} className="w-1/2 flex flex-row space-x-3 items-baseline">
+                        <div key={index} className="lg:w-1/2 w-full flex flex-row space-x-3 items-baseline">
                             <Input
                                 isClearable
                                 variant="underlined"
-                                className="w-1/2"
+                                className="lg:w-1/2 w-full"
                                 label="Nazwa"
                                 placeholder="Wprowadź nazwę qerka..."
                                 value={querk}

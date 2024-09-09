@@ -28,7 +28,7 @@ export default function AddEventModal() {
     );
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-10 border-1 p-3">
             <div className="w-full flex justify-center">
                 <p id="add-event-modal" className="text-3xl">
                     Dodaj wydarzenie

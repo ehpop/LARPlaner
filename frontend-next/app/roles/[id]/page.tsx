@@ -45,14 +45,14 @@ export default function RoleDisplayPage() {
                 {role.attributes.map((attribute, index) => (
                     <div
                         key={index}
-                        className="w-1/2 flex flex-row space-x-3 items-baseline"
+                        className="lg:w-1/2 w-full flex flex-row space-x-3 items-baseline"
                     >
                         <Select
                             key={index}
                             defaultSelectedKeys={[attribute.name]}
                             isDisabled={true}
                             variant="underlined"
-                            className="w-3/4"
+                            className="lg:w-3/4 w-full"
                             label="Atrybut"
                         >
                             <SelectItem key={attribute.name} value={attribute.name}>
@@ -66,7 +66,7 @@ export default function RoleDisplayPage() {
                             size="sm"
                             variant="underlined"
                             type="number"
-                            className="w-1/4"
+                            className="lg:w-1/4 w-1/2"
                         />
                     </div>
                 ))}
@@ -74,14 +74,14 @@ export default function RoleDisplayPage() {
 
             <div className="border-1 p-3 space-y-3">
                 <p className="text-xl font-bold">Querki postaci:</p>
-                <div className="w-1/2">
+                <div className="lg:w-1/2 w-full">
                     <Select
                         placeholder="Wybierz querki"
                         isDisabled={true}
                         variant="underlined"
                         defaultSelectedKeys={role.querks}
                         selectionMode="multiple"
-                        className="w-3/4"
+                        className="lg:w-3/4 w-full"
                     >
                         {role.querks.map((querk) => (
                             <SelectItem key={querk} value={querk}>

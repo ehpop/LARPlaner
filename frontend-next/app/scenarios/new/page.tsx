@@ -1,6 +1,6 @@
 "use client";
 
-import {Button, Input, Select, SelectItem, Textarea} from "@nextui-org/react";
+import {Button, Input, Textarea} from "@nextui-org/react";
 import {useState} from "react";
 import MultiSelect from "@/components/multi-select";
 import ItemCreator from "@/components/scenarios/item-creator";
@@ -11,7 +11,7 @@ const roles: string[] = [
     "złodziej",
     "czarodziej",
     "kapłan",
-]
+];
 
 const skills: string[] = [
     "skill1",
@@ -19,14 +19,14 @@ const skills: string[] = [
     "skill3",
     "skill4",
     "skill5",
-]
+];
 
 const querks: string[] = [
     "querk1",
     "querk2",
     "querk3",
     "querk4",
-]
+];
 
 export default function ScenariosPage() {
     const [countRoles, setCountRoles] = useState(2);
@@ -74,13 +74,11 @@ export default function ScenariosPage() {
                         size="sm"
                         variant="bordered"
                     >
-                        {
-                            showSection ? "-" : "+"
-                        }
+                        {showSection ? "-" : "+"}
                     </Button>
                 </div>
                 <div className={showSection ? "" : "hidden"}>
-                    <ItemCreator skills={skills} querks={querks}/>
+                    <ItemCreator skills={skills} querks={querks} />
                 </div>
             </div>
             <div className="w-full flex justify-end">
@@ -94,5 +92,5 @@ export default function ScenariosPage() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
