@@ -3,7 +3,7 @@
 import {Button, Input, Select, SelectItem} from "@nextui-org/react";
 import {useState} from "react";
 
-export default function RoleDisplayPage() {
+export default function RoleDisplayPage({params}: any) {
     const [role, setRole] = useState({
         name: "Example Role Name",
         description: "This is a description of the role.",
@@ -17,7 +17,7 @@ export default function RoleDisplayPage() {
     return (
         <div className="space-y-10 border-1 p-3">
             <div className="w-full flex justify-center">
-                <p className="text-3xl">Wyświetl postać</p>
+                <p className="text-3xl">{`Postać ${params.id}`}</p>
             </div>
 
             <div className="space-y-3">

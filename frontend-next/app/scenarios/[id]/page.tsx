@@ -29,8 +29,6 @@ const scenarioData = {
 
 export default function ScenarioDisplayPage({ params }: any) {
     const [scenario, setScenario] = useState(scenarioData);
-    const skills = ["Magia", "Walka", "Strzelectwo"]; // Example skills
-    const querks = ["Odważny", "Zwinny", "Mądry"];   // Example quirks
 
     return (
         <div className="space-y-10 border-1 p-3">
