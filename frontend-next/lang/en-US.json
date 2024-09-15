@@ -1,0 +1,6 @@
+{
+  "events.display.addEvent": "Add new event",
+  "events.page.display.title.future": "Future events",
+  "events.page.display.title.now": "Now events",
+  "events.page.display.title.previous": "Previous events"
+}
