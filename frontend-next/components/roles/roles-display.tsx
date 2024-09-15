@@ -1,31 +1,36 @@
-import { Input, Pagination } from "@nextui-org/react";
-import { useEffect, useState, ChangeEvent } from "react";
-import { SearchIcon } from "@/components/icons";
-import { Link } from "@nextui-org/link";
-import { Button } from "@nextui-org/button";
+import {Input, Pagination} from "@nextui-org/react";
+import {ChangeEvent, useEffect, useState} from "react";
+import {Link} from "@nextui-org/link";
+import {Button} from "@nextui-org/button";
+
+import {SearchIcon} from "@/components/icons";
 
 const ROLES_PER_PAGE = 6;
 
-export const RolesDisplay = ({ rolesList, title, canAddNewRole = false }: {
-    rolesList: string[],
-    title: string,
-    canAddNewRole?: boolean
+export const RolesDisplay = ({
+                                 rolesList,
+                                 title,
+                                 canAddNewRole = false,
+                             }: {
+    rolesList: string[];
+    title: string;
+    canAddNewRole?: boolean;
 }) => {
     const [searchValue, setSearchValue] = useState("");
     const getAmountOfPages = (list: string[]) => {
         return Math.ceil(list.length / ROLES_PER_PAGE);
-
     };
     const getPages = (list: string[]) => {
         let pages: string[][] = [];
         let amountOfPages = getAmountOfPages(list);
+
         for (let i = 1; i <= amountOfPages; i++) {
             let page = list.slice((i - 1) * ROLES_PER_PAGE, i * ROLES_PER_PAGE);
+
             pages.push(page);
-
         }
-        return pages;
 
+        return pages;
     };
     const [pages, setPages] = useState(getPages(rolesList));
     const [filteredList, setFilteredList] = useState(rolesList);
@@ -38,7 +43,7 @@ export const RolesDisplay = ({ rolesList, title, canAddNewRole = false }: {
     useEffect(() => {
         const newFilteredList = searchValue
             ? rolesList.filter((role) =>
-                role.toLowerCase().includes(searchValue.toLowerCase())
+                role.toLowerCase().includes(searchValue.toLowerCase()),
             )
             : rolesList;
 
@@ -52,10 +57,10 @@ export const RolesDisplay = ({ rolesList, title, canAddNewRole = false }: {
             <div className="gap-4 grid sm:grid-cols-2 grid-cols-1">
                 {pages[currentPage - 1]?.map((role) => (
                     <Link
-                        href={`/roles/${role.replace(/\s/g, "-").toLowerCase()}`}
                         key={role}
                         isBlock
                         className="w-full border-1 p-3 space-y-3 text-center"
+                        href={`/roles/${role.replace(/\s/g, "-").toLowerCase()}`}
                     >
                         <p className="text-xl">{role}</p>
                     </Link>
@@ -64,8 +69,8 @@ export const RolesDisplay = ({ rolesList, title, canAddNewRole = false }: {
             <div className="pt-5 flex justify-center align-center">
                 <Pagination
                     showControls
-                    total={pages.length}
                     initialPage={currentPage}
+                    total={pages.length}
                     onChange={(page) => setCurrentPage(page)}
                 />
             </div>
@@ -79,7 +84,8 @@ export const RolesDisplay = ({ rolesList, title, canAddNewRole = false }: {
     );
 
     return (
-        <div className="w-full border-small px-5 py-5 space-y-3 rounded-small border-default-200 dark:border-default-100">
+        <div
+            className="w-full border-small px-5 py-5 space-y-3 rounded-small border-default-200 dark:border-default-100">
             <div className="w-full flex justify-between">
                 <p className="text-3xl">{title}</p>
                 <Input
@@ -92,9 +98,9 @@ export const RolesDisplay = ({ rolesList, title, canAddNewRole = false }: {
                     }}
                     placeholder="Type to search..."
                     size="sm"
+                    startContent={<SearchIcon className="text-default-400"/>}
                     type="search"
                     value={searchValue}
-                    startContent={<SearchIcon className="text-default-400" />}
                     onChange={handleSearch}
                 />
             </div>
@@ -102,7 +108,7 @@ export const RolesDisplay = ({ rolesList, title, canAddNewRole = false }: {
             {canAddNewRole && (
                 <div className="w-full flex justify-center">
                     <Link href="/roles/new">
-                        <Button variant="solid" color="success">
+                        <Button color="success" variant="solid">
                             Dodaj nową rolę
                         </Button>
                     </Link>

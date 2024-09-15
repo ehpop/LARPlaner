@@ -1,11 +1,13 @@
 import React from "react";
 
-export default function EventsLayout({children,}: { children: React.ReactNode; }) {
+export default function EventsLayout({
+                                         children,
+                                     }: {
+    children: React.ReactNode;
+}) {
     return (
         <section className="flex flex-col items-center justify-center">
-            <div className="w-full inline-block justify-center">
-                {children}
-            </div>
+            <div className="w-full inline-block justify-center">{children}</div>
         </section>
     );
 }

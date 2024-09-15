@@ -3,11 +3,12 @@ import {
     Input,
     Modal,
     ModalBody,
-    ModalContent, ModalFooter,
+    ModalContent,
+    ModalFooter,
     ModalHeader,
     Select,
     SelectItem,
-    useDisclosure
+    useDisclosure,
 } from "@nextui-org/react";
 import React from "react";
 import QRCode from "react-qr-code";
@@ -18,7 +19,6 @@ const QRModal = ({isOpen, onOpen, onOpenChange, selectedItem}: any) => {
             <Modal
                 backdrop="opaque"
                 isOpen={isOpen}
-                onOpenChange={onOpenChange}
                 motionProps={{
                     variants: {
                         enter: {
@@ -37,13 +37,16 @@ const QRModal = ({isOpen, onOpen, onOpenChange, selectedItem}: any) => {
                                 ease: "easeIn",
                             },
                         },
-                    }
+                    },
                 }}
+                onOpenChange={onOpenChange}
             >
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">{selectedItem}</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">
+                                {selectedItem}
+                            </ModalHeader>
                             <ModalBody className="dark:bg-white">
                                 <div className="w-full flex justify-center">
                                     <QRCode value={selectedItem}/>
@@ -63,8 +66,7 @@ const QRModal = ({isOpen, onOpen, onOpenChange, selectedItem}: any) => {
             </Modal>
         </>
     );
-}
-
+};
 
 const Item = ({item}: any) => {
     const [showItem, setShowItem] = React.useState(true);
@@ -73,31 +75,31 @@ const Item = ({item}: any) => {
     const onOpenModal = (item: string) => {
         setSelectedItem(item);
         onOpen();
-    }
+    };
 
     return (
         <div className="w-full flex flex-col border-1 p-3 space-y-3">
             <div className="w-full flex flex-row justify-between">
                 <Input
-                    size="sm"
-                    variant="underlined"
                     className="lg:w-1/4 w-3/4"
-                    label="Nazwa przedmiotu"
-                    value={item.name}
                     isDisabled={true}
+                    label="Nazwa przedmiotu"
+                    size="sm"
+                    value={item.name}
+                    variant="underlined"
                 />
                 <Button
+                    color="primary"
                     size="sm"
                     variant="bordered"
-                    color="primary"
                     onClick={() => onOpenModal(item.name)}
                 >
                     Kod QR
                 </Button>
                 <Button
-                    onClick={() => setShowItem(!showItem)}
                     size="sm"
                     variant="bordered"
+                    onClick={() => setShowItem(!showItem)}
                 >
                     {showItem ? "-" : "+"}
                 </Button>
@@ -105,39 +107,42 @@ const Item = ({item}: any) => {
             {showItem && (
                 <>
                     <Input
-                        size="sm"
-                        variant="underlined"
                         className="w-full"
-                        label="Opis przedmiotu"
-                        value={item.description}
                         isDisabled={true}
+                        label="Opis przedmiotu"
+                        size="sm"
+                        value={item.description}
+                        variant="underlined"
                     />
                     <div className="w-full border-1 p-3 space-y-3">
                         <p>Umiejętności wymagane do użycia przedmiotu</p>
                         {item.skills.map((skill: any, index: number) => (
-                            <div key={index} className="lg:w-1/2 w-full flex flex-row space-x-3 items-baseline">
+                            <div
+                                key={index}
+                                className="lg:w-1/2 w-full flex flex-row space-x-3 items-baseline"
+                            >
                                 <Select
                                     className="lg:w-3/4 w-full"
+                                    defaultSelectedKeys={[skill.name]}
+                                    isDisabled={true}
                                     label="Umiejętność"
                                     placeholder="Wybierz umiejętność"
                                     variant="underlined"
-                                    isDisabled={true}
-                                    defaultSelectedKeys={[skill.name]}
                                 >
                                     <SelectItem key={skill.name} value={skill.name}>
                                         {skill.name}
                                     </SelectItem>
                                 </Select>
                                 <Input
-                                    value={skill.level}
-                                    size="sm"
-                                    isDisabled={true}
                                     className="lg:w-1/4 w-1/2"
+                                    isDisabled={true}
                                     label="Poziom"
-                                    type="number"
-                                    variant="underlined"
-                                    min="1"
                                     max="10"
+                                    min="1"
+                                    size="sm"
+                                    type="number"
+                                    value={skill.level}
+                                    variant="underlined"
                                 />
                             </div>
                         ))}
@@ -148,9 +153,9 @@ const Item = ({item}: any) => {
                             <div className="lg:w-1/2 w-full">
                                 <Select
                                     className="lg:w-3/4 w-full"
-                                    placeholder="Wybierz querki"
-                                    isDisabled={true}
                                     defaultSelectedKeys={item.querks}
+                                    isDisabled={true}
+                                    placeholder="Wybierz querki"
                                     selectionMode="multiple"
                                     variant="underlined"
                                 >
@@ -165,7 +170,12 @@ const Item = ({item}: any) => {
                     )}
                 </>
             )}
-            <QRModal isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} selectedItem={selectedItem}/>
+            <QRModal
+                isOpen={isOpen}
+                selectedItem={selectedItem}
+                onOpen={onOpen}
+                onOpenChange={onOpenChange}
+            />
         </div>
     );
 };

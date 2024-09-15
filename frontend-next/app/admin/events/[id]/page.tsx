@@ -1,10 +1,10 @@
 "use client";
 
-import {Input, DatePicker, Textarea, Button, Select, SelectItem, CalendarDate} from "@nextui-org/react";
-import { useEffect, useState } from "react";
-import {getLocalTimeZone, now, parseAbsoluteToLocal} from "@internationalized/date";
+import {Button, DatePicker, Input, Select, SelectItem, Textarea,} from "@nextui-org/react";
+import {useEffect, useState} from "react";
+import {getLocalTimeZone, now} from "@internationalized/date";
 
-export default function EventPage({ params }: any) {
+export default function EventPage({params}: any) {
     const event = {
         id: params.id,
         title: `Wydarzenie #${params.id}`,
@@ -14,9 +14,9 @@ export default function EventPage({ params }: any) {
         maxParticipants: 20,
         scenario: "scenario1",
         scenarios: [
-            { key: "scenario1", name: "Scenario 1" },
-            { key: "scenario2", name: "Scenario 2" },
-            { key: "scenario3", name: "Scenario 3" },
+            {key: "scenario1", name: "Scenario 1"},
+            {key: "scenario2", name: "Scenario 2"},
+            {key: "scenario3", name: "Scenario 3"},
         ],
     };
 
@@ -29,13 +29,13 @@ export default function EventPage({ params }: any) {
 
     const selectScenario = (
         <Select
-            size="lg"
-            variant="underlined"
+            className="w-1/2"
+            defaultSelectedKeys={[selectedScenario]}
+            isDisabled={!isBeingEdited}
             label="Scenariusz"
             placeholder="Wybierz scenariusz..."
-            className="w-1/2"
-            isDisabled={!isBeingEdited}
-            defaultSelectedKeys={[selectedScenario]}
+            size="lg"
+            variant="underlined"
         >
             {event.scenarios.map((scenario) => (
                 <SelectItem key={scenario.key} value={scenario.name}>
@@ -49,60 +49,64 @@ export default function EventPage({ params }: any) {
         <div className="w-full items-center">
             <div className="space-y-10 border-1 p-3">
                 <div className="w-full flex justify-center">
-                    <p id="view-event-modal" className="text-3xl">
+                    <p className="text-3xl" id="view-event-modal">
                         {event.title}
                     </p>
                 </div>
                 <Input
-                    size="lg"
-                    variant="underlined"
                     className="w-full"
-                    label="Nazwa"
                     defaultValue={event.title}
                     isDisabled={!isBeingEdited}
+                    label="Nazwa"
+                    size="lg"
+                    variant="underlined"
                 />
                 <div className="w-full">
                     <div className="flex justify-between space-x-3">
                         <DatePicker
-                            size="lg"
-                            granularity="day"
-                            variant="underlined"
                             className="w-1/2"
-                            label="Data"
                             defaultValue={event.date}
+                            granularity="day"
                             isDisabled={!isBeingEdited}
+                            label="Data"
+                            size="lg"
+                            variant="underlined"
                         />
                         <Input
-                            size="lg"
-                            variant="underlined"
                             className="w-1/2"
-                            label="Czas"
-                            type="time"
                             defaultValue={event.time}
                             isDisabled={!isBeingEdited}
+                            label="Czas"
+                            size="lg"
+                            type="time"
+                            variant="underlined"
                         />
                     </div>
                 </div>
                 <Textarea
-                    size="lg"
-                    variant="underlined"
                     className="w-full"
-                    label="Opis"
                     defaultValue={event.description}
                     isDisabled={!isBeingEdited}
-                />
-                <Input
+                    label="Opis"
                     size="lg"
                     variant="underlined"
+                />
+                <Input
                     className="w-full"
-                    label="Max liczba uczestników"
                     defaultValue={event.maxParticipants.toString()}
-                    type="number"
                     isDisabled={!isBeingEdited}
+                    label="Max liczba uczestników"
+                    size="lg"
+                    type="number"
+                    variant="underlined"
                 />
                 <div className="w-full flex justify-between items-baseline space-x-3">
                     {selectScenario}
-                    <Button color="success" href={"/scenarios/new"} isDisabled={!isBeingEdited}>
+                    <Button
+                        color="success"
+                        href={"/scenarios/new"}
+                        isDisabled={!isBeingEdited}
+                    >
                         Dodaj nowy scenariusz
                     </Button>
                     <Button color="warning" isDisabled={!isBeingEdited}>
@@ -114,16 +118,22 @@ export default function EventPage({ params }: any) {
                         <Button color="danger" size="lg">
                             Usuń
                         </Button>
-                        <Button color="warning" size="lg" onClick={() => setIsBeingEdited(true)}>
+                        <Button
+                            color="warning"
+                            size="lg"
+                            onClick={() => setIsBeingEdited(true)}
+                        >
                             Edytuj
                         </Button>
-                        {
-                            isBeingEdited && (
-                                <Button color="success" size="lg" onClick={() => setIsBeingEdited(false)}>
-                                    Zapisz
-                                </Button>
-                            )
-                        }
+                        {isBeingEdited && (
+                            <Button
+                                color="success"
+                                size="lg"
+                                onClick={() => setIsBeingEdited(false)}
+                            >
+                                Zapisz
+                            </Button>
+                        )}
                     </div>
                 </div>
             </div>

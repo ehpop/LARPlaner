@@ -1,6 +1,7 @@
 "use client";
 
 import {EventsDisplay} from "@/components/events/events-display";
+import {useIntl} from "react-intl";
 
 const list = [
     {
@@ -126,11 +127,23 @@ const list = [
 ];
 
 function EventsPage() {
+    const intl = useIntl();
+
     return (
         <div className="space-y-5">
-            <EventsDisplay list={[]} title="Aktualne wydarzenia"/>
-            <EventsDisplay list={list} title="Nadchodzące wydarzenia" canAddNewEvent={true}/>
-            <EventsDisplay list={list.slice(0, 10)} title="Wydarzenia historyczne"/>
+            <EventsDisplay list={[]} title={
+                intl.formatMessage({id: "events.page.display.title.now", defaultMessage: "Now events"})
+            }/>
+            <EventsDisplay
+                canAddNewEvent={true}
+                list={list}
+                title={
+                    intl.formatMessage({id: "events.page.display.title.future", defaultMessage: "Future events"})
+                }
+            />
+            <EventsDisplay list={list.slice(0, 10)} title={
+                intl.formatMessage({id: "events.page.display.title.previous", defaultMessage: "Previous events"})
+            }/>
         </div>
     );
 }

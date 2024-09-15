@@ -1,7 +1,5 @@
 "use client";
 
-import {Link} from "@nextui-org/link";
-import {Button} from "@nextui-org/react";
 import RolesDisplay from "@/components/roles/roles-display";
 
 const roles = [
@@ -23,7 +21,7 @@ export default function RolesPage() {
             <div className="w-full flex justify-center">
                 <p className="text-3xl">Roles Page</p>
             </div>
-            <RolesDisplay rolesList={roles} title={"Rola"} canAddNewRole={true}/>
+            <RolesDisplay canAddNewRole={true} rolesList={roles} title={"Rola"}/>
         </div>
     );
 }

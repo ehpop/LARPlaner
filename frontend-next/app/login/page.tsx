@@ -1,7 +1,7 @@
 "use client";
 
-import {useState, ChangeEvent, FormEvent} from "react";
-import {Input, Button, Link, Card, Spacer, Spinner} from "@nextui-org/react";
+import {ChangeEvent, FormEvent, useState} from "react";
+import {Button, Card, Input, Link, Spinner} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 
 export default function LoginPage() {
@@ -38,49 +38,45 @@ export default function LoginPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-[800] bg-default-100 dark:bg-stone-950 p-4">
             <Card className="max-w-md w-full p-6 space-y-3" shadow="lg">
-                <p className="text-center text-3xl">
-                    Login
-                </p>
+                <p className="text-center text-3xl">Login</p>
 
                 {error && (
                     <Card className="mt-4 mb-6 border-1">
-                        <p color="error">
-                            {error}
-                        </p>
+                        <p color="error">{error}</p>
                     </Card>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-3">
+                <form className="space-y-3" onSubmit={handleSubmit}>
                     <Input
                         fullWidth
-                        type="email"
+                        required
                         label="Email"
                         placeholder="Enter your email"
+                        type="email"
                         value={email}
                         onChange={handleEmailChange}
-                        required
                     />
                     <Input
                         fullWidth
+                        required
                         label="Password"
                         placeholder="Enter your password"
+                        type="password"
                         value={password}
                         onChange={handlePasswordChange}
-                        type="password"
-                        required
                     />
                     <Button
+                        className="w-full"
                         color="primary"
-                        type="submit"
                         disabled={loading}
                         size="lg"
-                        className="w-full"
+                        type="submit"
                     >
                         Login
                     </Button>
                     {loading && (
                         <div className="flex justify-center">
-                            <Spinner color="primary" label="Logging..." />
+                            <Spinner color="primary" label="Logging..."/>
                         </div>
                     )}
                 </form>

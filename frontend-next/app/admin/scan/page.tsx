@@ -1,8 +1,9 @@
 "use client";
 
-import {title} from "@/components/primitives";
 import {QrReader} from "react-qr-reader";
 import {useState} from "react";
+
+import {title} from "@/components/primitives";
 
 export default function ScanPage() {
     const [data, setData] = useState("No result");
@@ -24,6 +25,7 @@ export default function ScanPage() {
             <div>
                 <h2>QR Code Scanner</h2>
                 <QrReader
+                    constraints={{facingMode: "environment"}}
                     onResult={(result: any, error: any) => {
                         if (result) {
                             handleScan(result);
@@ -33,7 +35,6 @@ export default function ScanPage() {
                             handleError(error);
                         }
                     }}
-                    constraints={{facingMode: "environment"}}
                 />
                 <p>Scanned Data: {data}</p>
                 {error && <p style={{color: "red"}}>Error: {error}</p>}

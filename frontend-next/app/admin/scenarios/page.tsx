@@ -1,7 +1,5 @@
 "use client";
 
-import {Button} from "@nextui-org/react";
-import {Link} from "@nextui-org/link";
 import ScenariosDisplay from "@/components/scenarios/scenarios-display";
 
 const scenarios: string[] = [
@@ -15,7 +13,7 @@ const scenarios: string[] = [
     "Scenario 8",
     "Scenario 9",
     "Scenario 10",
-]
+];
 
 function ScenariosPage() {
     return (
@@ -23,10 +21,13 @@ function ScenariosPage() {
             <div className="w-full flex justify-center">
                 <p className="text-3xl">Scenarios Page</p>
             </div>
-            <ScenariosDisplay scenariosList={scenarios} title={"Scenarios"} canAddNewScenario={true}/>
+            <ScenariosDisplay
+                canAddNewScenario={true}
+                scenariosList={scenarios}
+                title={"Scenarios"}
+            />
         </div>
-
-    )
+    );
 }
 
 export default ScenariosPage;

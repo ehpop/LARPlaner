@@ -14,16 +14,25 @@ import {Link} from "@nextui-org/link";
 import {link as linkStyles} from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
+import {useContext, useState} from "react";
 
 import {siteConfig} from "@/config/site";
 import {ThemeSwitch} from "@/components/theme-switch";
 import {GithubIcon, Logo} from "@/components/icons";
-import {useState} from "react";
+import {Select, SelectItem} from "@nextui-org/react";
+import {LocaleContext} from "@/context/locale-context";
+import {locales} from "@/lang/i18n/i18n-config";
 
 export const Navbar = () => {
     const [isAdmin, setIsAdmin] = useState(true);
-    const [navItems, setNavItems] = useState(isAdmin ?  siteConfig.navItems.admin :  siteConfig.navItems.user);
-    const [navMenuItems, setNavMenuItems] = useState(isAdmin ? siteConfig.navMenuItems.admin : siteConfig.navMenuItems.user);
+    const [navItems, setNavItems] = useState(
+        isAdmin ? siteConfig.navItems.admin : siteConfig.navItems.user,
+    );
+    const [navMenuItems, setNavMenuItems] = useState(
+        isAdmin ? siteConfig.navMenuItems.admin : siteConfig.navMenuItems.user,
+    );
+
+    const {locale, setLocale} = useContext(LocaleContext);
 
     return (
         <NextUINavbar maxWidth="xl" position="sticky">
@@ -42,7 +51,7 @@ export const Navbar = () => {
                             <NextLink
                                 className={clsx(
                                     linkStyles({color: "foreground"}),
-                                    "data-[active=true]:text-primary data-[active=true]:font-medium"
+                                    "data-[active=true]:text-primary data-[active=true]:font-medium",
                                 )}
                                 color="foreground"
                                 href={item.href}
@@ -62,7 +71,22 @@ export const Navbar = () => {
                     </Link>
                     <ThemeSwitch/>
                 </NavbarItem>
-                <NavbarItem className="hidden sm:flex">
+                <NavbarItem className="hidden sm:flex space-x-1">
+                    <Select
+                        className="w-32"
+                        size="md"
+                        value={locale}
+                        defaultSelectedKeys={[locale]}
+                        onChange={(event) => setLocale(event.target.value)}
+                    >
+                        {
+                            Object.keys(locales).map((key) => (
+                                <SelectItem key={key} value={locales[key].name}>
+                                    {locales[key].name}
+                                </SelectItem>
+                            ))
+                        }
+                    </Select>
                     <Button
                         as={Link}
                         className="text-sm font-normal text-default-600 bg-default-100"
@@ -88,11 +112,7 @@ export const Navbar = () => {
                 <div className="mx-4 mt-2 flex flex-col gap-2">
                     {navMenuItems.map((item, index) => (
                         <NavbarMenuItem key={`${item}-${index}`}>
-                            <Link
-                                color="primary"
-                                href={item.href}
-                                size="lg"
-                            >
+                            <Link color="primary" href={item.href} size="lg">
                                 {item.label}
                             </Link>
                         </NavbarMenuItem>

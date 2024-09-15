@@ -22,20 +22,20 @@ export default function RoleDisplayPage({params}: any) {
 
             <div className="space-y-3">
                 <Input
-                    label="Nazwa"
-                    value={role.name}
-                    size="lg"
                     isDisabled={true}
+                    label="Nazwa"
+                    size="lg"
+                    value={role.name}
                     variant="underlined"
                 />
             </div>
 
             <div className="space-y-3">
                 <Input
-                    label="Opis"
-                    value={role.description}
-                    size="lg"
                     isDisabled={true}
+                    label="Opis"
+                    size="lg"
+                    value={role.description}
                     variant="underlined"
                 />
             </div>
@@ -49,24 +49,24 @@ export default function RoleDisplayPage({params}: any) {
                     >
                         <Select
                             key={index}
+                            className="lg:w-3/4 w-full"
                             defaultSelectedKeys={[attribute.name]}
                             isDisabled={true}
-                            variant="underlined"
-                            className="lg:w-3/4 w-full"
                             label="Atrybut"
+                            variant="underlined"
                         >
                             <SelectItem key={attribute.name} value={attribute.name}>
                                 {attribute.name}
                             </SelectItem>
                         </Select>
                         <Input
-                            value={attribute.value.toString()}
+                            className="lg:w-1/4 w-1/2"
                             isDisabled={true}
                             label="Wartość"
                             size="sm"
-                            variant="underlined"
                             type="number"
-                            className="lg:w-1/4 w-1/2"
+                            value={attribute.value.toString()}
+                            variant="underlined"
                         />
                     </div>
                 ))}
@@ -76,12 +76,12 @@ export default function RoleDisplayPage({params}: any) {
                 <p className="text-xl font-bold">Querki postaci:</p>
                 <div className="lg:w-1/2 w-full">
                     <Select
-                        placeholder="Wybierz querki"
-                        isDisabled={true}
-                        variant="underlined"
-                        defaultSelectedKeys={role.querks}
-                        selectionMode="multiple"
                         className="lg:w-3/4 w-full"
+                        defaultSelectedKeys={role.querks}
+                        isDisabled={true}
+                        placeholder="Wybierz querki"
+                        selectionMode="multiple"
+                        variant="underlined"
                     >
                         {role.querks.map((querk) => (
                             <SelectItem key={querk} value={querk}>

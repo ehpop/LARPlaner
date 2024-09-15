@@ -1,5 +1,5 @@
-import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
-import { Link } from "@nextui-org/link";
+import {Card, CardBody, CardFooter, Image} from "@nextui-org/react";
+import {Link} from "@nextui-org/link";
 
 interface EventProps {
     event: {
@@ -10,7 +10,7 @@ interface EventProps {
     };
 }
 
-export const Event = ({ event }: EventProps) => {
+export const Event = ({event}: EventProps) => {
     return (
         <Link aria-label={`Event: ${event.title}`} href={`events/${event.id}`}>
             <Card shadow="sm" key={event.id}>
@@ -25,7 +25,9 @@ export const Event = ({ event }: EventProps) => {
                     />
                 </CardBody>
                 <CardFooter className="text-small justify-between">
-                    <b>{event.title}</b>
+                    <b>
+                        {event.title}
+                    </b>
                     <p className="text-default-500">{event.date}</p>
                 </CardFooter>
             </Card>

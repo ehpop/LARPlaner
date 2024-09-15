@@ -1,6 +1,6 @@
 "use client";
 
-import {Button, DatePicker, Input, Select, SelectItem, Textarea} from "@nextui-org/react";
+import {Button, DatePicker, Input, Select, SelectItem, Textarea,} from "@nextui-org/react";
 import {useState} from "react";
 import {Link} from "@nextui-org/link";
 
@@ -15,71 +15,73 @@ export default function AddEventModal() {
 
     const selectScenario = (
         <Select
-            size="lg"
+            className="w-1/2"
             items={scenarios}
             label="Scenariusz"
             placeholder="Wybierz scenariusz..."
+            size="lg"
             variant="underlined"
-            className="w-1/2"
             onSelectionChange={setSelectedScenario}
         >
-            {(scenario) => <SelectItem key={scenario.key}>{scenario.name}</SelectItem>}
+            {(scenario) => (
+                <SelectItem key={scenario.key}>{scenario.name}</SelectItem>
+            )}
         </Select>
     );
 
     return (
         <div className="space-y-10 border-1 p-3">
             <div className="w-full flex justify-center">
-                <p id="add-event-modal" className="text-3xl">
+                <p className="text-3xl" id="add-event-modal">
                     Dodaj wydarzenie
                 </p>
             </div>
             <Input
-                size="lg"
-                isClearable={true}
-                variant="underlined"
                 className="w-full"
+                isClearable={true}
                 label="Nazwa"
                 placeholder="Wprowadź nazwę wydarzenia..."
+                size="lg"
+                variant="underlined"
             />
             <div className="w-full">
                 <div className="flex justify-between space-x-3">
                     <DatePicker
-                        size="lg"
-                        variant="underlined"
+                        showMonthAndYearPickers
                         className="w-1/2 "
                         label="Data"
-                        showMonthAndYearPickers
-                    />
-                    <Input
                         size="lg"
                         variant="underlined"
+                    />
+                    <Input
                         className="w-1/2"
                         label="Czas"
+                        size="lg"
                         type="time"
+                        variant="underlined"
                     />
                 </div>
             </div>
             <Textarea
-                size="lg"
-                variant="underlined"
                 className="w-full"
                 label="Opis"
                 placeholder="Wprowadź opis wydarzenia"
+                size="lg"
+                variant="underlined"
             />
             <Input
-                size="lg"
-                isClearable={true}
-                variant="underlined"
                 className="w-full"
+                isClearable={true}
                 label="Max liczba uczestników"
-                placeholder="Wprowadź liczbę uczestników..."
-                type="number"
                 min="0"
+                placeholder="Wprowadź liczbę uczestników..."
+                size="lg"
+                type="number"
+                variant="underlined"
             />
             <div className="w-full flex justify-between items-baseline space-x-3">
                 {selectScenario}
-                <Button color="success" href={"/scenarios/new"} as={Link}>
+                <Button as={Link} color="success" href={"/scenarios/new"}>
                     Dodaj nowy scenariusz
                 </Button>
                 <Button color="warning" isDisabled={!selectedScenario}>
@@ -88,7 +90,7 @@ export default function AddEventModal() {
             </div>
             <div className="w-full flex justify-end">
                 <div className="flex justify-between space-x-3">
-                    <Button color="danger" variant="bordered" size="lg">
+                    <Button color="danger" size="lg" variant="bordered">
                         Anuluj
                     </Button>
                     <Button color="success" size="lg">

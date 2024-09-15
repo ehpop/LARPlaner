@@ -1,10 +1,11 @@
 "use client";
 
-import { Button, Input, Select, SelectItem } from "@nextui-org/react";
-import React, { useState } from "react";
+import {Button, Input, Select, SelectItem} from "@nextui-org/react";
+import React, {useState} from "react";
+
 import MultiSelect from "@/components/multi-select";
 
-const Item = ({ skills, querks, removeItem, index }: any) => {
+const Item = ({skills, querks, removeItem, index}: any) => {
     const [showItem, setShowItem] = useState(true);
 
     return (
@@ -12,26 +13,26 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
             <div className="w-full flex flex-col border-1 space-y-3 p-3">
                 <div className="w-full flex flex-row justify-between space-y-3">
                     <Input
-                        size="sm"
-                        variant="underlined"
                         className="lg:w-1/4 w-1/2"
                         label="Nazwa przedmiotu"
                         placeholder="Nazwa..."
+                        size="sm"
                         type="text"
+                        variant="underlined"
                     />
                     <div className="space-x-3">
                         <Button
-                            onClick={() => setShowItem(!showItem)}
                             size="sm"
                             variant="bordered"
+                            onClick={() => setShowItem(!showItem)}
                         >
                             {showItem ? "-" : "+"}
                         </Button>
                         <Button
-                            onClick={() => removeItem(index)}
-                            size="sm"
                             color="danger"
+                            size="sm"
                             variant="bordered"
+                            onClick={() => removeItem(index)}
                         >
                             Usuń
                         </Button>
@@ -39,24 +40,24 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
                 </div>
                 <div className={showItem ? "space-y-3" : "hidden"}>
                     <Input
-                        size="sm"
-                        variant="underlined"
                         className="lg:w-1/2 w-3/4"
                         label="Opis przedmiotu"
                         placeholder="Opis..."
+                        size="sm"
                         type="text"
+                        variant="underlined"
                     />
                     <div className="w-full flex flex-col border-1 p-3 space-y-3">
                         <p>Umiejętności wymagane do użycia przedmiotu</p>
                         <MultiSelect
-                            options={skills}
                             addButtonLabel="Dodaj wymaganą umiejętność"
-                            removeButtonLabel="Usuń umiejętność"
-                            selectLabel="Umiejętność"
                             counterLabel="Minimalny poziom"
                             defaultCounterValue="10"
-                            minCounterValue={1}
                             maxCounterValue={10}
+                            minCounterValue={1}
+                            options={skills}
+                            removeButtonLabel="Usuń umiejętność"
+                            selectLabel="Umiejętność"
                         />
                     </div>
                     {querks && (
@@ -84,7 +85,7 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
     );
 };
 
-const ItemCreator = ({ skills, querks }: any) => {
+const ItemCreator = ({skills, querks}: any) => {
     const [items, setItems] = useState<string[]>(["1st item"]);
 
     const addItem = () => {
@@ -93,6 +94,7 @@ const ItemCreator = ({ skills, querks }: any) => {
 
     const removeItem = (index: number) => {
         const updatedItems = [...items];
+
         updatedItems.splice(index, 1);
         setItems(updatedItems);
     };
@@ -102,13 +104,13 @@ const ItemCreator = ({ skills, querks }: any) => {
             {items.map((item, index) => (
                 <Item
                     key={index}
-                    skills={skills}
+                    index={index}
                     querks={querks}
                     removeItem={removeItem}
-                    index={index}
+                    skills={skills}
                 />
             ))}
-            <Button onClick={addItem} size="sm" color="success" variant="solid">
+            <Button color="success" size="sm" variant="solid" onClick={addItem}>
                 Dodaj
             </Button>
         </div>

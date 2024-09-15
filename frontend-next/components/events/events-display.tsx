@@ -1,16 +1,23 @@
 import {Input, Pagination} from "@nextui-org/react";
-import {Event} from "./event";
 import {ChangeEvent, useEffect, useState} from "react";
-import {SearchIcon} from "@/components/icons";
 import {Link} from "@nextui-org/link";
 import {Button} from "@nextui-org/button";
 
+import {Event} from "./event";
+
+import {SearchIcon} from "@/components/icons";
+import {FormattedMessage} from "react-intl";
+
 const EVENTS_PER_PAGE = 3;
 
-export const EventsDisplay = ({list, title, canAddNewEvent = false}: {
-    list: any[],
-    title: string,
-    canAddNewEvent?: boolean
+export const EventsDisplay = ({
+                                  list,
+                                  title,
+                                  canAddNewEvent = false,
+                              }: {
+    list: any[];
+    title: string;
+    canAddNewEvent?: boolean;
 }) => {
     const getAmountOfPages = (list: any[]) => {
         return Math.ceil(list.length / EVENTS_PER_PAGE);
@@ -19,8 +26,10 @@ export const EventsDisplay = ({list, title, canAddNewEvent = false}: {
     const getPages = (list: any[]) => {
         let pages: any[] = [];
         let amountOfPages = getAmountOfPages(list);
+
         for (let i = 1; i <= amountOfPages; i++) {
             let page = list.slice((i - 1) * EVENTS_PER_PAGE, i * EVENTS_PER_PAGE);
+
             pages.push(page);
         }
 
@@ -38,7 +47,9 @@ export const EventsDisplay = ({list, title, canAddNewEvent = false}: {
 
     useEffect(() => {
         const newFilteredList = searchValue
-            ? list.filter((item) => item.title.toLowerCase().includes(searchValue.toLowerCase()))
+            ? list.filter((item) =>
+                item.title.toLowerCase().includes(searchValue.toLowerCase()),
+            )
             : list;
 
         setFilteredList(newFilteredList);
@@ -56,8 +67,8 @@ export const EventsDisplay = ({list, title, canAddNewEvent = false}: {
             <div className="pt-5 flex justify-center align-center">
                 <Pagination
                     showControls
-                    total={pages.length}
                     initialPage={currentPage}
+                    total={pages.length}
                     onChange={(page) => setCurrentPage(page)}
                 />
             </div>
@@ -85,22 +96,22 @@ export const EventsDisplay = ({list, title, canAddNewEvent = false}: {
                     }}
                     placeholder="Type to search..."
                     size="sm"
+                    startContent={<SearchIcon className={"text-default-400"}/>}
                     type="search"
                     value={searchValue}
-                    startContent={<SearchIcon className={"text-default-400"}/>}
                     onChange={handleSearch}
                 />
             </div>
             {filteredList.length > 0 ? EventsElement : NoEventsElement}
-            {canAddNewEvent &&
+            {canAddNewEvent && (
                 <div className="w-full flex justify-center">
                     <Link href={"/events/new"}>
-                        <Button variant="solid" color="success">
-                            Dodaj nowe wydarzenie
+                        <Button color="success" variant="solid">
+                            <FormattedMessage id="events.display.addEvent" defaultMessage="Add new event"/>
                         </Button>
                     </Link>
                 </div>
-            }
+            )}
         </div>
     );
 };

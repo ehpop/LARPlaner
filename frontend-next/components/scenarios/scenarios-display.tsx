@@ -1,15 +1,20 @@
-import { Input, Pagination } from "@nextui-org/react";
-import { useEffect, useState, ChangeEvent } from "react";
-import { SearchIcon } from "@/components/icons";
-import { Link } from "@nextui-org/link";
-import { Button } from "@nextui-org/button";
+import {Input, Pagination} from "@nextui-org/react";
+import {ChangeEvent, useEffect, useState} from "react";
+import {Link} from "@nextui-org/link";
+import {Button} from "@nextui-org/button";
+
+import {SearchIcon} from "@/components/icons";
 
 const SCENARIOS_PER_PAGE = 6;
 
-export const ScenariosDisplay = ({ scenariosList, title, canAddNewScenario = false }: {
-    scenariosList: string[],
-    title: string,
-    canAddNewScenario?: boolean
+export const ScenariosDisplay = ({
+                                     scenariosList,
+                                     title,
+                                     canAddNewScenario = false,
+                                 }: {
+    scenariosList: string[];
+    title: string;
+    canAddNewScenario?: boolean;
 }) => {
     const getAmountOfPages = (list: string[]) => {
         return Math.ceil(list.length / SCENARIOS_PER_PAGE);
@@ -18,8 +23,13 @@ export const ScenariosDisplay = ({ scenariosList, title, canAddNewScenario = fal
     const getPages = (list: string[]) => {
         let pages: string[][] = [];
         let amountOfPages = getAmountOfPages(list);
+
         for (let i = 1; i <= amountOfPages; i++) {
-            let page = list.slice((i - 1) * SCENARIOS_PER_PAGE, i * SCENARIOS_PER_PAGE);
+            let page = list.slice(
+                (i - 1) * SCENARIOS_PER_PAGE,
+                i * SCENARIOS_PER_PAGE,
+            );
+
             pages.push(page);
         }
 
@@ -38,7 +48,7 @@ export const ScenariosDisplay = ({ scenariosList, title, canAddNewScenario = fal
     useEffect(() => {
         const newFilteredList = searchValue
             ? scenariosList.filter((scenario) =>
-                scenario.toLowerCase().includes(searchValue.toLowerCase())
+                scenario.toLowerCase().includes(searchValue.toLowerCase()),
             )
             : scenariosList;
 
@@ -52,10 +62,10 @@ export const ScenariosDisplay = ({ scenariosList, title, canAddNewScenario = fal
             <div className="gap-4 grid sm:grid-cols-2 grid-cols-1">
                 {pages[currentPage - 1]?.map((scenario, index) => (
                     <Link
-                        href={`/scenarios/${index + 1}`}
                         key={scenario}
                         isBlock
                         className="w-full border-1 p-3 space-y-3 text-center"
+                        href={`/scenarios/${index + 1}`}
                     >
                         <p className="text-xl">{scenario}</p>
                     </Link>
@@ -64,8 +74,8 @@ export const ScenariosDisplay = ({ scenariosList, title, canAddNewScenario = fal
             <div className="pt-5 flex justify-center align-center">
                 <Pagination
                     showControls
-                    total={pages.length}
                     initialPage={currentPage}
+                    total={pages.length}
                     onChange={(page) => setCurrentPage(page)}
                 />
             </div>
@@ -79,7 +89,8 @@ export const ScenariosDisplay = ({ scenariosList, title, canAddNewScenario = fal
     );
 
     return (
-        <div className="w-full border-small px-5 py-5 space-y-3 rounded-small border-default-200 dark:border-default-100">
+        <div
+            className="w-full border-small px-5 py-5 space-y-3 rounded-small border-default-200 dark:border-default-100">
             <div className="w-full flex justify-between">
                 <p className="text-3xl">{title}</p>
                 <Input
@@ -92,9 +103,9 @@ export const ScenariosDisplay = ({ scenariosList, title, canAddNewScenario = fal
                     }}
                     placeholder="Type to search..."
                     size="sm"
+                    startContent={<SearchIcon className="text-default-400"/>}
                     type="search"
                     value={searchValue}
-                    startContent={<SearchIcon className="text-default-400" />}
                     onChange={handleSearch}
                 />
             </div>
@@ -102,7 +113,7 @@ export const ScenariosDisplay = ({ scenariosList, title, canAddNewScenario = fal
             {canAddNewScenario && (
                 <div className="w-full flex justify-center">
                     <Link href={"/scenarios/new"}>
-                        <Button variant="solid" color="success">
+                        <Button color="success" variant="solid">
                             Dodaj nowy scenariusz
                         </Button>
                     </Link>
