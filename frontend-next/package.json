@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix",
-    "extract": "formatjs extract \"app/**/*.tsx\" \"components/**/*.tsx\" --out-file lang/en-US.json --ignore 'lang/**/*' --format simple"
+    "extract": "formatjs extract \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"config/**/*.{ts,tsx}\" --out-file lang/en-US.json --ignore 'lang/**/*' --format simple"
   },
   "dependencies": {
     "@nextui-org/button": "2.0.34",
@@ -25,6 +25,8 @@
     "@react-aria/ssr": "3.9.4",
     "@react-aria/visually-hidden": "3.8.12",
     "clsx": "2.1.1",
+    "firebase": "^10.13.2",
+    "firebase-admin": "^12.5.0",
     "framer-motion": "~11.1.1",
     "intl-messageformat": "^10.5.0",
     "next": "14.2.4",
@@ -36,6 +38,7 @@
     "react-qr-reader": "^3.0.0-beta-1"
   },
   "devDependencies": {
+    "@formatjs/cli": "^6.2.4",
     "@types/node": "20.5.7",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
@@ -53,10 +56,9 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unused-imports": "^3.2.0",
     "postcss": "8.4.38",
+    "react-intl-translations-manager": "^5.0.3",
     "tailwind-variants": "0.1.20",
     "tailwindcss": "3.4.3",
-    "typescript": "5.0.4",
-    "@formatjs/cli": "^6.2.4",
-    "react-intl-translations-manager": "^5.0.3"
+    "typescript": "5.0.4"
   }
 }
