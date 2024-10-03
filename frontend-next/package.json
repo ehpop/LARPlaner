@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev --turbo -p 9000",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix",
+    "start": "next start -p 9000",
+    "lint": "eslint . --ext .ts,.tsx -c .eslinrc.js --fix",
     "extract": "formatjs extract \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"config/**/*.{ts,tsx}\" --out-file lang/en-US.json --ignore 'lang/**/*' --format simple"
   },
   "dependencies": {
@@ -35,10 +35,11 @@
     "react-dom": "18.3.1",
     "react-intl": "^6.5.5",
     "react-qr-code": "^2.0.15",
-    "react-qr-reader": "^3.0.0-beta-1"
+    "react-zxing": "2.0.2"
   },
   "devDependencies": {
     "@formatjs/cli": "^6.2.4",
+    "@next/eslint-plugin-next": "^14.2.13",
     "@types/node": "20.5.7",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",

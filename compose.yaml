@@ -20,3 +20,5 @@ services:
         - /app/.next
     ports:
       - "9000:9000"
+    env_file:
+      - .env
