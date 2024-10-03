@@ -7,7 +7,11 @@ import Image from "next/image";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { useAuth } from "@/providers/firebase-provider";
-import { emailAuthProvider, githubAuthProvider, googleAuthProvider } from "@/config/firebase";
+import {
+  emailAuthProvider,
+  githubAuthProvider,
+  googleAuthProvider,
+} from "@/config/firebase";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,8 +41,8 @@ export default function LoginPage() {
       setError(
         intl.formatMessage({
           id: "login.error",
-          defaultMessage: "Invalid email or password"
-        })
+          defaultMessage: "Invalid email or password",
+        }),
       );
     } finally {
       setLoading(false);
@@ -63,11 +67,11 @@ export default function LoginPage() {
             required
             label={intl.formatMessage({
               id: "login.email",
-              defaultMessage: "Email"
+              defaultMessage: "Email",
             })}
             placeholder={intl.formatMessage({
               id: "login.emailPlaceholder",
-              defaultMessage: "Enter your email"
+              defaultMessage: "Enter your email",
             })}
             type="email"
             value={email}
@@ -78,11 +82,11 @@ export default function LoginPage() {
             required
             label={intl.formatMessage({
               id: "login.password",
-              defaultMessage: "Password"
+              defaultMessage: "Password",
             })}
             placeholder={intl.formatMessage({
               id: "login.passwordPlaceholder",
-              defaultMessage: "Enter your password"
+              defaultMessage: "Enter your password",
             })}
             type="password"
             value={password}

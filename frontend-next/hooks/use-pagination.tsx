@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export const usePagination = <T extends any[]>(
   list: T,
-  itemsPerPage: number
+  itemsPerPage: number,
 ) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pages, setPages] = useState<T[]>([]);
@@ -31,6 +31,6 @@ export const usePagination = <T extends any[]>(
     currentPage,
     pages,
     totalPages: pages.length,
-    setCurrentPage
+    setCurrentPage,
   };
 };

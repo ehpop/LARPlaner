@@ -53,7 +53,7 @@ export default function RolesPage() {
         <p className="text-3xl" id="add-event-modal">
           {intl.formatMessage({
             id: "role.add.title",
-            defaultMessage: "Add role"
+            defaultMessage: "Add role",
           })}
         </p>
       </div>
@@ -62,11 +62,11 @@ export default function RolesPage() {
         className="w-full"
         label={intl.formatMessage({
           id: "role.add.name",
-          defaultMessage: "Name"
+          defaultMessage: "Name",
         })}
         placeholder={intl.formatMessage({
           id: "role.add.name.placeholder",
-          defaultMessage: "Insert role name..."
+          defaultMessage: "Insert role name...",
         })}
         size="lg"
         variant="underlined"
@@ -75,11 +75,11 @@ export default function RolesPage() {
         className="w-full"
         label={intl.formatMessage({
           id: "role.add.description",
-          defaultMessage: "Description"
+          defaultMessage: "Description",
         })}
         placeholder={intl.formatMessage({
           id: "role.add.description.placeholder",
-          defaultMessage: "Insert role description..."
+          defaultMessage: "Insert role description...",
         })}
         size="lg"
         variant="underlined"
@@ -88,7 +88,7 @@ export default function RolesPage() {
         <p>
           {intl.formatMessage({
             id: "role.add.attributes",
-            defaultMessage: "Attributes"
+            defaultMessage: "Attributes",
           })}
         </p>
         {attributes.map((attribute, index) => (
@@ -99,11 +99,11 @@ export default function RolesPage() {
                 className="w-1/2"
                 label={intl.formatMessage({
                   id: "role.add.attribute.name",
-                  defaultMessage: "Name"
+                  defaultMessage: "Name",
                 })}
                 placeholder={intl.formatMessage({
                   id: "role.add.attribute.name.placeholder",
-                  defaultMessage: "Insert attribute name..."
+                  defaultMessage: "Insert attribute name...",
                 })}
                 value={attribute.key}
                 variant="underlined"
@@ -111,7 +111,7 @@ export default function RolesPage() {
                   onAttributeChange(
                     index,
                     e.target.value,
-                    attribute.value.toString()
+                    attribute.value.toString(),
                   )
                 }
               />
@@ -120,13 +120,13 @@ export default function RolesPage() {
                 className="w-1/6"
                 label={intl.formatMessage({
                   id: "role.add.attribute.value",
-                  defaultMessage: "Value"
+                  defaultMessage: "Value",
                 })}
                 max={100}
                 min={0}
                 placeholder={intl.formatMessage({
                   id: "role.add.attribute.value.placeholder",
-                  defaultMessage: "Insert attribute value..."
+                  defaultMessage: "Insert attribute value...",
                 })}
                 type="number"
                 value={attribute.value.toString()}
@@ -143,7 +143,7 @@ export default function RolesPage() {
               >
                 {intl.formatMessage({
                   id: "role.add.attribute.remove",
-                  defaultMessage: "Delete attribute"
+                  defaultMessage: "Delete attribute",
                 })}
               </Button>
             </div>
@@ -157,7 +157,7 @@ export default function RolesPage() {
         >
           {intl.formatMessage({
             id: "role.add.attribute.add",
-            defaultMessage: "Add attribute"
+            defaultMessage: "Add attribute",
           })}
         </Button>
       </div>
@@ -165,7 +165,7 @@ export default function RolesPage() {
         <p>
           {intl.formatMessage({
             id: "role.add.querks",
-            defaultMessage: "Character's querks"
+            defaultMessage: "Character's querks",
           })}
         </p>
         {querks.map((querk, index) => (
@@ -178,11 +178,11 @@ export default function RolesPage() {
               className="lg:w-1/2 w-full"
               label={intl.formatMessage({
                 id: "role.add.querk.name",
-                defaultMessage: "Name"
+                defaultMessage: "Name",
               })}
               placeholder={intl.formatMessage({
                 id: "role.add.querk.placeholder",
-                defaultMessage: "Input querk name..."
+                defaultMessage: "Input querk name...",
               })}
               value={querk}
               variant="underlined"
@@ -196,7 +196,7 @@ export default function RolesPage() {
             >
               {intl.formatMessage({
                 id: "role.add.querk.remove",
-                defaultMessage: "Delete qerk"
+                defaultMessage: "Delete qerk",
               })}
             </Button>
           </div>
@@ -204,7 +204,7 @@ export default function RolesPage() {
         <Button color="success" size="sm" variant="solid" onClick={addQuerk}>
           {intl.formatMessage({
             id: "role.add.querk.add",
-            defaultMessage: "Add querk"
+            defaultMessage: "Add querk",
           })}
         </Button>
       </div>
@@ -213,13 +213,13 @@ export default function RolesPage() {
           <Button color="danger" size="lg" variant="bordered">
             {intl.formatMessage({
               id: "role.add.cancel",
-              defaultMessage: "Cancel"
+              defaultMessage: "Cancel",
             })}
           </Button>
           <Button color="success" size="lg">
             {intl.formatMessage({
               id: "role.add.save",
-              defaultMessage: "Save"
+              defaultMessage: "Save",
             })}
           </Button>
         </div>

@@ -13,10 +13,10 @@ export interface ILocale {
 export const locales: { [key: string]: ILocale } = {
   "en-US": {
     name: "English",
-    messages: enMessages
+    messages: enMessages,
   },
   pl: {
     name: "Polski",
-    messages: plMessages
-  }
+    messages: plMessages,
+  },
 };

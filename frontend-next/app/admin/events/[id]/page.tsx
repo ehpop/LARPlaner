@@ -1,6 +1,13 @@
 "use client";
 
-import { Button, DatePicker, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
+import {
+  Button,
+  DatePicker,
+  Input,
+  Select,
+  SelectItem,
+  Textarea,
+} from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { getLocalTimeZone, now } from "@internationalized/date";
 import { FormattedMessage, useIntl } from "react-intl"; // Import FormattedMessage and useIntl
@@ -19,8 +26,8 @@ export default function EventPage({ params }: any) {
     scenarios: [
       { key: "scenario1", name: "Scenario 1" },
       { key: "scenario2", name: "Scenario 2" },
-      { key: "scenario3", name: "Scenario 3" }
-    ]
+      { key: "scenario3", name: "Scenario 3" },
+    ],
   };
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
@@ -37,11 +44,11 @@ export default function EventPage({ params }: any) {
       isDisabled={!isBeingEdited}
       label={intl.formatMessage({
         id: "events.page.display.scenario",
-        defaultMessage: "Scenario"
+        defaultMessage: "Scenario",
       })}
       placeholder={intl.formatMessage({
         id: "events.page.display.selectScenario",
-        defaultMessage: "Select a scenario..."
+        defaultMessage: "Select a scenario...",
       })}
       size="lg"
       variant="underlined"
@@ -68,7 +75,7 @@ export default function EventPage({ params }: any) {
           isDisabled={!isBeingEdited}
           label={intl.formatMessage({
             id: "events.page.display.name",
-            defaultMessage: "Name"
+            defaultMessage: "Name",
           })}
           size="lg"
           variant="underlined"
@@ -82,7 +89,7 @@ export default function EventPage({ params }: any) {
               isDisabled={!isBeingEdited}
               label={intl.formatMessage({
                 id: "events.page.display.date",
-                defaultMessage: "Date"
+                defaultMessage: "Date",
               })}
               size="lg"
               variant="underlined"
@@ -93,7 +100,7 @@ export default function EventPage({ params }: any) {
               isDisabled={!isBeingEdited}
               label={intl.formatMessage({
                 id: "events.page.display.time",
-                defaultMessage: "Time"
+                defaultMessage: "Time",
               })}
               size="lg"
               type="time"
@@ -107,7 +114,7 @@ export default function EventPage({ params }: any) {
           isDisabled={!isBeingEdited}
           label={intl.formatMessage({
             id: "events.page.display.description",
-            defaultMessage: "Description"
+            defaultMessage: "Description",
           })}
           size="lg"
           variant="underlined"
@@ -118,7 +125,7 @@ export default function EventPage({ params }: any) {
           isDisabled={!isBeingEdited}
           label={intl.formatMessage({
             id: "events.page.display.maxParticipants",
-            defaultMessage: "Max participants"
+            defaultMessage: "Max participants",
           })}
           size="lg"
           type="number"

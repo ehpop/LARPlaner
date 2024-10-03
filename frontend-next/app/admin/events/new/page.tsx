@@ -1,6 +1,13 @@
 "use client";
 
-import { Button, DatePicker, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
+import {
+  Button,
+  DatePicker,
+  Input,
+  Select,
+  SelectItem,
+  Textarea,
+} from "@nextui-org/react";
 import { useState } from "react";
 import { Link } from "@nextui-org/link";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -11,7 +18,7 @@ export default function NewEventPage() {
   const scenarios = [
     { key: "scenario1", name: "Scenario 1" },
     { key: "scenario2", name: "Scenario 2" },
-    { key: "scenario3", name: "Scenario 3" }
+    { key: "scenario3", name: "Scenario 3" },
   ];
 
   const [selectedScenario, setSelectedScenario] = useState();
@@ -22,11 +29,11 @@ export default function NewEventPage() {
       items={scenarios}
       label={intl.formatMessage({
         id: "events.page.new.addEvent.scenario",
-        defaultMessage: "Scenario"
+        defaultMessage: "Scenario",
       })}
       placeholder={intl.formatMessage({
         id: "events.page.new.addEvent.selectScenario",
-        defaultMessage: "Select a scenario..."
+        defaultMessage: "Select a scenario...",
       })}
       size="lg"
       variant="underlined"
@@ -53,11 +60,11 @@ export default function NewEventPage() {
         isClearable={true}
         label={intl.formatMessage({
           id: "events.page.new.addEvent.name",
-          defaultMessage: "Name"
+          defaultMessage: "Name",
         })}
         placeholder={intl.formatMessage({
           id: "events.page.new.addEvent.namePlaceholder",
-          defaultMessage: "Enter event name..."
+          defaultMessage: "Enter event name...",
         })}
         size="lg"
         variant="underlined"
@@ -69,7 +76,7 @@ export default function NewEventPage() {
             className="w-1/2"
             label={intl.formatMessage({
               id: "events.page.new.addEvent.date",
-              defaultMessage: "Date"
+              defaultMessage: "Date",
             })}
             size="lg"
             variant="underlined"
@@ -78,7 +85,7 @@ export default function NewEventPage() {
             className="w-1/2"
             label={intl.formatMessage({
               id: "events.page.new.addEvent.time",
-              defaultMessage: "Time"
+              defaultMessage: "Time",
             })}
             size="lg"
             type="time"
@@ -90,11 +97,11 @@ export default function NewEventPage() {
         className="w-full"
         label={intl.formatMessage({
           id: "events.page.new.addEvent.description",
-          defaultMessage: "Description"
+          defaultMessage: "Description",
         })}
         placeholder={intl.formatMessage({
           id: "events.page.new.addEvent.descriptionPlaceholder",
-          defaultMessage: "Enter event description..."
+          defaultMessage: "Enter event description...",
         })}
         size="lg"
         variant="underlined"
@@ -104,12 +111,12 @@ export default function NewEventPage() {
         isClearable={true}
         label={intl.formatMessage({
           id: "events.page.new.addEvent.maxParticipants",
-          defaultMessage: "Max participants"
+          defaultMessage: "Max participants",
         })}
         min="0"
         placeholder={intl.formatMessage({
           id: "events.page.new.addEvent.maxParticipantsPlaceholder",
-          defaultMessage: "Enter number of participants..."
+          defaultMessage: "Enter number of participants...",
         })}
         size="lg"
         type="number"

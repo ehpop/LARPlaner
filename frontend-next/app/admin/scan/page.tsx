@@ -10,7 +10,7 @@ export default function ScanPage() {
   const { ref } = useZxing({
     onDecodeResult(result) {
       setData(result.getText());
-    }
+    },
   });
 
   return (

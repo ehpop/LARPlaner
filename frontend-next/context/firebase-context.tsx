@@ -15,7 +15,7 @@ export interface IFirebaseContext {
   handleLogIn: (
     authProvider: AuthProvider,
     email?: string,
-    password?: string
+    password?: string,
   ) => void;
   handleLogOut: () => void;
 }
@@ -23,14 +23,10 @@ export interface IFirebaseContext {
 export const FirebaseContext = createContext<IFirebaseContext>({
   auth,
   user: null,
-  setUser: () => {
-  },
+  setUser: () => {},
   loading: false,
   isAdmin: false,
-  setIsAdmin: () => {
-  },
-  handleLogIn: () => {
-  },
-  handleLogOut: () => {
-  }
+  setIsAdmin: () => {},
+  handleLogIn: () => {},
+  handleLogOut: () => {},
 });

@@ -12,9 +12,9 @@ export default function RoleDisplayPage({ params }: any) {
     description: "This is a description of the role.",
     attributes: [
       { name: "Strength", value: 75 },
-      { name: "Agility", value: 60 }
+      { name: "Agility", value: 60 },
     ],
-    querks: ["Brave", "Impulsive"]
+    querks: ["Brave", "Impulsive"],
   });
 
   return (
@@ -23,7 +23,7 @@ export default function RoleDisplayPage({ params }: any) {
         <p className="text-3xl">
           {intl.formatMessage({
             id: "role.display.title",
-            defaultMessage: `Character '${params.id}'`
+            defaultMessage: `Character '${params.id}'`,
           })}
         </p>
       </div>
@@ -33,7 +33,7 @@ export default function RoleDisplayPage({ params }: any) {
           isDisabled={true}
           label={intl.formatMessage({
             id: "role.display.name",
-            defaultMessage: "Name"
+            defaultMessage: "Name",
           })}
           size="lg"
           value={role.name}
@@ -46,7 +46,7 @@ export default function RoleDisplayPage({ params }: any) {
           isDisabled={true}
           label={intl.formatMessage({
             id: "role.display.description",
-            defaultMessage: "Description"
+            defaultMessage: "Description",
           })}
           size="lg"
           value={role.description}
@@ -58,7 +58,7 @@ export default function RoleDisplayPage({ params }: any) {
         <p className="text-xl font-bold">
           {intl.formatMessage({
             id: "role.display.attributes",
-            defaultMessage: "Attributes:"
+            defaultMessage: "Attributes:",
           })}
         </p>
         {role.attributes.map((attribute, index) => (
@@ -73,7 +73,7 @@ export default function RoleDisplayPage({ params }: any) {
               isDisabled={true}
               label={intl.formatMessage({
                 id: "role.display.attribute",
-                defaultMessage: "Attribute"
+                defaultMessage: "Attribute",
               })}
               variant="underlined"
             >
@@ -86,7 +86,7 @@ export default function RoleDisplayPage({ params }: any) {
               isDisabled={true}
               label={intl.formatMessage({
                 id: "role.display.value",
-                defaultMessage: "Value"
+                defaultMessage: "Value",
               })}
               size="sm"
               type="number"
@@ -101,7 +101,7 @@ export default function RoleDisplayPage({ params }: any) {
         <p className="text-xl font-bold">
           {intl.formatMessage({
             id: "role.display.querks",
-            defaultMessage: "Character's querks:"
+            defaultMessage: "Character's querks:",
           })}
         </p>
         <div className="lg:w-1/2 w-full">
@@ -111,7 +111,7 @@ export default function RoleDisplayPage({ params }: any) {
             isDisabled={true}
             placeholder={intl.formatMessage({
               id: "role.display.querks.placeholder",
-              defaultMessage: "Select querks"
+              defaultMessage: "Select querks",
             })}
             selectionMode="multiple"
             variant="underlined"
@@ -129,13 +129,13 @@ export default function RoleDisplayPage({ params }: any) {
         <Button color="danger" size="lg">
           {intl.formatMessage({
             id: "role.display.delete",
-            defaultMessage: "Delete"
+            defaultMessage: "Delete",
           })}
         </Button>
         <Button color="warning" size="lg">
           {intl.formatMessage({
             id: "role.display.edit",
-            defaultMessage: "Edit"
+            defaultMessage: "Edit",
           })}
         </Button>
       </div>

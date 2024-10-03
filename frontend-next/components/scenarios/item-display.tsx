@@ -8,7 +8,7 @@ import {
   ModalHeader,
   Select,
   SelectItem,
-  useDisclosure
+  useDisclosure,
 } from "@nextui-org/react";
 import React from "react";
 import QRCode from "react-qr-code";
@@ -26,18 +26,18 @@ const QRModal = ({ isOpen, onOpen, onOpenChange, selectedItem }: any) => {
               opacity: 1,
               transition: {
                 duration: 0.3,
-                ease: "easeOut"
-              }
+                ease: "easeOut",
+              },
             },
             exit: {
               y: -20,
               opacity: 0,
               transition: {
                 duration: 0.2,
-                ease: "easeIn"
-              }
-            }
-          }
+                ease: "easeIn",
+              },
+            },
+          },
         }}
         onOpenChange={onOpenChange}
       >

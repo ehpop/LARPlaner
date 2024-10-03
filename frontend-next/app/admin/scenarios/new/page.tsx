@@ -32,11 +32,11 @@ export default function ScenariosPage() {
         isClearable={true}
         label={intl.formatMessage({
           id: "scenarios.new.page.scenarioName",
-          defaultMessage: "Name"
+          defaultMessage: "Name",
         })}
         placeholder={intl.formatMessage({
           id: "scenarios.new.page.insertScenarioName",
-          defaultMessage: "Insert scenario name"
+          defaultMessage: "Insert scenario name",
         })}
         size="lg"
         variant="underlined"
@@ -45,11 +45,11 @@ export default function ScenariosPage() {
         className="w-full"
         label={intl.formatMessage({
           id: "scenarios.new.page.scenarioDescription",
-          defaultMessage: "Description"
+          defaultMessage: "Description",
         })}
         placeholder={intl.formatMessage({
           id: "scenarios.new.page.insertScenarioDescription",
-          defaultMessage: "Insert scenario description"
+          defaultMessage: "Insert scenario description",
         })}
         size="lg"
         variant="underlined"
@@ -64,22 +64,22 @@ export default function ScenariosPage() {
         <MultiSelect
           addButtonLabel={intl.formatMessage({
             id: "scenarios.new.page.addRole",
-            defaultMessage: "Add role"
+            defaultMessage: "Add role",
           })}
           counterLabel={intl.formatMessage({
             id: "scenarios.new.page.roleCount",
-            defaultMessage: "Role count"
+            defaultMessage: "Role count",
           })}
           defaultCounterValue="1"
           minCounterValue={1}
           options={roles}
           removeButtonLabel={intl.formatMessage({
             id: "scenarios.new.page.removeRole",
-            defaultMessage: "Delete role"
+            defaultMessage: "Delete role",
           })}
           selectLabel={intl.formatMessage({
             id: "scenarios.new.page.selectRole",
-            defaultMessage: "Select role"
+            defaultMessage: "Select role",
           })}
         />
       </div>

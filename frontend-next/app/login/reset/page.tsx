@@ -29,15 +29,15 @@ export default function PasswordResetPage() {
       setSuccessMessage(
         intl.formatMessage({
           id: "passwordReset.success",
-          defaultMessage: "Password reset email sent!"
-        })
+          defaultMessage: "Password reset email sent!",
+        }),
       );
     } catch (error) {
       setErrorMessage(
         intl.formatMessage({
           id: "passwordReset.error",
-          defaultMessage: "Failed to send password reset email."
-        })
+          defaultMessage: "Failed to send password reset email.",
+        }),
       );
     } finally {
       setLoading(false);
@@ -69,11 +69,11 @@ export default function PasswordResetPage() {
             required
             label={intl.formatMessage({
               id: "passwordReset.emailLabel",
-              defaultMessage: "Email"
+              defaultMessage: "Email",
             })}
             placeholder={intl.formatMessage({
               id: "passwordReset.emailPlaceholder",
-              defaultMessage: "Enter your email"
+              defaultMessage: "Enter your email",
             })}
             type="email"
             value={email}

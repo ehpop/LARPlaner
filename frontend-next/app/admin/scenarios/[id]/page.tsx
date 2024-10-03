@@ -12,7 +12,7 @@ const scenarioData = {
     "Opis przykładowego scenariusza, który zawiera szczegóły dotyczące fabuły, tła, oraz celu.",
   roles: [
     { name: "mag", count: 1 },
-    { name: "wojownik", count: 2 }
+    { name: "wojownik", count: 2 },
   ],
   items: [
     {
@@ -20,20 +20,20 @@ const scenarioData = {
       description: "A powerful sword imbued with magical properties.",
       skills: [
         { name: "Siła", level: 20 },
-        { name: "Magia", level: 10 }
+        { name: "Magia", level: 10 },
       ],
-      querks: ["Zwinny", "Mądry", "Odważny"]
+      querks: ["Zwinny", "Mądry", "Odważny"],
     },
     {
       name: "Healing Potion",
       description: "A potion that heals the user's wounds.",
       skills: [
         { name: "Inteligencja", level: 10 },
-        { name: "Magia", level: 5 }
+        { name: "Magia", level: 5 },
       ],
-      querks: ["Mądry"]
-    }
-  ]
+      querks: ["Mądry"],
+    },
+  ],
 };
 
 export default function ScenarioDisplayPage({ params }: any) {
@@ -47,9 +47,9 @@ export default function ScenarioDisplayPage({ params }: any) {
           {intl.formatMessage(
             {
               id: "scenarios.id.page.title",
-              defaultMessage: "Scenario: {id}"
+              defaultMessage: "Scenario: {id}",
             },
-            { id: params.id }
+            { id: params.id },
           )}
         </p>
       </div>
@@ -98,7 +98,7 @@ export default function ScenarioDisplayPage({ params }: any) {
                 isDisabled={true}
                 label={intl.formatMessage({
                   id: "scenarios.id.page.roleCount",
-                  defaultMessage: "Role count:"
+                  defaultMessage: "Role count:",
                 })}
                 min={1}
                 size="md"

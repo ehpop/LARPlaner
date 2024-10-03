@@ -18,11 +18,11 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
             className="lg:w-1/4 w-1/2"
             label={intl.formatMessage({
               id: "scenarios.id.page.itemName",
-              defaultMessage: "Name"
+              defaultMessage: "Name",
             })}
             placeholder={intl.formatMessage({
               id: "scenarios.id.page.itemNamePlaceholder",
-              defaultMessage: "Name..."
+              defaultMessage: "Name...",
             })}
             size="sm"
             type="text"
@@ -54,11 +54,11 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
             className="lg:w-1/2 w-3/4"
             label={intl.formatMessage({
               id: "scenarios.id.page.itemDescription",
-              defaultMessage: "Description"
+              defaultMessage: "Description",
             })}
             placeholder={intl.formatMessage({
               id: "scenarios.id.page.insertItemDescription",
-              defaultMessage: "Insert item description"
+              defaultMessage: "Insert item description",
             })}
             size="sm"
             type="text"
@@ -74,11 +74,11 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
             <MultiSelect
               addButtonLabel={intl.formatMessage({
                 id: "scenarios.id.page.addSkill",
-                defaultMessage: "Add skill"
+                defaultMessage: "Add skill",
               })}
               counterLabel={intl.formatMessage({
                 id: "scenarios.id.page.skillCount",
-                defaultMessage: "Skill count"
+                defaultMessage: "Skill count",
               })}
               defaultCounterValue="10"
               maxCounterValue={10}
@@ -86,11 +86,11 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
               options={skills}
               removeButtonLabel={intl.formatMessage({
                 id: "scenarios.id.page.removeSkill",
-                defaultMessage: "Delete skill"
+                defaultMessage: "Delete skill",
               })}
               selectLabel={intl.formatMessage({
                 id: "scenarios.id.page.selectSkill",
-                defaultMessage: "Select skill"
+                defaultMessage: "Select skill",
               })}
             />
           </div>
@@ -107,7 +107,7 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
                   className="w-full"
                   placeholder={intl.formatMessage({
                     id: "scenarios.id.page.selectQuerk",
-                    defaultMessage: "Select querk"
+                    defaultMessage: "Select querk",
                   })}
                   selectionMode="multiple"
                   variant="bordered"

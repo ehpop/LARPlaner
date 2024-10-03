@@ -15,15 +15,15 @@ interface MultiSelectProps {
 }
 
 const MultiSelect = ({
-                       options,
-                       addButtonLabel,
-                       removeButtonLabel,
-                       selectLabel,
-                       counterLabel,
-                       minCounterValue,
-                       maxCounterValue,
-                       defaultCounterValue
-                     }: MultiSelectProps) => {
+  options,
+  addButtonLabel,
+  removeButtonLabel,
+  selectLabel,
+  counterLabel,
+  minCounterValue,
+  maxCounterValue,
+  defaultCounterValue,
+}: MultiSelectProps) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   const handleSelectChange = (index: number, event: any) => {
@@ -50,7 +50,7 @@ const MultiSelect = ({
   const getAvailableOptions = (currentSelection: string) => {
     return options.filter(
       (role: string) =>
-        !selectedOptions.includes(role) || role === currentSelection
+        !selectedOptions.includes(role) || role === currentSelection,
     );
   };
 

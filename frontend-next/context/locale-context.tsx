@@ -7,6 +7,5 @@ interface ILocaleContext {
 
 export const LocaleContext = createContext<ILocaleContext>({
   locale: "",
-  setLocale: () => {
-  }
+  setLocale: () => {},
 });

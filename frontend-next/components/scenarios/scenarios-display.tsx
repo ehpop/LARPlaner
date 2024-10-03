@@ -9,10 +9,10 @@ import { SearchIcon } from "@/components/icons";
 const SCENARIOS_PER_PAGE = 6;
 
 export const ScenariosDisplay = ({
-                                   scenariosList,
-                                   title,
-                                   canAddNewScenario = false
-                                 }: {
+  scenariosList,
+  title,
+  canAddNewScenario = false,
+}: {
   scenariosList: string[];
   title: string;
   canAddNewScenario?: boolean;
@@ -28,7 +28,7 @@ export const ScenariosDisplay = ({
     for (let i = 1; i <= amountOfPages; i++) {
       let page = list.slice(
         (i - 1) * SCENARIOS_PER_PAGE,
-        i * SCENARIOS_PER_PAGE
+        i * SCENARIOS_PER_PAGE,
       );
 
       pages.push(page);
@@ -50,8 +50,8 @@ export const ScenariosDisplay = ({
   useEffect(() => {
     const newFilteredList = searchValue
       ? scenariosList.filter((scenario) =>
-        scenario.toLowerCase().includes(searchValue.toLowerCase())
-      )
+          scenario.toLowerCase().includes(searchValue.toLowerCase()),
+        )
       : scenariosList;
 
     setFilteredList(newFilteredList);
@@ -106,11 +106,11 @@ export const ScenariosDisplay = ({
             mainWrapper: "h-full",
             input: "text-small",
             inputWrapper:
-              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20"
+              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
           }}
           placeholder={intl.formatMessage({
             id: "scenarios.display.search",
-            defaultMessage: "Search..."
+            defaultMessage: "Search...",
           })}
           size="sm"
           startContent={<SearchIcon className="text-default-400" />}

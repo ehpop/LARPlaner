@@ -4,17 +4,17 @@ import { Link } from "@nextui-org/link";
 import { Button } from "@nextui-org/button";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { SearchIcon } from "@/components/icons";
-
 import { Event } from "./event";
+
+import { SearchIcon } from "@/components/icons";
 
 const EVENTS_PER_PAGE = 3;
 
 export const EventsDisplay = ({
-                                list,
-                                title,
-                                canAddNewEvent = false
-                              }: {
+  list,
+  title,
+  canAddNewEvent = false,
+}: {
   list: any[];
   title: string;
   canAddNewEvent?: boolean;
@@ -49,8 +49,8 @@ export const EventsDisplay = ({
   useEffect(() => {
     const newFilteredList = searchValue
       ? list.filter((item) =>
-        item.title.toLowerCase().includes(searchValue.toLowerCase())
-      )
+          item.title.toLowerCase().includes(searchValue.toLowerCase()),
+        )
       : list;
 
     setFilteredList(newFilteredList);
@@ -97,11 +97,11 @@ export const EventsDisplay = ({
             mainWrapper: "h-full",
             input: "text-small",
             inputWrapper:
-              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20"
+              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
           }}
           placeholder={intl.formatMessage({
             id: "events.display.search.placeholder",
-            defaultMessage: "Type to search..."
+            defaultMessage: "Type to search...",
           })}
           size="sm"
           startContent={<SearchIcon className={"text-default-400"} />}

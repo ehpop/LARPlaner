@@ -3,7 +3,11 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Button, Card, Input, Spinner } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, updateProfile, User } from "@firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  User,
+} from "@firebase/auth";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { auth } from "@/config/firebase";
@@ -49,8 +53,8 @@ export default function SignUpPage() {
       setError(
         intl.formatMessage({
           id: "signup.passwordMismatch",
-          defaultMessage: "Passwords do not match"
-        })
+          defaultMessage: "Passwords do not match",
+        }),
       );
       setLoading(false);
 
@@ -61,12 +65,12 @@ export default function SignUpPage() {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
       const user: User = userCredential.user;
 
       await updateProfile(user, {
-        displayName: displayName
+        displayName: displayName,
       });
 
       // handleLogIn(emailAuthProvider, email, password);
@@ -75,8 +79,8 @@ export default function SignUpPage() {
       setError(
         intl.formatMessage({
           id: "signup.error",
-          defaultMessage: "Error during sign-up process"
-        })
+          defaultMessage: "Error during sign-up process",
+        }),
       );
     } finally {
       setLoading(false);
@@ -101,11 +105,11 @@ export default function SignUpPage() {
             required
             label={intl.formatMessage({
               id: "signup.displayName",
-              defaultMessage: "Display Name"
+              defaultMessage: "Display Name",
             })}
             placeholder={intl.formatMessage({
               id: "signup.displayNamePlaceholder",
-              defaultMessage: "Enter your display name"
+              defaultMessage: "Enter your display name",
             })}
             value={displayName}
             onChange={handleDisplayNameChange}
@@ -115,11 +119,11 @@ export default function SignUpPage() {
             required
             label={intl.formatMessage({
               id: "signup.emailLabel",
-              defaultMessage: "Email"
+              defaultMessage: "Email",
             })}
             placeholder={intl.formatMessage({
               id: "signup.emailPlaceholder",
-              defaultMessage: "Enter your email"
+              defaultMessage: "Enter your email",
             })}
             type="email"
             value={email}
@@ -130,11 +134,11 @@ export default function SignUpPage() {
             required
             label={intl.formatMessage({
               id: "signup.passwordLabel",
-              defaultMessage: "Password"
+              defaultMessage: "Password",
             })}
             placeholder={intl.formatMessage({
               id: "signup.passwordPlaceholder",
-              defaultMessage: "Enter your password"
+              defaultMessage: "Enter your password",
             })}
             type="password"
             value={password}
@@ -145,11 +149,11 @@ export default function SignUpPage() {
             required
             label={intl.formatMessage({
               id: "signup.passwordConfirmLabel",
-              defaultMessage: "Confirm Password"
+              defaultMessage: "Confirm Password",
             })}
             placeholder={intl.formatMessage({
               id: "signup.passwordConfirmPlaceholder",
-              defaultMessage: "Confirm your password"
+              defaultMessage: "Confirm your password",
             })}
             type="password"
             value={passwordConfirm}

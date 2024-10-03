@@ -29,12 +29,11 @@ const SelectUniqueOptions = ({ roles }: any) => {
   const getAvailableOptions = (currentSelection: string) => {
     return roles.filter(
       (role: string) =>
-        !selectedOptions.includes(role) || role === currentSelection
+        !selectedOptions.includes(role) || role === currentSelection,
     );
   };
 
-  const submitSelect = () => {
-  };
+  const submitSelect = () => {};
 
   return (
     <div>

@@ -21,12 +21,12 @@ export function Providers({ children, themeProps }: ProvidersProps) {
   const locale = useContext(LocaleContext);
 
   return (
-    <NextUIProvider navigate={router.push}>
-      <NextThemesProvider {...themeProps}>
-        <FirebaseProvider>
+    <FirebaseProvider>
+      <NextUIProvider navigate={router.push}>
+        <NextThemesProvider {...themeProps}>
           <LocaleProvider locale={locale}>{children}</LocaleProvider>
-        </FirebaseProvider>
-      </NextThemesProvider>
-    </NextUIProvider>
+        </NextThemesProvider>
+      </NextUIProvider>
+    </FirebaseProvider>
   );
 }

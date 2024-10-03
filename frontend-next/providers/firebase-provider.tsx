@@ -1,11 +1,22 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import { AuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, User } from "@firebase/auth";
+import {
+  AuthProvider,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  User,
+} from "@firebase/auth";
 import { useRouter } from "next/navigation";
 
 import { FirebaseContext } from "@/context/firebase-context";
-import { auth, emailAuthProvider, githubAuthProvider, googleAuthProvider } from "@/config/firebase";
+import {
+  auth,
+  emailAuthProvider,
+  githubAuthProvider,
+  googleAuthProvider,
+} from "@/config/firebase";
 
 export default function FirebaseProvider({ children }: any) {
   const [user, setUser] = useState<User | null>(null);
@@ -22,8 +33,7 @@ export default function FirebaseProvider({ children }: any) {
           .then((idTokenResult) => {
             setIsAdmin(idTokenResult.claims["isAdmin"] === true);
           })
-          .catch((error) => {
-          });
+          .catch((error) => {});
       } else {
         setUser(null);
         setIsAdmin(false);
@@ -37,7 +47,7 @@ export default function FirebaseProvider({ children }: any) {
   const handleLogIn = (
     authProvider: AuthProvider,
     email?: string,
-    password?: string
+    password?: string,
   ) => {
     const signInWithAuthProvider = (authProvider: AuthProvider) => {
       signInWithPopup(auth, authProvider)
@@ -56,8 +66,7 @@ export default function FirebaseProvider({ children }: any) {
         .then((userCredential) => {
           router.push("/profile");
         })
-        .catch((error) => {
-        });
+        .catch((error) => {});
     };
 
     if (authProvider === emailAuthProvider && email && password) {
@@ -80,8 +89,7 @@ export default function FirebaseProvider({ children }: any) {
         setIsAdmin(false);
         router.push("/login");
       })
-      .catch((error) => {
-      });
+      .catch((error) => {});
   }
 
   return (
@@ -94,7 +102,7 @@ export default function FirebaseProvider({ children }: any) {
         isAdmin,
         setIsAdmin,
         handleLogIn,
-        handleLogOut
+        handleLogOut,
       }}
     >
       {children}

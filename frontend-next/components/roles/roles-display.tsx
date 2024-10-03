@@ -9,10 +9,10 @@ import { SearchIcon } from "@/components/icons";
 const ROLES_PER_PAGE = 6;
 
 export const RolesDisplay = ({
-                               rolesList,
-                               title,
-                               canAddNewRole = false
-                             }: {
+  rolesList,
+  title,
+  canAddNewRole = false,
+}: {
   rolesList: string[];
   title: string;
   canAddNewRole?: boolean;
@@ -44,8 +44,8 @@ export const RolesDisplay = ({
   useEffect(() => {
     const newFilteredList = searchValue
       ? rolesList.filter((role) =>
-        role.toLowerCase().includes(searchValue.toLowerCase())
-      )
+          role.toLowerCase().includes(searchValue.toLowerCase()),
+        )
       : rolesList;
 
     setFilteredList(newFilteredList);
@@ -96,11 +96,11 @@ export const RolesDisplay = ({
             mainWrapper: "h-full",
             input: "text-small",
             inputWrapper:
-              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20"
+              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
           }}
           placeholder={intl.formatMessage({
             id: "roles.display.search.placeholder",
-            defaultMessage: "Search..."
+            defaultMessage: "Search...",
           })}
           size="sm"
           startContent={<SearchIcon className="text-default-400" />}

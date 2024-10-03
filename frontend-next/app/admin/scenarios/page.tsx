@@ -12,7 +12,7 @@ const scenarios: string[] = [
   "Scenario 7",
   "Scenario 8",
   "Scenario 9",
-  "Scenario 10"
+  "Scenario 10",
 ];
 
 function ScenariosPage() {

@@ -7,24 +7,24 @@ import { defineMessages } from "react-intl";
 const siteConfigMessages = defineMessages({
   navHome: {
     id: "nav.home",
-    defaultMessage: "Home"
+    defaultMessage: "Home",
   },
   navEvents: {
     id: "nav.events",
-    defaultMessage: "Events"
+    defaultMessage: "Events",
   },
   navScenarios: {
     id: "nav.scenarios",
-    defaultMessage: "Scenarios"
+    defaultMessage: "Scenarios",
   },
   navRoles: {
     id: "nav.roles",
-    defaultMessage: "Roles"
+    defaultMessage: "Roles",
   },
   navScan: {
     id: "nav.scan",
-    defaultMessage: "Scan"
-  }
+    defaultMessage: "Scan",
+  },
 });
 
 export const siteConfig = {
@@ -34,71 +34,71 @@ export const siteConfig = {
     admin: [
       {
         label: siteConfigMessages.navHome,
-        href: "/"
+        href: "/",
       },
       {
         label: siteConfigMessages.navEvents,
-        href: "/admin/events"
+        href: "/admin/events",
       },
       {
         label: siteConfigMessages.navScenarios,
-        href: "/admin/scenarios"
+        href: "/admin/scenarios",
       },
       {
         label: siteConfigMessages.navRoles,
-        href: "/admin/roles"
+        href: "/admin/roles",
       },
       {
         label: siteConfigMessages.navScan,
-        href: "/admin/scan"
-      }
+        href: "/admin/scan",
+      },
     ],
     user: [
       {
         label: siteConfigMessages.navHome,
-        href: "/"
+        href: "/",
       },
       {
         label: siteConfigMessages.navEvents,
-        href: "/events"
-      }
-    ]
+        href: "/events",
+      },
+    ],
   },
   navMenuItems: {
     admin: [
       {
         label: siteConfigMessages.navHome,
-        href: "/"
+        href: "/",
       },
       {
         label: siteConfigMessages.navEvents,
-        href: "/admin/events"
+        href: "/admin/events",
       },
       {
         label: siteConfigMessages.navScenarios,
-        href: "/admin/scenarios"
+        href: "/admin/scenarios",
       },
       {
         label: siteConfigMessages.navRoles,
-        href: "/admin/roles"
+        href: "/admin/roles",
       },
       {
         label: siteConfigMessages.navScan,
-        href: "/admin/scan"
-      }
+        href: "/admin/scan",
+      },
     ],
     user: [
       {
         label: siteConfigMessages.navHome,
-        href: "/"
+        href: "/",
       },
       {
         label: siteConfigMessages.navEvents,
-        href: "/events"
-      }
-    ]
+        href: "/events",
+      },
+    ],
   },
   links: {
-    github: "https://github.com/ehpop/LARPlaner"
-  }
+    github: "https://github.com/ehpop/LARPlaner",
+  },
 };

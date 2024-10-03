@@ -12,7 +12,7 @@ const roles = [
   "tancerz ostrzy",
   "druid",
   "bard",
-  "szaman"
+  "szaman",
 ];
 
 export default function RolesPage() {

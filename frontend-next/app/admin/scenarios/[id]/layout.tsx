@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 
 export default function ScenarioIdLayout({
-                                           children
-                                         }: {
+  children,
+}: {
   children: ReactNode;
 }) {
   return (
