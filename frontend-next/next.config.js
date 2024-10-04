@@ -10,43 +10,43 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "www.google.com",
-        port: ",
+        port: "",
       },
       {
         protocol: "https",
         hostname: "github.githubassets.com",
-        port: ""
+        port: "",
       },
       {
         protocol: "https",
         hostname: "cdn-icons-png.flaticon.com",
-        port: ""
+        port: "",
       },
       {
         protocol: "https",
         hostname: "cdn0.iconfinder.com",
-        port: ""
+        port: "",
       },
       {
         protocol: "https",
         hostname: "cdn1.iconfinder.com",
-        port: ""
+        port: "",
       },
       {
         protocol: "https",
         hostname: "cdn2.iconfinder.com",
-        port: ""
+        port: "",
       },
       {
         protocol: "https",
         hostname: "cdn3.iconfinder.com",
-        port: ""
+        port: "",
       },
       {
         protocol: "https",
         hostname: "cdn4.iconfinder.com",
-        port: ""
-      }
+        port: "",
+      },
     ],
   },
 };

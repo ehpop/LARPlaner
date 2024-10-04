@@ -12,14 +12,14 @@ export const siteConfigMessages = defineMessages({
   },
   navScenarios: {
     id: "nav.scenarios",
-    defaultMessage: "Scenarios,
+    defaultMessage: "Scenarios",
   },
   navRoles: {
     id: "nav.roles",
-    defaultMessage: "Roles"
+    defaultMessage: "Roles",
   },
   navScan: {
     id: "nav.scan",
-    defaultMessage: "Scan"
+    defaultMessage: "Scan",
   },
 });
