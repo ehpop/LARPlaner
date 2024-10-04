@@ -33,7 +33,7 @@ export default function FirebaseProvider({ children }: any) {
           .then((idTokenResult) => {
             setIsAdmin(idTokenResult.claims["isAdmin"] === true);
           })
-          .catch((error) => {});
+          .catch((_error) => {});
       } else {
         setUser(null);
         setIsAdmin(false);
@@ -51,12 +51,11 @@ export default function FirebaseProvider({ children }: any) {
   ) => {
     const signInWithAuthProvider = (authProvider: AuthProvider) => {
       signInWithPopup(auth, authProvider)
-        .then((result) => {
+        .then((_result) => {
           router.push("/profile");
         })
         .catch((error) => {
           if (error.code === "auth/account-exists-with-different-credential") {
-          } else {
           }
         });
     };

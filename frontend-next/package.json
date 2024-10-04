@@ -6,7 +6,7 @@
     "dev": "next dev --turbo -p 9000",
     "build": "next build",
     "start": "next start -p 9000",
-    "lint": "eslint . --ext .ts,.tsx -c .eslinrc.js --fix",
+    "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix",
     "extract": "formatjs extract \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"config/**/*.{ts,tsx}\" --out-file lang/en-US.json --ignore 'lang/**/*' --format simple"
   },
   "dependencies": {

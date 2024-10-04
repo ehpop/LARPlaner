@@ -7,5 +7,5 @@ export default function EventsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <ProtectedRoute children={children} adminOnly={true} />;
+  return <ProtectedRoute adminOnly={true}>{children}</ProtectedRoute>;
 }

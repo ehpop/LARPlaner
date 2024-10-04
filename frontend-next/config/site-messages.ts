@@ -3,11 +3,11 @@ import { defineMessages } from "react-intl";
 export const siteConfigMessages = defineMessages({
   navHome: {
     id: "nav.home",
-    defaultMessage: "Home"
+    defaultMessage: "Home",
   },
   navEvents: {
     id: "nav.events",
-    defaultMessage: "Events"
+    defaultMessage: "Events,
   },
   navScenarios: {
     id: "nav.scenarios",
@@ -20,5 +20,5 @@ export const siteConfigMessages = defineMessages({
   navScan: {
     id: "nav.scan",
     defaultMessage: "Scan"
-  }
+  },
 });

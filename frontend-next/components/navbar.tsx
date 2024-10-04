@@ -7,7 +7,7 @@ import {
   NavbarItem,
   NavbarMenu,
   NavbarMenuItem,
-  NavbarMenuToggle
+  NavbarMenuToggle,
 } from "@nextui-org/navbar";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
@@ -79,7 +79,7 @@ export const Navbar = () => {
     setMounted(true);
     setNavItems(isAdmin ? siteConfig.navItems.admin : siteConfig.navItems.user);
     setNavMenuItems(
-      isAdmin ? siteConfig.navMenuItems.admin : siteConfig.navMenuItems.user
+      isAdmin ? siteConfig.navMenuItems.admin : siteConfig.navMenuItems.use,
     );
   }, [user, isAdmin]);
 
@@ -133,16 +133,12 @@ export const Navbar = () => {
                 <NextLink
                   className={clsx(
                     linkStyles({ color: "foreground" }),
-                    "data-[active=true]:text-primary data-[active=true]:font-medium"
+                    "data-[active=true]:text-primary data-[active=true]:font-medium",
                   )}
                   color="foreground"
                   href={item.href}
                 >
-                  {
-                    <FormattedMessage
-                      id={item.label}
-                    />
-                  }
+                  {<FormattedMessage id={item.label} />}
                 </NextLink>
               </NavbarItem>
             ))}
@@ -177,9 +173,7 @@ export const Navbar = () => {
             navMenuItems.map((item, index) => (
               <NavbarMenuItem key={`${item}-${index}`}>
                 <Link color="primary" href={item.href} size="lg">
-                  <FormattedMessage
-                    id={item.label}
-                  />
+                  <FormattedMessage id={item.label} />
                 </Link>
               </NavbarMenuItem>
             ))}
