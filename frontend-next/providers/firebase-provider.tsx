@@ -56,16 +56,19 @@ export default function FirebaseProvider({ children }: any) {
         })
         .catch((error) => {
           if (error.code === "auth/account-exists-with-different-credential") {
+            throw new Error(
+              "You have already signed up with a different method. Log in with that method to link your accounts.",
+            );
           }
         });
     };
 
     const signInUserWithEmail = (email: string, password: string) => {
       signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
+        .then((_userCredential) => {
           router.push("/profile");
         })
-        .catch((error) => {});
+        .catch((_error) => {});
     };
 
     if (authProvider === emailAuthProvider && email && password) {
@@ -88,7 +91,9 @@ export default function FirebaseProvider({ children }: any) {
         setIsAdmin(false);
         router.push("/login");
       })
-      .catch((error) => {});
+      .catch((_error) => {
+        throw new Error("Error signing out");
+      });
   }
 
   return (

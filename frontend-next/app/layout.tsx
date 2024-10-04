@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   },
 };
 
+// noinspection JSUnusedGlobalSymbols
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "white" },

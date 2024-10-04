@@ -1,5 +1,3 @@
-export type navItem = { label: string; href: string };
-export type navMenuItem = { label: string; href: string };
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
@@ -15,7 +13,7 @@ export const siteConfig = {
     ],
     user: [
       { label: "nav.home", href: "/" },
-      { label: "nav.events", href: "/events" ,
+      { label: "nav.events", href: "/events" },
     ],
   },
   navMenuItems: {
@@ -24,7 +22,7 @@ export const siteConfig = {
       { label: "nav.events", href: "/admin/events" },
       { label: "nav.scenarios", href: "/admin/scenarios" },
       { label: "nav.roles", href: "/admin/roles" },
-      { label: "nav.scan", href: "/admin/scan" }
+      { label: "nav.scan", href: "/admin/scan" ,
     ],
     user: [
       { label: "nav.home", href: "/" },

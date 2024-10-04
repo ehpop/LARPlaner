@@ -13,7 +13,7 @@ import {
 import React from "react";
 import QRCode from "react-qr-code";
 
-const QRModal = ({ isOpen, onOpen, onOpenChange, selectedItem }: any) => {
+const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
   return (
     <>
       <Modal

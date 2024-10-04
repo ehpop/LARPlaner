@@ -79,7 +79,7 @@ export const Navbar = () => {
     setMounted(true);
     setNavItems(isAdmin ? siteConfig.navItems.admin : siteConfig.navItems.user);
     setNavMenuItems(
-      isAdmin ? siteConfig.navMenuItems.admin : siteConfig.navMenuItems.use,
+      isAdmin ? siteConfig.navMenuItems.admin : siteConfig.navMenuItems.user,
     );
   }, [user, isAdmin]);
 

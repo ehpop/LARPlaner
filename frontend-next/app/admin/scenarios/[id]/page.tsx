@@ -1,12 +1,11 @@
 "use client";
 
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
-import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import ItemDisplay from "@/components/scenarios/item-display";
 
-const scenarioData = {
+const scenario = {
   name: "Przykładowy Scenariusz",
   description:
     "Opis przykładowego scenariusza, który zawiera szczegóły dotyczące fabuły, tła, oraz celu.",
@@ -37,7 +36,6 @@ const scenarioData = {
 };
 
 export default function ScenarioDisplayPage({ params }: any) {
-  const [scenario, setScenario] = useState(scenarioData);
   const intl = useIntl();
 
   return (
@@ -117,7 +115,7 @@ export default function ScenarioDisplayPage({ params }: any) {
             id={"scenarios.id.page.itemsInScenario"}
           />
         </p>
-        <ItemDisplay items={scenarioData.items} />
+        <ItemDisplay items={scenario.items} />
       </div>
       <div className="w-full flex justify-end">
         <div className="flex justify-between space-x-3">

@@ -11,7 +11,6 @@ import {
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { auth } from "@/config/firebase";
-import { useAuth } from "@/providers/firebase-provider";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -22,7 +21,6 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const intl = useIntl();
-  const { handleLogIn } = useAuth();
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setError(null);

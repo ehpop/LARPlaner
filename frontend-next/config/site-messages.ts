@@ -1,5 +1,6 @@
 import { defineMessages } from "react-intl";
 
+// noinspection JSUnusedGlobalSymbols
 export const siteConfigMessages = defineMessages({
   navHome: {
     id: "nav.home",
@@ -7,11 +8,11 @@ export const siteConfigMessages = defineMessages({
   },
   navEvents: {
     id: "nav.events",
-    defaultMessage: "Events,
+    defaultMessage: "Events",
   },
   navScenarios: {
     id: "nav.scenarios",
-    defaultMessage: "Scenarios"
+    defaultMessage: "Scenarios,
   },
   navRoles: {
     id: "nav.roles",

@@ -2,17 +2,102 @@
 
 import { FC, useContext, useEffect, useState } from "react";
 import Image from "next/image";
-import { Button } from "@nextui-org/react";
+import {
+  Avatar,
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
+} from "@nextui-org/react";
 import { sendEmailVerification, updateProfile, UserInfo } from "@firebase/auth";
 
 import { FirebaseContext } from "@/context/firebase-context";
 
 const ProfilePage: FC = () => {
   const { user, isAdmin } = useContext(FirebaseContext);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [newUserPhoto, setNewUserPhoto] = useState<string>("");
+  const [lastLoadedPhoto, setLastLoadedPhoto] = useState<string>("");
   const [isClient, setIsClient] = useState(false);
 
+  const updateProfilePhoto = (
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader>Update Profile Photo</ModalHeader>
+            <ModalBody>
+              <div className="w-full flex justify-center">
+                <Avatar
+                  showFallback
+                  className="w-20 h-20"
+                  size="lg"
+                  src={lastLoadedPhoto}
+                />
+              </div>
+              <div className="w-full flex space-x-3 justify-between">
+                <Input
+                  className="w-3/4"
+                  label="Photo URL"
+                  placeholder="https://example.com/photo.jpg"
+                  variant="underlined"
+                  onChange={(e) => {
+                    setNewUserPhoto(e.target.value);
+                  }}
+                />
+                <Button
+                  className="mt-4"
+                  color="primary"
+                  isDisabled={
+                    newUserPhoto === "" || newUserPhoto === lastLoadedPhoto
+                  }
+                  onClick={() => {
+                    setLastLoadedPhoto(newUserPhoto);
+                  }}
+                >
+                  Load Image
+                </Button>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="light" onPress={onClose}>
+                Close
+              </Button>
+              <Button
+                color="success"
+                isDisabled={lastLoadedPhoto === ""}
+                onPress={() => {
+                  handleUpdateProfile();
+                  onOpenChange();
+                  location.reload();
+                }}
+              >
+                Update Profile Photo
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  );
+
+  const handleUpdateProfile = () => {
+    if (!user) {
+      return;
+    }
+
+    updateProfile(user, {
+      photoURL: newUserPhoto,
+    })
+      .then(() => {})
+      .catch((_error) => {});
+  };
+
   useEffect(() => {
-    console.log(user);
     setIsClient(true);
   }, []);
 
@@ -73,10 +158,9 @@ const ProfilePage: FC = () => {
             color="primary"
             isDisabled={user.emailVerified}
             onClick={() => {
-              console.log(user);
               sendEmailVerification(user)
                 .then(() => {})
-                .catch((error) => {});
+                .catch((_error) => {});
             }}
           >
             Verify Email
@@ -89,26 +173,16 @@ const ProfilePage: FC = () => {
               user
                 ?.delete()
                 .then(() => {})
-                .catch((error) => {});
+                .catch((_error) => {});
             }}
           >
             Delete account
           </Button>
 
-          <Button
-            className="mt-4"
-            color="success"
-            onClick={() => {
-              updateProfile(user, {
-                photoURL:
-                  "https://cdn-icons-png.flaticon.com/512/1144/1144760.png",
-              })
-                .then(() => {})
-                .catch((error) => {});
-            }}
-          >
+          <Button className="mt-4" color="success" onClick={onOpen}>
             Update Profile Photo
           </Button>
+          {updateProfilePhoto}
         </div>
       </div>
     </div>

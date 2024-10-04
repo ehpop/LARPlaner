@@ -2,7 +2,6 @@
 
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Button, Card, Input, Link, Spinner } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -14,7 +13,6 @@ import {
 } from "@/config/firebase";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
