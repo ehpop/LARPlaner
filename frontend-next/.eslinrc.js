@@ -18,5 +18,6 @@ module.exports = {
   "plugins": [
     "react"
   ],
-  "rules": {}
+  "rules": {},
+  "parser": "babel-eslint"
 };
