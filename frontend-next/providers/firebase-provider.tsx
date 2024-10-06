@@ -6,6 +6,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   User,
 } from "@firebase/auth";
 import { useRouter } from "next/navigation";
@@ -17,6 +18,7 @@ import {
   githubAuthProvider,
   googleAuthProvider,
 } from "@/config/firebase";
+import { isMobile } from "@/utils/functions";
 
 export default function FirebaseProvider({ children }: any) {
   const [user, setUser] = useState<User | null>(null);
@@ -50,17 +52,37 @@ export default function FirebaseProvider({ children }: any) {
     password?: string,
   ) => {
     const signInWithAuthProvider = (authProvider: AuthProvider) => {
-      signInWithPopup(auth, authProvider)
-        .then((_result) => {
-          router.push("/profile");
-        })
-        .catch((error) => {
-          if (error.code === "auth/account-exists-with-different-credential") {
-            throw new Error(
-              "You have already signed up with a different method. Log in with that method to link your accounts.",
-            );
-          }
-        });
+      if (isMobile(window.navigator.userAgent)) {
+        alert("Signing in with redirect on mobile browser");
+        signInWithRedirect(auth, authProvider)
+          .then((_result) => {
+            router.push("/profile");
+          })
+          .catch((error) => {
+            if (
+              error.code === "auth/account-exists-with-different-credential"
+            ) {
+              throw new Error(
+                "You have already signed up with a different method. Log in with that method to link your accounts.",
+              );
+            }
+          });
+      } else {
+        alert("Signing in with popup on desktop browser");
+        signInWithPopup(auth, authProvider)
+          .then((_result) => {
+            router.push("/profile");
+          })
+          .catch((error) => {
+            if (
+              error.code === "auth/account-exists-with-different-credential"
+            ) {
+              throw new Error(
+                "You have already signed up with a different method. Log in with that method to link your accounts.",
+              );
+            }
+          });
+      }
     };
 
     const signInUserWithEmail = (email: string, password: string) => {

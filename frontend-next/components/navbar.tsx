@@ -74,6 +74,7 @@ export const Navbar = () => {
   const [navMenuItems, setNavMenuItems] =
     useState<SiteConfig["navMenuItems"]["admin"]>();
   const [mounted, setMounted] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -116,7 +117,12 @@ export const Navbar = () => {
   );
 
   const navbar = (
-    <NextUINavbar maxWidth="xl" position="sticky">
+    <NextUINavbar
+      isMenuOpen={isMenuOpen}
+      maxWidth="xl"
+      position="sticky"
+      onMenuOpenChange={setIsMenuOpen}
+    >
       {/* Left-aligned brand */}
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
@@ -151,6 +157,8 @@ export const Navbar = () => {
           <Link isExternal aria-label="Github" href={siteConfig.links.github}>
             <GithubIcon className="text-default-500" />
           </Link>
+        </NavbarItem>
+        <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>
         {localeAndAccount}
@@ -158,21 +166,24 @@ export const Navbar = () => {
 
       {/* Mobile menu toggle */}
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
         <ThemeSwitch />
         <NavbarMenuToggle />
+        {accountElement}
       </NavbarContent>
 
       {/* Mobile menu items */}
       <NavbarMenu className="sm:hidden">
-        <NavbarMenuItem>{languageSelect}</NavbarMenuItem>
-        <div className="mx-4 mt-2 flex flex-col gap-2">
+        <div className="mx-4 mt-2 flex flex-col gap-2 ">
+          <NavbarMenuItem>{languageSelect}</NavbarMenuItem>
           {navMenuItems &&
             navMenuItems.map((item, index) => (
               <NavbarMenuItem key={`${item}-${index}`}>
-                <Link color="primary" href={item.href} size="lg">
+                <Link
+                  color="primary"
+                  href={item.href}
+                  size="lg"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   <FormattedMessage id={item.label} />
                 </Link>
               </NavbarMenuItem>
