@@ -51,7 +51,7 @@ export default function LoginPage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
       <Card className="max-w-md w-full p-8 space-y-5 shadow-lg rounded-lg bg-white dark:bg-gray-800">
         <p className="text-center text-3xl font-bold text-gray-900 dark:text-white">
-          Login
+          <FormattedMessage defaultMessage="Login" id="login.title" />
         </p>
         {error && (
           <div className="bg-red-100 text-red-600 p-3 rounded-md text-center">
@@ -99,9 +99,9 @@ export default function LoginPage() {
             onClick={() => handleLogIn(emailAuthProvider)}
           >
             {loading ? (
-              <Spinner color="primary" label="Logging in..." />
+              <Spinner color="primary" />
             ) : (
-              "Login"
+              <FormattedMessage defaultMessage="Login" id="login.login" />
             )}
           </Button>
         </form>

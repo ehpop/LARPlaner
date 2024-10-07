@@ -1,19 +1,7 @@
 "use client";
 
 import RolesDisplay from "@/components/roles/roles-display";
-
-const roles = [
-  "mag",
-  "wojownik",
-  "złodziej",
-  "czarodziej",
-  "kapłan",
-  "łucznik",
-  "tancerz ostrzy",
-  "druid",
-  "bard",
-  "szaman",
-];
+import { roles } from "@/data/mock-data";
 
 export default function RolesPage() {
   return (

@@ -66,12 +66,23 @@ export const EventsDisplay = ({
         ))}
       </div>
       <div className="pt-5 flex justify-center align-center">
-        <Pagination
-          showControls
-          initialPage={currentPage}
-          total={pages.length}
-          onChange={(page) => setCurrentPage(page)}
-        />
+        <div className="hidden md:block">
+          <Pagination
+            showControls
+            initialPage={currentPage}
+            total={pages.length}
+            onChange={(page) => setCurrentPage(page)}
+          />
+        </div>
+        <div className="block md:hidden">
+          <Pagination
+            showControls
+            initialPage={currentPage}
+            size="sm"
+            total={pages.length}
+            onChange={(page) => setCurrentPage(page)}
+          />
+        </div>
       </div>
     </>
   );

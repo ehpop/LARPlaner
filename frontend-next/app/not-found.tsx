@@ -1,10 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@nextui-org/button";
+import { FormattedMessage } from "react-intl";
 
 export default function NotFound() {
   const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -13,9 +16,15 @@ export default function NotFound() {
   return (
     isMounted && (
       <div className="flex flex-col w-full space-y-1 items-center">
-        <h1>Not found – 404!</h1>
+        <FormattedMessage
+          defaultMessage="Page not found"
+          id="notfound.message"
+          tagName="h1"
+        />
         <div>
-          <Link href="/">Go back to Home</Link>
+          <Button onClick={router.back}>
+            <FormattedMessage defaultMessage="Go back" id="notfound.back" />
+          </Button>
         </div>
       </div>
     )

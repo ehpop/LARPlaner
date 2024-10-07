@@ -3,18 +3,10 @@
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useIntl } from "react-intl";
 
+import { role } from "@/data/mock-data";
+
 export default function RoleDisplayPage({ params }: any) {
   const intl = useIntl();
-
-  const role = {
-    name: "Example Role Name",
-    description: "This is a description of the role.",
-    attributes: [
-      { name: "Strength", value: 75 },
-      { name: "Agility", value: 60 },
-    ],
-    querks: ["Brave", "Impulsive"],
-  };
 
   return (
     <div className="space-y-10 border-1 p-3">
