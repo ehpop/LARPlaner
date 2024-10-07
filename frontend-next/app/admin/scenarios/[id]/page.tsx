@@ -4,36 +4,7 @@ import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import ItemDisplay from "@/components/scenarios/item-display";
-
-const scenario = {
-  name: "Przykładowy Scenariusz",
-  description:
-    "Opis przykładowego scenariusza, który zawiera szczegóły dotyczące fabuły, tła, oraz celu.",
-  roles: [
-    { name: "mag", count: 1 },
-    { name: "wojownik", count: 2 },
-  ],
-  items: [
-    {
-      name: "Magic Sword",
-      description: "A powerful sword imbued with magical properties.",
-      skills: [
-        { name: "Siła", level: 20 },
-        { name: "Magia", level: 10 },
-      ],
-      querks: ["Zwinny", "Mądry", "Odważny"],
-    },
-    {
-      name: "Healing Potion",
-      description: "A potion that heals the user's wounds.",
-      skills: [
-        { name: "Inteligencja", level: 10 },
-        { name: "Magia", level: 5 },
-      ],
-      querks: ["Mądry"],
-    },
-  ],
-};
+import { scenario } from "@/data/mock-data";
 
 export default function ScenarioDisplayPage({ params }: any) {
   const intl = useIntl();

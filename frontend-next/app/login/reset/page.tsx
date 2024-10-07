@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Button, Card, Input, Spinner } from "@nextui-org/react";
+import { Button, Card, Input, Link, Spinner } from "@nextui-org/react";
 import { sendPasswordResetEmail } from "@firebase/auth";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -96,6 +96,11 @@ export default function PasswordResetPage() {
             )}
           </Button>
         </form>
+        <div className="flex justify-between items-center mt-4 text-sm text-gray-600 dark:text-gray-400">
+          <Link href={"/login"} size="sm" underline="focus">
+            <FormattedMessage defaultMessage="Log in" id="reset.login" />
+          </Link>
+        </div>
       </Card>
     </div>
   );

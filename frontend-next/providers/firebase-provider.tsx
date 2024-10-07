@@ -9,6 +9,7 @@ import {
   User,
 } from "@firebase/auth";
 import { useRouter } from "next/navigation";
+import { useIntl } from "react-intl";
 
 import { FirebaseContext } from "@/context/firebase-context";
 import {
@@ -23,6 +24,7 @@ export default function FirebaseProvider({ children }: any) {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
+  const intl = useIntl();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -50,7 +52,6 @@ export default function FirebaseProvider({ children }: any) {
     password?: string,
   ) => {
     const signInWithAuthProvider = (authProvider: AuthProvider) => {
-      alert("Signing in with popup on desktop browser");
       signInWithPopup(auth, authProvider)
         .then((_result) => {
           router.push("/profile");
@@ -58,7 +59,11 @@ export default function FirebaseProvider({ children }: any) {
         .catch((error) => {
           if (error.code === "auth/account-exists-with-different-credential") {
             throw new Error(
-              "You have already signed up with a different method. Log in with that method to link your accounts.",
+              intl.formatMessage({
+                id: "login.error.account-exists-with-different-credential",
+                defaultMessage:
+                  "You have already signed up with a different method. Log in with that method to link your accounts.",
+              }),
             );
           }
         });
