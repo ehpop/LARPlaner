@@ -15,7 +15,15 @@ import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
 import React, { FC, useContext, useEffect, useState } from "react";
-import { Avatar, Select, SelectItem } from "@nextui-org/react";
+import {
+  Avatar,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Select,
+  SelectItem,
+} from "@nextui-org/react";
 import { FormattedMessage } from "react-intl";
 import { User } from "@firebase/auth";
 
@@ -29,6 +37,18 @@ import { locales } from "@/lang/i18n/i18n-config";
 interface AccountElementProps {
   user: User | null | undefined;
   handleLogOut: () => void;
+}
+
+interface DesktopLinksProps {
+  navItems: SiteConfig["navItems"]["admin"] | SiteConfig["navItems"]["user"];
+}
+
+interface NavbarMenuContentProps {
+  items:
+    | SiteConfig["navMenuItems"]["admin"]
+    | SiteConfig["navMenuItems"]["user"];
+  setIsMenuOpen: (isOpen: boolean) => void;
+  languageSelect: React.JSX.Element;
 }
 
 const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
@@ -45,26 +65,72 @@ const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
   }
 
   return (
-    <div className="flex space-x-3">
-      <Button
-        className={buttonClass}
-        size="md"
-        variant="flat"
-        onClick={handleLogOut}
-      >
-        <FormattedMessage defaultMessage="Log out" id="nav.logout" />
-      </Button>
-
-      <Link
-        aria-label="Profile"
-        className="flex justify-center items-center gap-1"
-        href={"/profile"}
-      >
+    <Dropdown>
+      <DropdownTrigger className="cursor-pointer">
         <Avatar showFallback src={user.photoURL || undefined} />
-      </Link>
-    </div>
+      </DropdownTrigger>
+      <DropdownMenu aria-label="Static Actions">
+        <DropdownItem key="profile" textValue="profile">
+          <Link color="foreground" href={"/profile"}>
+            <FormattedMessage defaultMessage="Profile" id="nav.dashboard" />
+          </Link>
+        </DropdownItem>
+        <DropdownItem key="log out" textValue="log out">
+          <Link className="text-danger" onClick={handleLogOut}>
+            <FormattedMessage defaultMessage="Log out" id="nav.logout" />
+          </Link>
+        </DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
   );
 };
+
+const DesktopLinks = ({ navItems }: DesktopLinksProps) => {
+  return (
+    <ul className="hidden lg:flex gap-4 justify-start ml-2">
+      {navItems &&
+        navItems.map((item) => (
+          <NavbarItem key={item.href}>
+            <NextLink
+              className={clsx(
+                linkStyles({ color: "foreground" }),
+                "data-[active=true]:text-primary data-[active=true]:font-medium",
+              )}
+              color="foreground"
+              href={item.href}
+            >
+              {<FormattedMessage id={item.label} />}
+            </NextLink>
+          </NavbarItem>
+        ))}
+    </ul>
+  );
+};
+
+function NavbarMenuContent({
+  items,
+  setIsMenuOpen,
+  languageSelect,
+}: NavbarMenuContentProps) {
+  return (
+    <div className="mx-4 mt-2 flex flex-col gap-2 w-3/4 justify-center">
+      <NavbarMenuItem>{languageSelect}</NavbarMenuItem>
+      {items &&
+        items.map((item, index) => (
+          <NavbarMenuItem key={`${item}-${index}`}>
+            <Link
+              color="foreground"
+              href={item.href}
+              size="lg"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <FormattedMessage id={item.label} />
+            </Link>
+          </NavbarMenuItem>
+        ))}
+    </div>
+  );
+}
 
 export const Navbar = () => {
   const { user, isAdmin, handleLogOut } = useContext(FirebaseContext);
@@ -106,14 +172,10 @@ export const Navbar = () => {
   );
 
   const localeAndAccount = (
-    <>
-      <NavbarItem className="hidden sm:flex space-x-1">
-        {languageSelect}
-      </NavbarItem>
-      <NavbarItem className="hidden sm:flex space-x-1">
-        {accountElement}
-      </NavbarItem>
-    </>
+    <div className="hidden lg:flex space-x-1">
+      <NavbarItem>{languageSelect}</NavbarItem>
+      <NavbarItem>{accountElement}</NavbarItem>
+    </div>
   );
 
   const navbar = (
@@ -124,71 +186,45 @@ export const Navbar = () => {
       onMenuOpenChange={setIsMenuOpen}
     >
       {/* Left-aligned brand */}
-      <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
+      <NavbarContent className="basis-1/5 lg:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <Logo />
             <p className="font-bold text-inherit">{siteConfig.name}</p>
           </NextLink>
         </NavbarBrand>
-        {/* Desktop links */}
-        <ul className="hidden sm:flex gap-4 justify-start ml-2">
-          {navItems &&
-            navItems.map((item) => (
-              <NavbarItem key={item.href}>
-                <NextLink
-                  className={clsx(
-                    linkStyles({ color: "foreground" }),
-                    "data-[active=true]:text-primary data-[active=true]:font-medium",
-                  )}
-                  color="foreground"
-                  href={item.href}
-                >
-                  {<FormattedMessage id={item.label} />}
-                </NextLink>
-              </NavbarItem>
-            ))}
-        </ul>
+        {navItems && <DesktopLinks navItems={navItems} />}
       </NavbarContent>
 
       {/* Right-aligned content */}
-      <NavbarContent className="basis-1/5 flex  sm:basis-full" justify="end">
-        <NavbarItem className="hidden sm:flex gap-2">
+      <NavbarContent className="basis-1/5 flex lg:basis-full" justify="end">
+        <NavbarItem className="hidden lg:flex gap-2">
           <Link isExternal aria-label="Github" href={siteConfig.links.github}>
             <GithubIcon className="text-default-500" />
           </Link>
         </NavbarItem>
-        <NavbarItem className="hidden sm:flex gap-2">
+        <NavbarItem className="hidden lg:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>
         {localeAndAccount}
       </NavbarContent>
 
       {/* Mobile menu toggle */}
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
+      <NavbarContent className="lg:hidden basis-1 pl-4" justify="end">
         <ThemeSwitch />
-        <NavbarMenuToggle />
         {accountElement}
+        <NavbarMenuToggle />
       </NavbarContent>
 
       {/* Mobile menu items */}
-      <NavbarMenu className="sm:hidden">
-        <div className="mx-4 mt-2 flex flex-col gap-2 ">
-          <NavbarMenuItem>{languageSelect}</NavbarMenuItem>
-          {navMenuItems &&
-            navMenuItems.map((item, index) => (
-              <NavbarMenuItem key={`${item}-${index}`}>
-                <Link
-                  color="primary"
-                  href={item.href}
-                  size="lg"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <FormattedMessage id={item.label} />
-                </Link>
-              </NavbarMenuItem>
-            ))}
-        </div>
+      <NavbarMenu className="lg:hidden">
+        {navMenuItems && (
+          <NavbarMenuContent
+            items={navMenuItems}
+            languageSelect={languageSelect}
+            setIsMenuOpen={setIsMenuOpen}
+          />
+        )}
       </NavbarMenu>
     </NextUINavbar>
   );

@@ -11,6 +11,7 @@ function EventsPage() {
   return (
     <div className="space-y-5">
       <EventsDisplay
+        isAdmin={true}
         list={[]}
         title={intl.formatMessage({
           id: "events.page.display.title.now",
@@ -19,6 +20,7 @@ function EventsPage() {
       />
       <EventsDisplay
         canAddNewEvent={true}
+        isAdmin={true}
         list={list}
         title={intl.formatMessage({
           id: "events.page.display.title.future",
@@ -26,6 +28,7 @@ function EventsPage() {
         })}
       />
       <EventsDisplay
+        isAdmin={true}
         list={list.slice(0, 10)}
         title={intl.formatMessage({
           id: "events.page.display.title.previous",
