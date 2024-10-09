@@ -11,9 +11,11 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
   useDisclosure,
 } from "@nextui-org/react";
 import { sendEmailVerification, updateProfile, UserInfo } from "@firebase/auth";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { FirebaseContext } from "@/context/firebase-context";
 
@@ -23,13 +25,19 @@ const ProfilePage: FC = () => {
   const [newUserPhoto, setNewUserPhoto] = useState<string>("");
   const [lastLoadedPhoto, setLastLoadedPhoto] = useState<string>("");
   const [isClient, setIsClient] = useState(false);
+  const intl = useIntl();
 
   const updateProfilePhoto = (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader>Update Profile Photo</ModalHeader>
+            <ModalHeader>
+              <FormattedMessage
+                defaultMessage="Update Profile Photo"
+                id="profile.updatePhoto"
+              />
+            </ModalHeader>
             <ModalBody>
               <div className="w-full flex justify-center">
                 <Avatar
@@ -42,7 +50,10 @@ const ProfilePage: FC = () => {
               <div className="w-full flex space-x-3 justify-between">
                 <Input
                   className="w-3/4"
-                  label="Photo URL"
+                  label={intl.formatMessage({
+                    id: "profile.photoUrl",
+                    defaultMessage: "Photo URL",
+                  })}
                   placeholder="https://example.com/photo.jpg"
                   variant="underlined"
                   onChange={(e) => {
@@ -59,13 +70,16 @@ const ProfilePage: FC = () => {
                     setLastLoadedPhoto(newUserPhoto);
                   }}
                 >
-                  Load Image
+                  <FormattedMessage
+                    defaultMessage="Load Image"
+                    id="profile.loadImage"
+                  />
                 </Button>
               </div>
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={onClose}>
-                Close
+                <FormattedMessage defaultMessage="Close" id="profile.close" />
               </Button>
               <Button
                 color="success"
@@ -76,7 +90,10 @@ const ProfilePage: FC = () => {
                   location.reload();
                 }}
               >
-                Update Profile Photo
+                <FormattedMessage
+                  defaultMessage="Update Profile Photo"
+                  id="profile.update"
+                />
               </Button>
             </ModalFooter>
           </>
@@ -86,9 +103,7 @@ const ProfilePage: FC = () => {
   );
 
   const handleUpdateProfile = () => {
-    if (!user) {
-      return;
-    }
+    if (!user) return;
 
     updateProfile(user, {
       photoURL: newUserPhoto,
@@ -102,25 +117,53 @@ const ProfilePage: FC = () => {
   }, []);
 
   if (!isClient) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex w-full h-full justify-center align-middle">
+        <Spinner
+          label={intl.formatMessage({
+            defaultMessage: "Loading...",
+            id: "profile.loading",
+          })}
+        />
+      </div>
+    );
   }
 
   return user ? (
     <div className="w-full flex flex-row justify-center">
       <div className="w-11/12 lg:w-3/4 flex flex-col justify-center items-center space-y-4 p-4 dark:bg-stone-950 rounded-lg shadow-md">
         <p className="text-lg font-bold">
-          Display Name: {user.displayName || "N/A"}
+          <FormattedMessage
+            defaultMessage="Display Name"
+            id="profile.displayName"
+          />
+          : {user.displayName || "N/A"}
         </p>
 
         <p className="text-md">
-          Email: {user.email || "N/A"} (is verified:{" "}
-          {user.emailVerified ? "Yes" : "No"})
+          <FormattedMessage defaultMessage="Email" id="profile.email" />:{" "}
+          {user.email || "N/A"} (
+          <FormattedMessage
+            defaultMessage="is verified"
+            id="profile.isVerified"
+          />
+          : {user.emailVerified ? "Yes" : "No"})
         </p>
 
-        <p className="text-md">Phone Number: {user.phoneNumber || "N/A"}</p>
+        <p className="text-md">
+          <FormattedMessage
+            defaultMessage="Phone Number"
+            id="profile.phoneNumber"
+          />
+          : {user.phoneNumber || "N/A"}
+        </p>
 
         <p className="text-md font-semibold">
-          Admin Status: {isAdmin ? "Yes" : "No"}
+          <FormattedMessage
+            defaultMessage="Admin Status"
+            id="profile.adminStatus"
+          />
+          : {isAdmin ? "Yes" : "No"}
         </p>
 
         {user.photoURL && (
@@ -134,7 +177,13 @@ const ProfilePage: FC = () => {
         )}
 
         <div className="mt-4">
-          <p className="text-md font-semibold">Connected Providers:</p>
+          <p className="text-md font-semibold">
+            <FormattedMessage
+              defaultMessage="Connected Providers"
+              id="profile.connectedProviders"
+            />
+            :
+          </p>
           {user.providerData.length > 0 ? (
             <ul className="list-disc list-inside">
               {user.providerData.map((provider: UserInfo) => (
@@ -148,11 +197,16 @@ const ProfilePage: FC = () => {
               ))}
             </ul>
           ) : (
-            <p>No providers linked.</p>
+            <p>
+              <FormattedMessage
+                defaultMessage="No providers linked."
+                id="profile.noProviders"
+              />
+            </p>
           )}
         </div>
 
-        <div className="w-11/12 flex justify-between">
+        <div className="md:w-1/2 w-3/4 flex flex-col">
           <Button
             className="mt-4"
             color="primary"
@@ -163,7 +217,10 @@ const ProfilePage: FC = () => {
                 .catch((_error) => {});
             }}
           >
-            Verify Email
+            <FormattedMessage
+              defaultMessage="Verify Email"
+              id="profile.verifyEmail"
+            />
           </Button>
 
           <Button
@@ -176,11 +233,17 @@ const ProfilePage: FC = () => {
                 .catch((_error) => {});
             }}
           >
-            Delete account
+            <FormattedMessage
+              defaultMessage="Delete account"
+              id="profile.deleteAccount"
+            />
           </Button>
 
           <Button className="mt-4" color="success" onClick={onOpen}>
-            Update Profile Photo
+            <FormattedMessage
+              defaultMessage="Update Profile Photo"
+              id="profile.updatePhoto"
+            />
           </Button>
           {updateProfilePhoto}
         </div>
@@ -188,7 +251,12 @@ const ProfilePage: FC = () => {
     </div>
   ) : (
     <div className="w-full flex flex-col justify-center items-center min-h-screen">
-      <p>No user information available. Please log in.</p>
+      <p>
+        <FormattedMessage
+          defaultMessage="No user information available. Please log in."
+          id="profile.noUser"
+        />
+      </p>
     </div>
   );
 };

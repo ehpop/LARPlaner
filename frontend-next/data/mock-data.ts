@@ -1,3 +1,5 @@
+import { getLocalTimeZone, now } from "@internationalized/date";
+
 export const eventsList = [
   {
     id: 1,
@@ -138,8 +140,8 @@ export const role = {
   name: "Warrior",
   description: "A strong and brave warrior.",
   attributes: [
-    { name: "Strength", value: 75 },
-    { name: "Agility", value: 60 },
+    { name: "strength", value: 75 },
+    { name: "agility", value: 60 },
   ],
   querks: ["Brave", "Impulsive"],
 };
@@ -185,4 +187,23 @@ export const scenario = {
       querks: ["Mądry"],
     },
   ],
+};
+
+const event = {
+  id: 1,
+  title: `Wydarzenie #1`,
+  date: now(getLocalTimeZone()),
+  time: "12:00",
+  description: "Przykładowy opis wydarzenia.",
+  maxParticipants: 20,
+  scenario: "scenario1",
+  scenarios: [
+    { key: "scenario1", name: "Scenario 1" },
+    { key: "scenario2", name: "Scenario 2" },
+    { key: "scenario3", name: "Scenario 3" },
+  ],
+};
+
+export const getEvent = (id: number) => {
+  return { ...event, id: id, title: `Wydarzenie #${id}` };
 };

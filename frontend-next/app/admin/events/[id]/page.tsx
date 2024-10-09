@@ -9,26 +9,14 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { getLocalTimeZone, now } from "@internationalized/date";
-import { FormattedMessage, useIntl } from "react-intl"; // Import FormattedMessage and useIntl
+import { FormattedMessage, useIntl } from "react-intl";
+
+import { getEvent } from "@/data/mock-data"; // Import FormattedMessage and useIntl
 
 export default function EventPage({ params }: any) {
   const intl = useIntl();
 
-  const event = {
-    id: params.id,
-    title: `Wydarzenie #${params.id}`,
-    date: now(getLocalTimeZone()),
-    time: "12:00",
-    description: "Przykładowy opis wydarzenia.",
-    maxParticipants: 20,
-    scenario: "scenario1",
-    scenarios: [
-      { key: "scenario1", name: "Scenario 1" },
-      { key: "scenario2", name: "Scenario 2" },
-      { key: "scenario3", name: "Scenario 3" },
-    ],
-  };
+  const event = getEvent(params.id);
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState(event.scenario);
@@ -62,8 +50,8 @@ export default function EventPage({ params }: any) {
   );
 
   return (
-    <div className="w-full items-center">
-      <div className="space-y-10 border-1 p-3">
+    <div className="w-full flex justify-center">
+      <div className="sm:w-3/4 w-full space-y-10 border-1 p-3">
         <div className="w-full flex justify-center">
           <p className="text-3xl" id="view-event-modal">
             {event.title}
@@ -131,54 +119,72 @@ export default function EventPage({ params }: any) {
           type="number"
           variant="underlined"
         />
-        <div className="w-full flex justify-between items-baseline space-x-3">
+        <div className="w-full flex justify-start items-baseline space-x-3">
           {selectScenario}
-          <Button
-            color="success"
-            href={"/admin/scenarios/new"}
-            isDisabled={!isBeingEdited}
-          >
-            <FormattedMessage
-              defaultMessage="Add new scenario"
-              id="events.page.display.addScenario"
-            />
-          </Button>
-          <Button color="warning" isDisabled={!isBeingEdited}>
-            <FormattedMessage
-              defaultMessage="Edit scenario"
-              id="events.page.display.editScenario"
-            />
-          </Button>
+          <div className="space-x-3">
+            <Button
+              color="success"
+              href={"/admin/scenarios/new"}
+              isDisabled={!isBeingEdited}
+            >
+              <FormattedMessage
+                defaultMessage="New"
+                id="events.page.display.addScenario"
+              />
+            </Button>
+            <Button color="warning" isDisabled={!isBeingEdited}>
+              <FormattedMessage
+                defaultMessage="Edit"
+                id="events.page.display.editScenario"
+              />
+            </Button>
+          </div>
         </div>
         <div className="w-full flex justify-end">
           <div className="flex justify-between space-x-3">
-            <Button color="danger" size="lg">
-              <FormattedMessage
-                defaultMessage="Delete"
-                id="events.page.display.delete"
-              />
-            </Button>
-            <Button
-              color="warning"
-              size="lg"
-              onClick={() => setIsBeingEdited(true)}
-            >
-              <FormattedMessage
-                defaultMessage="Edit"
-                id="events.page.display.edit"
-              />
-            </Button>
+            {!isBeingEdited && (
+              <div className="space-x-3">
+                <Button color="danger" size="lg">
+                  <FormattedMessage
+                    defaultMessage="Delete"
+                    id="events.page.display.delete"
+                  />
+                </Button>
+                <Button
+                  color="warning"
+                  size="lg"
+                  onClick={() => setIsBeingEdited(true)}
+                >
+                  <FormattedMessage
+                    defaultMessage="Edit"
+                    id="events.page.display.edit"
+                  />
+                </Button>
+              </div>
+            )}
             {isBeingEdited && (
-              <Button
-                color="success"
-                size="lg"
-                onClick={() => setIsBeingEdited(false)}
-              >
-                <FormattedMessage
-                  defaultMessage="Save"
-                  id="events.page.display.save"
-                />
-              </Button>
+              <div className="flex space-x-3">
+                <Button
+                  color="danger"
+                  size="lg"
+                  onClick={() => setIsBeingEdited(false)}
+                >
+                  <FormattedMessage
+                    defaultMessage="Cancel"
+                    id="events.page.display.cancel"
+                  />
+                </Button>
+                <Button
+                  color="success"
+                  size="lg"
+                  onClick={() => setIsBeingEdited(false)}
+                >
+                  <FormattedMessage
+                    defaultMessage="Save"
+                    id="events.page.display.save"
+                  />
+                </Button>
+              </div>
             )}
           </div>
         </div>

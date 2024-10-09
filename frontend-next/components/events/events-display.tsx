@@ -14,10 +14,12 @@ export const EventsDisplay = ({
   list,
   title,
   canAddNewEvent = false,
+  isAdmin = false,
 }: {
   list: any[];
   title: string;
   canAddNewEvent?: boolean;
+  isAdmin?: boolean;
 }) => {
   const getAmountOfPages = (list: any[]) => {
     return Math.ceil(list.length / EVENTS_PER_PAGE);
@@ -62,7 +64,11 @@ export const EventsDisplay = ({
     <>
       <div className={`gap-4 grid sm:grid-cols-3 grid-cols-1`}>
         {pages[currentPage - 1]?.map((item: any) => (
-          <Event key={Math.random()} event={item} />
+          <Event
+            key={Math.random()}
+            event={item}
+            link={isAdmin ? "/admin/events" : "/events"}
+          />
         ))}
       </div>
       <div className="pt-5 flex justify-center align-center">
@@ -100,8 +106,8 @@ export const EventsDisplay = ({
 
   return (
     <div className="w-full border-small px-5 py-5 space-y-3 rounded-small border-default-200 dark:border-default-100">
-      <div className="w-full flex justify-between">
-        <p className="text-3xl">{title}</p>
+      <div className="w-full flex justify-between space-x-3 items-baseline">
+        <p className="md:text-3xl whitespace-nowrap">{title}</p>
         <Input
           classNames={{
             base: "max-w-full sm:max-w-[10rem] h-10",

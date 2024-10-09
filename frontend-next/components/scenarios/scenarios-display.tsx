@@ -98,8 +98,8 @@ export const ScenariosDisplay = ({
 
   return (
     <div className="w-full border-small px-5 py-5 space-y-3 rounded-small border-default-200 dark:border-default-100">
-      <div className="w-full flex justify-between">
-        <p className="text-3xl">{title}</p>
+      <div className="w-full flex justify-between space-x-3 items-baseline">
+        <p className="md:text-3xl text-2xl">{title}</p>
         <Input
           classNames={{
             base: "max-w-full sm:max-w-[10rem] h-10",
@@ -125,7 +125,7 @@ export const ScenariosDisplay = ({
           <Link href={"/admin/scenarios/new"}>
             <Button color="success" variant="solid">
               <FormattedMessage
-                defaultMessage="Add New Scenario"
+                defaultMessage="New"
                 id="scenarios.display.addNewScenario"
               />
             </Button>

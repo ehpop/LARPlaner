@@ -8,28 +8,33 @@ interface EventProps {
     date: string;
     img: string;
   };
+  link?: string;
 }
 
-export const Event = ({ event }: EventProps) => {
+export const Event = ({ event, link }: EventProps) => {
+  const card = (
+    <Card key={event.id} shadow="sm">
+      <CardBody className="overflow-visible p-0">
+        <Image
+          alt={event.title}
+          className="object-cover h-[240px] w-[440px]"
+          radius="lg"
+          shadow="sm"
+          src={event.img}
+          width="100%"
+        />
+      </CardBody>
+      <CardFooter className="text-small justify-between">
+        <b>{event.title}</b>
+        <p className="text-default-500">{event.date}</p>
+      </CardFooter>
+    </Card>
+  );
+
   return (
-    <Link aria-label={`Event: ${event.title}`} href={`events/${event.id}`}>
-      <Card key={event.id} shadow="sm">
-        <CardBody className="overflow-visible p-0">
-          <Image
-            alt={event.title}
-            className="object-cover h-[240px] w-[440px]"
-            radius="lg"
-            shadow="sm"
-            src={event.img}
-            width="100%"
-          />
-        </CardBody>
-        <CardFooter className="text-small justify-between">
-          <b>{event.title}</b>
-          <p className="text-default-500">{event.date}</p>
-        </CardFooter>
-      </Card>
-    </Link>
+    <div className="flex w-full justify-center">
+      {link ? <Link href={`${link}/${event.id}`}>{card}</Link> : card}
+    </div>
   );
 };
 
