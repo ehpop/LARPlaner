@@ -92,11 +92,7 @@ export default function FirebaseProvider({ children }: any) {
   function handleLogOut() {
     auth
       .signOut()
-      .then(() => {
-        setUser(null);
-        setIsAdmin(false);
-        router.push("/login");
-      })
+      .then(() => {})
       .catch((_error) => {
         throw new Error("Error signing out");
       });
