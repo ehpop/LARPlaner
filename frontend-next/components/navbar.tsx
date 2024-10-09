@@ -76,7 +76,7 @@ const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
           </Link>
         </DropdownItem>
         <DropdownItem key="log out" textValue="log out">
-          <Link className="text-danger" onClick={handleLogOut}>
+          <Link className="text-danger" href="#" onPress={() => handleLogOut()}>
             <FormattedMessage defaultMessage="Log out" id="nav.logout" />
           </Link>
         </DropdownItem>
