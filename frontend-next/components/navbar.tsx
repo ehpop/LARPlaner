@@ -26,6 +26,7 @@ import {
 } from "@nextui-org/react";
 import { FormattedMessage } from "react-intl";
 import { User } from "@firebase/auth";
+import { useRouter } from "next/navigation";
 
 import { SiteConfig, siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -53,6 +54,7 @@ interface NavbarMenuContentProps {
 
 const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
   const buttonClass = "text-sm font-normal text-default-600 bg-default-100";
+  const router = useRouter();
 
   if (!user) {
     return (
@@ -75,8 +77,14 @@ const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
             <FormattedMessage defaultMessage="Profile" id="nav.dashboard" />
           </Link>
         </DropdownItem>
-        <DropdownItem key="log out" textValue="log out">
-          <Link className="text-danger" href="#" onPress={() => handleLogOut()}>
+        <DropdownItem
+          key="log out"
+          textValue="log out"
+          onClick={() => {
+            handleLogOut();
+          }}
+        >
+          <Link className="text-danger" href="#">
             <FormattedMessage defaultMessage="Log out" id="nav.logout" />
           </Link>
         </DropdownItem>

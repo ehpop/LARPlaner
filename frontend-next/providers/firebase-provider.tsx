@@ -89,14 +89,16 @@ export default function FirebaseProvider({ children }: any) {
     }
   };
 
-  function handleLogOut() {
+  const handleLogOut = () => {
     auth
       .signOut()
-      .then(() => {})
+      .then(() => {
+        // router.push("/");
+      })
       .catch((_error) => {
         throw new Error("Error signing out");
       });
-  }
+  };
 
   return (
     <FirebaseContext.Provider
