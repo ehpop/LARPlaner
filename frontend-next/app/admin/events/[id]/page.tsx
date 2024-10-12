@@ -153,7 +153,7 @@ export default function EventPage({ params }: any) {
                 <Button
                   color="warning"
                   size="lg"
-                  onClick={() => setIsBeingEdited(true)}
+                  onPress={() => setIsBeingEdited(true)}
                 >
                   <FormattedMessage
                     defaultMessage="Edit"
@@ -167,7 +167,7 @@ export default function EventPage({ params }: any) {
                 <Button
                   color="danger"
                   size="lg"
-                  onClick={() => setIsBeingEdited(false)}
+                  onPress={() => setIsBeingEdited(false)}
                 >
                   <FormattedMessage
                     defaultMessage="Cancel"
@@ -177,7 +177,7 @@ export default function EventPage({ params }: any) {
                 <Button
                   color="success"
                   size="lg"
-                  onClick={() => setIsBeingEdited(false)}
+                  onPress={() => setIsBeingEdited(false)}
                 >
                   <FormattedMessage
                     defaultMessage="Save"

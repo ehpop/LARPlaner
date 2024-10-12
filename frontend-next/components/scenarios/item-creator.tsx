@@ -32,7 +32,7 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
             <Button
               size="sm"
               variant="bordered"
-              onClick={() => setShowItem(!showItem)}
+              onPress={() => setShowItem(!showItem)}
             >
               {showItem ? "-" : "+"}
             </Button>
@@ -40,7 +40,7 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
               color="danger"
               size="sm"
               variant="bordered"
-              onClick={() => removeItem(index)}
+              onPress={() => removeItem(index)}
             >
               <FormattedMessage
                 defaultMessage={"Remove"}
@@ -152,7 +152,7 @@ const ItemCreator = ({ skills, querks }: any) => {
           skills={skills}
         />
       ))}
-      <Button color="success" size="sm" variant="solid" onClick={addItem}>
+      <Button color="success" size="sm" variant="solid" onPress={addItem}>
         <FormattedMessage
           defaultMessage={"Add item"}
           id={"scenarios.id.page.addItemButton"}

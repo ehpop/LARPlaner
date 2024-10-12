@@ -26,7 +26,6 @@ import {
 } from "@nextui-org/react";
 import { FormattedMessage } from "react-intl";
 import { User } from "@firebase/auth";
-import { useRouter } from "next/navigation";
 
 import { SiteConfig, siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -54,7 +53,6 @@ interface NavbarMenuContentProps {
 
 const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
   const buttonClass = "text-sm font-normal text-default-600 bg-default-100";
-  const router = useRouter();
 
   if (!user) {
     return (
@@ -71,22 +69,22 @@ const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
       <DropdownTrigger className="cursor-pointer">
         <Avatar showFallback src={user.photoURL || undefined} />
       </DropdownTrigger>
-      <DropdownMenu aria-label="Static Actions">
-        <DropdownItem key="profile" textValue="profile">
-          <Link color="foreground" href={"/profile"}>
-            <FormattedMessage defaultMessage="Profile" id="nav.dashboard" />
-          </Link>
+      <DropdownMenu
+        aria-label="Static Actions"
+        onAction={(key) => {
+          if (key === "log out") handleLogOut();
+        }}
+      >
+        <DropdownItem key="profile" href="/profile" textValue="profile">
+          <FormattedMessage defaultMessage="Profile" id="nav.dashboard" />
         </DropdownItem>
         <DropdownItem
           key="log out"
+          className="text-danger"
+          color="danger"
           textValue="log out"
-          onClick={() => {
-            handleLogOut();
-          }}
         >
-          <Link className="text-danger" href="#">
-            <FormattedMessage defaultMessage="Log out" id="nav.logout" />
-          </Link>
+          <FormattedMessage defaultMessage="Log out" id="nav.logout" />
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
@@ -130,7 +128,7 @@ function NavbarMenuContent({
               color="foreground"
               href={item.href}
               size="lg"
-              onClick={() => setIsMenuOpen(false)}
+              onPress={() => setIsMenuOpen(false)}
             >
               <FormattedMessage id={item.label} />
             </Link>

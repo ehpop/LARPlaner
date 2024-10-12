@@ -142,7 +142,7 @@ export default function RolesPage() {
                   color="danger"
                   size="sm"
                   variant="bordered"
-                  onClick={() => removeAttribute(index)}
+                  onPress={() => removeAttribute(index)}
                 >
                   {intl.formatMessage({
                     id: "role.add.attribute.remove",
@@ -156,7 +156,7 @@ export default function RolesPage() {
             color="success"
             size="sm"
             variant="solid"
-            onClick={addAttribute}
+            onPress={addAttribute}
           >
             {intl.formatMessage({
               id: "role.add.attribute.add",
@@ -195,7 +195,7 @@ export default function RolesPage() {
                 color="danger"
                 size="sm"
                 variant="bordered"
-                onClick={() => removeQuerk(index)}
+                onPress={() => removeQuerk(index)}
               >
                 {intl.formatMessage({
                   id: "role.add.querk.remove",
@@ -204,7 +204,7 @@ export default function RolesPage() {
               </Button>
             </div>
           ))}
-          <Button color="success" size="sm" variant="solid" onClick={addQuerk}>
+          <Button color="success" size="sm" variant="solid" onPress={addQuerk}>
             {intl.formatMessage({
               id: "role.add.querk.add",
               defaultMessage: "Add querk",

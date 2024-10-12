@@ -173,7 +173,7 @@ export default function RoleDisplayPage({ params }: any) {
               <Button
                 color="warning"
                 size="lg"
-                onClick={() => setIsBeingEdited(true)}
+                onPress={() => setIsBeingEdited(true)}
               >
                 {intl.formatMessage({
                   id: "role.display.edit",
@@ -187,7 +187,7 @@ export default function RoleDisplayPage({ params }: any) {
               <Button
                 color="danger"
                 size="lg"
-                onClick={() => setIsBeingEdited(false)}
+                onPress={() => setIsBeingEdited(false)}
               >
                 {intl.formatMessage({
                   id: "role.display.cancel",
@@ -197,7 +197,7 @@ export default function RoleDisplayPage({ params }: any) {
               <Button
                 color="success"
                 size="lg"
-                onClick={() => setIsBeingEdited(false)}
+                onPress={() => setIsBeingEdited(false)}
               >
                 {intl.formatMessage({
                   id: "role.display.save",

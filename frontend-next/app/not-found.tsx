@@ -22,7 +22,7 @@ export default function NotFound() {
           tagName="h1"
         />
         <div>
-          <Button onClick={router.back}>
+          <Button onPress={() => router.back()}>
             <FormattedMessage defaultMessage="Go back" id="notfound.back" />
           </Button>
         </div>

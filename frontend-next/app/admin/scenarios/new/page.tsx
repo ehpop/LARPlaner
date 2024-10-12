@@ -95,7 +95,7 @@ export default function ScenariosPage() {
             <Button
               size="sm"
               variant="bordered"
-              onClick={() => setShowSection(!showSection)}
+              onPress={() => setShowSection(!showSection)}
             >
               {showSection ? "-" : "+"}
             </Button>

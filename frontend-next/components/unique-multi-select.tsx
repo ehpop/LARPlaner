@@ -55,17 +55,17 @@ const SelectUniqueOptions = ({ roles }: any) => {
                 </SelectItem>
               ))}
             </Select>
-            <Button type="button" onClick={() => removeSelect(index)}>
+            <Button type="button" onPress={() => removeSelect(index)}>
               -
             </Button>
           </div>
         ))}
       </div>
       <div>
-        <Button type="button" onClick={addSelect}>
+        <Button type="button" onPress={addSelect}>
           + Add another
         </Button>
-        <Button type="button" onClick={submitSelect}>
+        <Button type="button" onPress={submitSelect}>
           Submit
         </Button>
       </div>
