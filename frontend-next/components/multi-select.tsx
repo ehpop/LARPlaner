@@ -88,13 +88,13 @@ const MultiSelect = ({
             color="danger"
             size="sm"
             variant="bordered"
-            onClick={() => removeSelect(index)}
+            onPress={() => removeSelect(index)}
           >
             {removeButtonLabel}
           </Button>
         </div>
       ))}
-      <Button color="success" size="sm" onClick={addSelect}>
+      <Button color="success" size="sm" onPress={addSelect}>
         {addButtonLabel}
       </Button>
     </div>

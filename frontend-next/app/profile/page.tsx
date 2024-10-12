@@ -66,7 +66,7 @@ const ProfilePage: FC = () => {
                   isDisabled={
                     newUserPhoto === "" || newUserPhoto === lastLoadedPhoto
                   }
-                  onClick={() => {
+                  onPress={() => {
                     setLastLoadedPhoto(newUserPhoto);
                   }}
                 >
@@ -211,7 +211,7 @@ const ProfilePage: FC = () => {
             className="mt-4"
             color="primary"
             isDisabled={user.emailVerified}
-            onClick={() => {
+            onPress={() => {
               sendEmailVerification(user)
                 .then(() => {})
                 .catch((_error) => {});
@@ -226,7 +226,7 @@ const ProfilePage: FC = () => {
           <Button
             className="mt-4"
             color="danger"
-            onClick={() => {
+            onPress={() => {
               user
                 ?.delete()
                 .then(() => {})
@@ -239,7 +239,7 @@ const ProfilePage: FC = () => {
             />
           </Button>
 
-          <Button className="mt-4" color="success" onClick={onOpen}>
+          <Button className="mt-4" color="success" onPress={onOpen}>
             <FormattedMessage
               defaultMessage="Update Profile Photo"
               id="profile.updatePhoto"

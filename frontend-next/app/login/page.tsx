@@ -96,7 +96,7 @@ export default function LoginPage() {
             disabled={loading}
             size="lg"
             type="submit"
-            onClick={() => handleLogIn(emailAuthProvider)}
+            onPress={() => handleLogIn(emailAuthProvider)}
           >
             {loading ? (
               <Spinner color="primary" />
@@ -108,7 +108,7 @@ export default function LoginPage() {
 
         <Button
           className="w-full mt-4 bg-white border border-gray-300 text-gray-900 rounded-lg py-2 px-4 flex items-center justify-center space-x-3 shadow hover:bg-gray-50 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
-          onClick={() => handleLogIn(googleAuthProvider)}
+          onPress={() => handleLogIn(googleAuthProvider)}
         >
           <Image
             alt="Google Logo"
@@ -125,7 +125,7 @@ export default function LoginPage() {
         </Button>
         <Button
           className="w-full mt-4 bg-white border border-gray-300 text-gray-900 rounded-lg py-2 px-4 flex items-center justify-center space-x-3 shadow hover:bg-gray-50 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
-          onClick={() => handleLogIn(githubAuthProvider)}
+          onPress={() => handleLogIn(githubAuthProvider)}
         >
           <Image
             alt="Github Logo"

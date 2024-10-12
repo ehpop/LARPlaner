@@ -99,7 +99,7 @@ const Item = ({ item }: any) => {
             color="primary"
             size="sm"
             variant="bordered"
-            onClick={() => onOpenModal(item.name)}
+            onPress={() => onOpenModal(item.name)}
           >
             {intl.formatMessage({
               id: "item.qr",
@@ -109,7 +109,7 @@ const Item = ({ item }: any) => {
           <Button
             size="sm"
             variant="bordered"
-            onClick={() => setShowItem(!showItem)}
+            onPress={() => setShowItem(!showItem)}
           >
             {showItem ? "-" : "+"}
           </Button>
