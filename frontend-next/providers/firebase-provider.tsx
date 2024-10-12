@@ -30,12 +30,9 @@ export default function FirebaseProvider({ children }: any) {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        user
-          .getIdTokenResult(true)
-          .then((idTokenResult) => {
-            setIsAdmin(idTokenResult.claims["isAdmin"] === true);
-          })
-          .catch((_error) => {});
+        user.getIdTokenResult(true).then((idTokenResult) => {
+          setIsAdmin(idTokenResult.claims["isAdmin"] === true);
+        });
       } else {
         setUser(null);
         setIsAdmin(false);
@@ -89,15 +86,12 @@ export default function FirebaseProvider({ children }: any) {
     }
   };
 
-  const handleLogOut = () => {
-    auth
-      .signOut()
-      .then(() => {
-        // router.push("/");
-      })
-      .catch((_error) => {
-        throw new Error("Error signing out");
-      });
+  const handleLogOut = async () => {
+    auth.signOut().then(() => {
+      // Preferred method should be to use router.push("/login") but it's causing
+      // a bug in the app. Bad setState() is called somewhere in the app.
+      document.location.href = "/login";
+    });
   };
 
   return (
