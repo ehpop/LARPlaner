@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { getEvent } from "@/data/mock-data"; // Import FormattedMessage and useIntl
+import { getEvent } from "@/data/mock-data";
 
 export default function EventPage({ params }: any) {
   const intl = useIntl();
@@ -38,6 +38,7 @@ export default function EventPage({ params }: any) {
         id: "events.page.display.selectScenario",
         defaultMessage: "Select a scenario...",
       })}
+      selectionMode="multiple"
       size="lg"
       variant="underlined"
     >

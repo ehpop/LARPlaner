@@ -177,29 +177,29 @@ const Item = ({ item }: any) => {
             ))}
           </div>
 
-          {item.querks && (
+          {item.tags && (
             <div className="w-full border p-3 space-y-3">
               <p>
                 {intl.formatMessage({
-                  id: "item.requiredQuerks",
-                  defaultMessage: "Required Querks",
+                  id: "item.requiredTags",
+                  defaultMessage: "Required Tags",
                 })}
               </p>
               <div className="lg:w-1/2 w-full">
                 <Select
                   className="lg:w-3/4 w-full"
-                  defaultSelectedKeys={item.querks}
+                  defaultSelectedKeys={item.tags}
                   isDisabled={true}
                   placeholder={intl.formatMessage({
-                    id: "item.chooseQuerks",
-                    defaultMessage: "Choose Querks",
+                    id: "item.chooseTags",
+                    defaultMessage: "Choose Tags",
                   })}
                   selectionMode="multiple"
                   variant="underlined"
                 >
-                  {item.querks.map((querk: string) => (
-                    <SelectItem key={querk} value={querk}>
-                      {querk}
+                  {item.tags.map((tag: string) => (
+                    <SelectItem key={tag} value={tag}>
+                      {tag}
                     </SelectItem>
                   ))}
                 </Select>

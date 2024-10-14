@@ -9,7 +9,7 @@ const DEFAULT_ATTRIBUTE = { key: "", value: 50 };
 export default function RolesPage() {
   const intl = useIntl();
   const [attributes, setAttributes] = useState([{ ...DEFAULT_ATTRIBUTE }]);
-  const [querks, setQuerks] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
 
   const addAttribute = () => {
     setAttributes([...attributes, { ...DEFAULT_ATTRIBUTE }]);
@@ -30,21 +30,21 @@ export default function RolesPage() {
   };
 
   const addQuerk = () => {
-    setQuerks([...querks, ""]);
+    setTags([...tags, ""]);
   };
 
   const removeQuerk = (index: number) => {
-    const updatedQuerks = [...querks];
+    const updatedTags = [...tags];
 
-    updatedQuerks.splice(index, 1);
-    setQuerks(updatedQuerks);
+    updatedTags.splice(index, 1);
+    setTags(updatedTags);
   };
 
-  const handleQuerkChanged = (index: number, newQuerkValue: string) => {
-    const updatedQuerks = [...querks];
+  const handleTagChanged = (index: number, newTagValue: string) => {
+    const updatedTags = [...tags];
 
-    updatedQuerks[index] = newQuerkValue;
-    setQuerks(updatedQuerks);
+    updatedTags[index] = newTagValue;
+    setTags(updatedTags);
   };
 
   return (
@@ -167,11 +167,11 @@ export default function RolesPage() {
         <div className="border-1 p-3 space-y-3">
           <p>
             {intl.formatMessage({
-              id: "role.add.querks",
-              defaultMessage: "Character's querks",
+              id: "role.add.tags",
+              defaultMessage: "Character's tags",
             })}
           </p>
-          {querks.map((querk, index) => (
+          {tags.map((querk, index) => (
             <div
               key={index}
               className="lg:w-1/2 w-full flex flex-row space-x-3 items-baseline"
@@ -189,7 +189,7 @@ export default function RolesPage() {
                 })}
                 value={querk}
                 variant="underlined"
-                onChange={(e) => handleQuerkChanged(index, e.target.value)}
+                onChange={(e) => handleTagChanged(index, e.target.value)}
               />
               <Button
                 color="danger"
