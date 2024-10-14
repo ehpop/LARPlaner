@@ -11,7 +11,7 @@ const roles: string[] = ["mag", "wojownik", "złodziej", "czarodziej", "kapłan"
 
 const skills: string[] = ["skill1", "skill2", "skill3", "skill4", "skill5"];
 
-const querks: string[] = ["querk1", "querk2", "querk3", "querk4"];
+const tags: string[] = ["tag1", "tag2", "tag3", "tag4"];
 
 export default function ScenariosPage() {
   const [showSection, setShowSection] = useState(true);
@@ -101,7 +101,7 @@ export default function ScenariosPage() {
             </Button>
           </div>
           <div className={showSection ? "" : "hidden"}>
-            <ItemCreator querks={querks} skills={skills} />
+            <ItemCreator skills={skills} tags={tags} />
           </div>
         </div>
         <div className="w-full flex justify-end">

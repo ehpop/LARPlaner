@@ -6,7 +6,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import MultiSelect from "@/components/multi-select";
 
-const Item = ({ skills, querks, removeItem, index }: any) => {
+const Item = ({ skills, tags, removeItem, index }: any) => {
   const [showItem, setShowItem] = useState(true);
   const intl = useIntl();
 
@@ -94,12 +94,12 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
               })}
             />
           </div>
-          {querks && (
+          {tags && (
             <div className="w-full flex flex-col border-1 p-3 space-y-3">
               <p>
                 <FormattedMessage
-                  defaultMessage={"Required querks:"}
-                  id={"scenarios.id.page.requiredQuerks"}
+                  defaultMessage={"Required tags:"}
+                  id={"scenarios.id.page.requiredTags"}
                 />
               </p>
               <div className="lg:w-1/2 w-3/4">
@@ -112,9 +112,9 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
                   selectionMode="multiple"
                   variant="bordered"
                 >
-                  {querks.map((querk: string) => (
-                    <SelectItem key={querk} value={querk}>
-                      {querk}
+                  {tags.map((tag: string) => (
+                    <SelectItem key={tag} value={tag}>
+                      {tag}
                     </SelectItem>
                   ))}
                 </Select>
@@ -127,7 +127,7 @@ const Item = ({ skills, querks, removeItem, index }: any) => {
   );
 };
 
-const ItemCreator = ({ skills, querks }: any) => {
+const ItemCreator = ({ skills, tags }: any) => {
   const [items, setItems] = useState<string[]>(["1st item"]);
 
   const addItem = () => {
@@ -147,9 +147,9 @@ const ItemCreator = ({ skills, querks }: any) => {
         <Item
           key={index}
           index={index}
-          querks={querks}
           removeItem={removeItem}
           skills={skills}
+          tags={tags}
         />
       ))}
       <Button color="success" size="sm" variant="solid" onPress={addItem}>

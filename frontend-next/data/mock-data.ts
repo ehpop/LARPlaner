@@ -143,7 +143,7 @@ export const role = {
     { name: "strength", value: 75 },
     { name: "agility", value: 60 },
   ],
-  querks: ["Brave", "Impulsive"],
+  tags: ["Brave", "Impulsive"],
 };
 
 export const scenarios = [
@@ -175,7 +175,7 @@ export const scenario = {
         { name: "Siła", level: 20 },
         { name: "Magia", level: 10 },
       ],
-      querks: ["Zwinny", "Mądry", "Odważny"],
+      tags: ["Zwinny", "Mądry", "Odważny"],
     },
     {
       name: "Healing Potion",
@@ -184,7 +184,7 @@ export const scenario = {
         { name: "Inteligencja", level: 10 },
         { name: "Magia", level: 5 },
       ],
-      querks: ["Mądry"],
+      tags: ["Mądry"],
     },
   ],
 };
@@ -207,3 +207,14 @@ const event = {
 export const getEvent = (id: number) => {
   return { ...event, id: id, title: `Wydarzenie #${id}` };
 };
+
+export const possibleAttributes = [
+  { key: "strength", name: "Strength" },
+  { key: "dexterity", name: "Dexterity" },
+  { key: "intelligence", name: "Intelligence" },
+  { key: "charisma", name: "Charisma" },
+  { key: "wisdom", name: "Wisdom" },
+  { key: "agility", name: "Agility" },
+];
+
+export const possibleTags = ["Brave", "Impulsive", "Strong", "Quick", "Clever"];
