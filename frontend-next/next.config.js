@@ -47,6 +47,11 @@ const nextConfig = {
         hostname: "cdn4.iconfinder.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "photos.fife.usercontent.google.com",
+        port: "",
+      },
     ],
   },
 };

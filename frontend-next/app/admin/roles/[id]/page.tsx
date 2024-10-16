@@ -10,21 +10,17 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
+import { uuidv4 } from "@firebase/util";
 
-import {
-  possibleAttributes,
-  possibleTags,
-  role as initialRole,
-  scenarios,
-} from "@/data/mock-data";
+import { role as initialRole, scenarios } from "@/data/mock-data";
 
 const AttributeDisplay = ({
   attribute,
-  index,
   isBeingEdited,
+  index,
   handleAttributeChange,
 }: {
-  attribute: { name: string; value: number };
+  attribute: { id: string; name: string; value: number };
   index: number;
   isBeingEdited: boolean;
   handleAttributeChange: (
@@ -35,9 +31,8 @@ const AttributeDisplay = ({
 }) => {
   return (
     <div className="w-full flex flex-row space-x-3 items-baseline">
-      <Select
+      <Input
         className="lg:w-3/4 w-full"
-        defaultSelectedKeys={[attribute.name]}
         isDisabled={!isBeingEdited}
         label={
           <FormattedMessage
@@ -45,29 +40,23 @@ const AttributeDisplay = ({
             id="role.display.attribute"
           />
         }
+        placeholder="Attribute name"
+        value={attribute.name}
         variant="underlined"
-        onChange={(event) =>
-          handleAttributeChange(index, "name", event.target.value)
-        }
-      >
-        {possibleAttributes.map((attribute) => (
-          <SelectItem key={attribute.key} value={attribute.name}>
-            {attribute.name}
-          </SelectItem>
-        ))}
-      </Select>
+        onChange={(e) => handleAttributeChange(index, "name", e.target.value)}
+      />
+
       <Input
         className="lg:w-1/4 w-1/2"
         isDisabled={!isBeingEdited}
         label={
           <FormattedMessage defaultMessage="Value" id="role.display.value" />
         }
-        size="sm"
         type="number"
         value={attribute.value.toString()}
         variant="underlined"
         onChange={(e) =>
-          handleAttributeChange(index, "value", parseInt(e.target.value))
+          handleAttributeChange(index, "value", Number(e.target.value))
         }
       />
     </div>
@@ -82,21 +71,47 @@ export default function RoleDisplayPage({ params }: any) {
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState([scenarios[0]]);
   const [role, setRole] = useState(initialRole);
-
+  const [tags, setTags] = useState(
+    role.tags.map((tag) => ({ id: uuidv4(), value: tag })),
+  );
+  const [attributes, setAttributes] = useState(
+    role.attributes.map((attr) => ({ ...attr, id: uuidv4() })),
+  );
   const handleAttributeChange = (
     index: number,
     field: string,
     value: string | number,
   ) => {
-    const updatedAttributes = role.attributes.map((attribute, i) =>
-      i === index ? { ...attribute, [field]: value } : attribute,
+    const updatedAttributes = attributes.map((attr, i) =>
+      i === index ? { ...attr, [field]: value } : attr,
     );
 
-    setRole({ ...role, attributes: updatedAttributes });
+    setAttributes(updatedAttributes);
   };
 
-  const handleTagsChange = (selectedTags: string[]) => {
-    setRole({ ...role, tags: selectedTags });
+  const handleAttributeRemoved = (index: number) => {
+    const updatedAttributes = attributes.filter((_, i) => i !== index);
+
+    setAttributes(updatedAttributes);
+  };
+
+  const handleAddAttribute = () => {
+    if (attributes.filter((attr) => attr.name === "").length > 0) {
+      return;
+    }
+
+    setAttributes([...attributes, { id: uuidv4(), name: "", value: 0 }]);
+  };
+
+  const handleTagChanged = (tagIndex: number, newTagValue: string) => {
+    const updatedTags = [...tags];
+
+    updatedTags[tagIndex] = { ...updatedTags[tagIndex], value: newTagValue };
+    setTags(updatedTags);
+  };
+
+  const handleTagRemoved = (tagIndex: number) => {
+    setTags(tags.filter((_tag, index) => index !== tagIndex));
   };
 
   const selectScenario = (
@@ -133,15 +148,36 @@ export default function RoleDisplayPage({ params }: any) {
 
   const roleDescription = (
     <Textarea
+      description={intl.formatMessage({
+        id: "role.display.description.description",
+        defaultMessage: "Description of the character visible to the user",
+      })}
       isDisabled={!isBeingEdited}
       label={intl.formatMessage({
-        id: "role.display.description",
+        id: "role.display.description.label",
         defaultMessage: "Description",
       })}
       size="lg"
       value={role.description}
       variant="underlined"
       onChange={(e) => setRole({ ...role, description: e.target.value })}
+    />
+  );
+  const roleGMNotes = (
+    <Textarea
+      description={intl.formatMessage({
+        id: "role.display.gm.notes.description",
+        defaultMessage: "Roles notes visible only to the GM",
+      })}
+      isDisabled={!isBeingEdited}
+      label={intl.formatMessage({
+        id: "role.display.gm.notes.label",
+        defaultMessage: "GM Notes",
+      })}
+      size="lg"
+      value={role.gmNotes}
+      variant="underlined"
+      onChange={(e) => setRole({ ...role, gmNotes: e.target.value })}
     />
   );
   const roleName = (
@@ -168,7 +204,7 @@ export default function RoleDisplayPage({ params }: any) {
       </p>
     </div>
   );
-  const attributesContainer = (
+  const attributesElement = (
     <div className="w-full sm:w-1/2 min-h-full border-1 p-3 space-y-3">
       <p className="text-xl font-bold">
         <FormattedMessage
@@ -176,15 +212,53 @@ export default function RoleDisplayPage({ params }: any) {
           id="role.display.attributes"
         />
       </p>
-      {role.attributes.map((attribute, index) => (
-        <AttributeDisplay
-          key={attribute.name}
-          attribute={attribute}
-          handleAttributeChange={handleAttributeChange}
-          index={index}
-          isBeingEdited={isBeingEdited}
-        />
-      ))}
+      {attributes.length === 0 ? (
+        <div className="w-full h-1/5 text-xl flex justify-center items-center">
+          <p>
+            <FormattedMessage
+              defaultMessage="No attributes"
+              id="role.display.noAttributes"
+            />
+          </p>
+        </div>
+      ) : (
+        attributes.map((attribute, index) => (
+          <div
+            key={attribute.id}
+            className="w-full flex flex-row space-x-3 items-baseline"
+          >
+            <AttributeDisplay
+              attribute={attribute}
+              handleAttributeChange={handleAttributeChange}
+              index={index}
+              isBeingEdited={isBeingEdited}
+            />
+            {isBeingEdited && (
+              <Button
+                className="w-1/4"
+                color="danger"
+                size="sm"
+                onClick={() => handleAttributeRemoved(index)}
+              >
+                <FormattedMessage
+                  defaultMessage="Remove"
+                  id="role.display.remove"
+                />
+              </Button>
+            )}
+          </div>
+        ))
+      )}
+      {isBeingEdited && (
+        <div className="w-full flex justify-center">
+          <Button color="success" size="md" onClick={handleAddAttribute}>
+            <FormattedMessage
+              defaultMessage="Add attribute"
+              id="role.display.addAttribute"
+            />
+          </Button>
+        </div>
+      )}
     </div>
   );
   const tagsElement = (
@@ -195,64 +269,126 @@ export default function RoleDisplayPage({ params }: any) {
           id="role.display.tags"
         />
       </p>
-      <div className="w-full">
-        <Select
-          className="w-full"
-          defaultSelectedKeys={role.tags}
-          isDisabled={!isBeingEdited}
-          placeholder={intl.formatMessage({
-            id: "role.display.tags.placeholder",
-            defaultMessage: "Select tags",
-          })}
-          selectionMode="multiple"
-          variant="underlined"
-          onChange={(event) => handleTagsChange([event.target.value])}
-        >
-          {possibleTags.map((tag) => (
-            <SelectItem key={tag} value={tag}>
-              {tag}
-            </SelectItem>
-          ))}
-        </Select>
-      </div>
+      {tags.length === 0 ? (
+        <div className="w-full h-1/5 text-xl flex justify-center items-center">
+          <p>
+            <FormattedMessage
+              defaultMessage="No tags"
+              id="role.display.noTags"
+            />
+          </p>
+        </div>
+      ) : (
+        tags.map((tag, index) => (
+          <div
+            key={tag.id}
+            className="w-full flex flex-row space-x-3 items-baseline"
+          >
+            <Input
+              className="w-full"
+              defaultValue={tag.value}
+              isDisabled={!isBeingEdited}
+              label={intl.formatMessage({
+                defaultMessage: "Tag's Name",
+                id: "role.display.tag.name",
+              })}
+              placeholder={intl.formatMessage({
+                defaultMessage: "Insert tag name...",
+                id: "role.display.tag.name.placeholder",
+              })}
+              size="sm"
+              variant="underlined"
+              onChange={(e) => {
+                handleTagChanged(index, e.target.value);
+              }}
+            />
+            {isBeingEdited && (
+              <Button
+                className="w-1/4"
+                color="danger"
+                size="sm"
+                onClick={(_event) => {
+                  handleTagRemoved(index);
+                }}
+              >
+                <FormattedMessage
+                  defaultMessage="Remove"
+                  id="role.display.remove"
+                />
+              </Button>
+            )}
+          </div>
+        ))
+      )}
+      {isBeingEdited && (
+        <div className="w-full flex justify-center">
+          <Button
+            color="success"
+            size="md"
+            onPress={() => {
+              if (tags.findIndex((tag) => tag.value === "") === -1) {
+                setTags([...tags, { id: uuidv4(), value: "" }]);
+              }
+            }}
+          >
+            <FormattedMessage
+              defaultMessage="Add tag"
+              id="role.display.addTag"
+            />
+          </Button>
+        </div>
+      )}
     </div>
   );
 
   const editButtons = (
-    <>
-      <div className="flex space-x-3">
-        <Button
-          color="danger"
-          size="lg"
-          onPress={() => setIsBeingEdited(false)}
-        >
-          <FormattedMessage defaultMessage="Cancel" id="role.display.cancel" />
-        </Button>
-        <Button
-          color="success"
-          size="lg"
-          onPress={() => setIsBeingEdited(false)}
-        >
-          <FormattedMessage defaultMessage="Save" id="role.display.save" />
-        </Button>
-      </div>
-    </>
+    <div className="flex space-x-3">
+      <Button color="danger" size="lg" onPress={() => setIsBeingEdited(false)}>
+        <FormattedMessage defaultMessage="Cancel" id="role.display.cancel" />
+      </Button>
+      <Button color="success" size="lg" onPress={() => setIsBeingEdited(false)}>
+        <FormattedMessage defaultMessage="Save" id="role.display.save" />
+      </Button>
+    </div>
   );
   const controlButtons = (
-    <>
-      <div className="space-x-3">
-        <Button color="danger" size="lg">
-          <FormattedMessage defaultMessage="Delete" id="role.display.delete" />
-        </Button>
-        <Button
-          color="warning"
-          size="lg"
-          onPress={() => setIsBeingEdited(true)}
-        >
-          <FormattedMessage defaultMessage="Edit" id="role.display.edit" />
-        </Button>
+    <div className="space-x-3">
+      <Button color="danger" size="lg">
+        <FormattedMessage defaultMessage="Delete" id="role.display.delete" />
+      </Button>
+      <Button color="warning" size="lg" onPress={() => setIsBeingEdited(true)}>
+        <FormattedMessage defaultMessage="Edit" id="role.display.edit" />
+      </Button>
+    </div>
+  );
+
+  const imageInput = (
+    <div className="w-full flex sm:flex-row sm:space-x-3 sm:space-y-0 flex-col-reverse space-x-0 space-y-3  sm:items-center">
+      <Textarea
+        className="w-full sm:w-1/2"
+        description={intl.formatMessage({
+          id: "role.display.image.description",
+          defaultMessage: "URL of the character's image",
+        })}
+        isDisabled={!isBeingEdited}
+        label={intl.formatMessage({
+          id: "role.display.image",
+          defaultMessage: "Role image",
+        })}
+        size="lg"
+        value={imageUrl}
+        variant="underlined"
+        onChange={(e) => setImageUrl(e.target.value)}
+      />
+      <div className="w-full sm:w-1/2 ">
+        <Image
+          alt="Character's image"
+          className="max-w-full"
+          fallbackSrc="images/role-fallback.jpg"
+          src={imageUrl}
+        />
       </div>
-    </>
+    </div>
   );
 
   return (
@@ -265,36 +401,13 @@ export default function RoleDisplayPage({ params }: any) {
             {roleName}
             {selectScenario}
           </div>
-          <div className="w-full flex sm:flex-row sm:space-x-3 sm:space-y-0 flex-col-reverse space-x-0 space-y-3  sm:items-center">
-            <Input
-              className="w-full sm:w-1/2"
-              description={intl.formatMessage({
-                id: "role.display.image.description",
-                defaultMessage: "URL of the character's image",
-              })}
-              isDisabled={!isBeingEdited}
-              label={intl.formatMessage({
-                id: "role.display.image",
-                defaultMessage: "Role image",
-              })}
-              size="lg"
-              value={imageUrl}
-              variant="underlined"
-              onChange={(e) => setImageUrl(e.target.value)}
-            />
-            <div className="w-full sm:w-1/2 ">
-              <Image
-                alt="Character's image"
-                className="max-w-full"
-                src={imageUrl}
-              />
-            </div>
-          </div>
+          {imageInput}
           {roleDescription}
+          {roleGMNotes}
         </div>
 
         <div className="w-full flex flex-col space-y-3 space-x-0 sm:flex-row sm:space-x-3 sm:space-y-0">
-          {attributesContainer}
+          {attributesElement}
           {tagsElement}
         </div>
 
