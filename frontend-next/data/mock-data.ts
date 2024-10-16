@@ -139,6 +139,7 @@ export const roles = [
 export const role = {
   name: "Warrior",
   description: "A strong and brave warrior.",
+  gmNotes: "Notes for the game master.",
   attributes: [
     { name: "strength", value: 75 },
     { name: "agility", value: 60 },
