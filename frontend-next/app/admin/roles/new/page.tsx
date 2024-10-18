@@ -113,11 +113,11 @@ export default function AddRolePage() {
   const selectScenario = (
     <Select
       label={intl.formatMessage({
-        id: "events.page.display.scenario",
+        id: "roles.new.page.display.scenario",
         defaultMessage: "Scenarios",
       })}
       placeholder={intl.formatMessage({
-        id: "events.page.display.selectScenario",
+        id: "roles.new.page.display.selectScenario",
         defaultMessage: "Select a scenario...",
       })}
       selectionMode="multiple"
@@ -136,11 +136,11 @@ export default function AddRolePage() {
   const roleDescription = (
     <Textarea
       label={intl.formatMessage({
-        id: "role.display.description.label",
+        id: "role.new.page.description.label",
         defaultMessage: "Description",
       })}
       placeholder={intl.formatMessage({
-        id: "role.display.description.placeholder",
+        id: "role.new.page.description.placeholder",
         defaultMessage: "Enter description...",
       })}
       size="lg"
@@ -240,7 +240,7 @@ export default function AddRolePage() {
   const tagsElement = (
     <div className="w-full sm:w-1/2 min-h-full border-1 p-3 space-y-3">
       <p className="text-xl font-bold">
-        <FormattedMessage defaultMessage="Tags:" id="role.display.tags" />
+        <FormattedMessage defaultMessage="Tags:" id="role.new.page.tags" />
       </p>
       {tags.length === 0 ? (
         <div className="w-full h-1/5 text-xl flex justify-center items-center">
@@ -297,11 +297,11 @@ export default function AddRolePage() {
       <Textarea
         className="w-full sm:w-1/2"
         label={intl.formatMessage({
-          id: "role.display.image",
+          id: "role.new.page.display.image.label",
           defaultMessage: "Role image",
         })}
         placeholder={intl.formatMessage({
-          id: "role.display.image",
+          id: "role.new.page.display.image.placeholder",
           defaultMessage: "Enter image URL...",
         })}
         size="lg"

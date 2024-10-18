@@ -131,17 +131,17 @@ export default function RoleDisplayPage({ params }: any) {
     <Select
       defaultSelectedKeys={selectedScenario}
       description={intl.formatMessage({
-        id: "events.page.display.scenario.description",
+        id: "role.page.display.scenario.description",
         defaultMessage:
           "Select one or more scenarios that will include this role",
       })}
       isDisabled={!isBeingEdited}
       label={intl.formatMessage({
-        id: "events.page.display.scenario",
+        id: "role.page.display.scenario",
         defaultMessage: "Scenarios",
       })}
       placeholder={intl.formatMessage({
-        id: "events.page.display.selectScenario",
+        id: "role.page.display.selectScenario",
         defaultMessage: "Select a scenario...",
       })}
       selectionMode="multiple"
@@ -162,12 +162,12 @@ export default function RoleDisplayPage({ params }: any) {
   const roleDescription = (
     <Textarea
       description={intl.formatMessage({
-        id: "role.display.description.description",
+        id: "events.id.page.description.description",
         defaultMessage: "Base description of the character",
       })}
       isDisabled={!isBeingEdited}
       label={intl.formatMessage({
-        id: "role.display.description.label",
+        id: "events.id.page.description.label",
         defaultMessage: "Description",
       })}
       size="lg"
@@ -262,7 +262,7 @@ export default function RoleDisplayPage({ params }: any) {
       <p className="text-xl font-bold">
         <FormattedMessage
           defaultMessage="Character's tags:"
-          id="role.display.tags"
+          id="role.id.page.display.tags"
         />
       </p>
       {tags.length === 0 ? (
