@@ -47,7 +47,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Link
                 isExternal
                 className="flex items-center gap-1 text-current"
-                href="https://nextui-docs-v2.vercel.app?utm_source=next-app-template"
+                href="https://nextui.org/docs"
                 title="nextui.org homepage"
               >
                 <span className="text-default-600">Powered by</span>
