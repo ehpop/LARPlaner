@@ -1,14 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { Button, Input, Select, SelectItem } from "@nextui-org/react";
+import React, { useState } from "react";
+import { Input, Select, SelectItem, useDisclosure } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import ItemDisplay from "@/components/scenarios/item-display";
 import { scenario as initialScenario } from "@/data/mock-data";
+import { ButtonPanel } from "@/components/buttons/button-pannel";
+import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 
 export default function ScenarioDisplayPage({ params }: any) {
   const intl = useIntl();
+  const {
+    onOpen: onOpenDelete,
+    isOpen: isOpenDelete,
+    onOpenChange: onOpenChangeDelete,
+  } = useDisclosure();
+  const {
+    onOpen: onOpenCancel,
+    isOpen: isOpenCancel,
+    onOpenChange: onOpenChangeCancel,
+  } = useDisclosure();
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [scenario, setScenario] = useState(initialScenario);
@@ -24,6 +36,44 @@ export default function ScenarioDisplayPage({ params }: any) {
 
     setScenario({ ...scenario, roles: updatedRoles });
   };
+
+  const confirmDelete = (
+    <ConfirmActionModal
+      handleOnConfirm={() => {
+        alert("Event will be deleted");
+      }}
+      isOpen={isOpenDelete}
+      prompt={intl.formatMessage({
+        id: "scenarios.id.page.delete",
+        defaultMessage:
+          "Are you sure you want to delete this scenario? This action will not be reversible.",
+      })}
+      title={intl.formatMessage({
+        id: "scenarios.id.page.deleteTitle",
+        defaultMessage: "Do you want to delete this scenario?",
+      })}
+      onOpenChange={onOpenChangeDelete}
+    />
+  );
+
+  const confirmCancel = (
+    <ConfirmActionModal
+      handleOnConfirm={() => {
+        setIsBeingEdited(false);
+      }}
+      isOpen={isOpenCancel}
+      prompt={intl.formatMessage({
+        id: "scenarios.id.page.cancelEdit",
+        defaultMessage:
+          "Are you sure you want to cancel your changes? This action will not be reversible.",
+      })}
+      title={intl.formatMessage({
+        id: "scenarios.id.page.cancelEditTitle",
+        defaultMessage: "Do you want to cancel added changes?",
+      })}
+      onOpenChange={onOpenChangeCancel}
+    />
+  );
 
   return (
     <div className="w-full h-full flex justify-center">
@@ -84,7 +134,7 @@ export default function ScenarioDisplayPage({ params }: any) {
             {scenario.roles.map((role, index) => (
               <div key={index} className="flex flex-row space-x-3 items-center">
                 <Select
-                  className="lg:w-1/4 w-3/4"
+                  className="sm:w-1/4 w-3/4"
                   defaultSelectedKeys={[role.name]}
                   isDisabled={!isBeingEdited}
                   label="Role"
@@ -125,61 +175,26 @@ export default function ScenarioDisplayPage({ params }: any) {
               id={"scenarios.id.page.itemsInScenario"}
             />
           </p>
-          <ItemDisplay
-            isEditable={isBeingEdited}
-            items={scenario.items}
-            onItemsChange={(updatedItems: typeof scenario.items) =>
-              setScenario({ ...scenario, items: updatedItems })
-            }
-          />
+          <ItemDisplay isBeingEdited={isBeingEdited} items={scenario.items} />
         </div>
         <div className="w-full flex justify-end">
-          <div className="flex justify-between space-x-3">
-            {!isBeingEdited && (
-              <div className="space-x-3">
-                <Button color="danger" size="lg">
-                  <FormattedMessage
-                    defaultMessage={"Delete"}
-                    id={"scenarios.id.page.deleteScenarioButton"}
-                  />
-                </Button>
-                <Button
-                  color="warning"
-                  size="lg"
-                  onPress={() => setIsBeingEdited(true)}
-                >
-                  <FormattedMessage
-                    defaultMessage={"Edit"}
-                    id={"scenarios.id.page.editScenarioButton"}
-                  />
-                </Button>
-              </div>
-            )}
-            {isBeingEdited && (
-              <div className="flex space-x-3">
-                <Button
-                  color="danger"
-                  size="lg"
-                  onPress={() => setIsBeingEdited(false)}
-                >
-                  <FormattedMessage
-                    defaultMessage={"Cancel"}
-                    id={"scenarios.id.page.cancel"}
-                  />
-                </Button>
-                <Button
-                  color="success"
-                  size="lg"
-                  onPress={() => setIsBeingEdited(false)}
-                >
-                  <FormattedMessage
-                    defaultMessage={"Save"}
-                    id={"scenarios.id.page.save"}
-                  />
-                </Button>
-              </div>
-            )}
-          </div>
+          <ButtonPanel
+            isBeingEdited={isBeingEdited}
+            onCancelEditClicked={() => {
+              onOpenCancel();
+            }}
+            onDeleteClicked={() => {
+              onOpenDelete();
+            }}
+            onEditClicked={() => {
+              setIsBeingEdited(true);
+            }}
+            onSaveClicked={() => {
+              setIsBeingEdited(false);
+            }}
+          />
+          {confirmCancel}
+          {confirmDelete}
         </div>
       </div>
     </div>

@@ -4,7 +4,13 @@ import { useState } from "react";
 import { Autocomplete, AutocompleteItem, Chip } from "@nextui-org/react";
 import { Check, X } from "lucide-react";
 
-const MultiselectSearch = ({ array }: { array: string[] }) => {
+const MultiselectSearch = ({
+  array,
+  selectLabel,
+}: {
+  array: string[];
+  selectLabel: string;
+}) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleSelect = (item: string) => {
@@ -21,7 +27,12 @@ const MultiselectSearch = ({ array }: { array: string[] }) => {
 
   return (
     <div>
-      <Autocomplete className="w-full" selectedKey={""} variant="underlined">
+      <Autocomplete
+        className="w-full"
+        label={selectLabel}
+        selectedKey={""}
+        variant="underlined"
+      >
         {array.map((item, index) => (
           <AutocompleteItem
             key={index}
