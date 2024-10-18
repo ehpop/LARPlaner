@@ -7,11 +7,14 @@ import {
   Select,
   SelectItem,
   Textarea,
+  useDisclosure,
 } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { getEvent } from "@/data/mock-data";
+import { ButtonPanel } from "@/components/buttons/button-pannel";
+import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 
 export default function EventPage({ params }: any) {
   const intl = useIntl();
@@ -20,6 +23,16 @@ export default function EventPage({ params }: any) {
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState(event.scenario);
+  const {
+    onOpen: onOpenDelete,
+    isOpen: isOpenDelete,
+    onOpenChange: onOpenChangeDelete,
+  } = useDisclosure();
+  const {
+    onOpen: onOpenCancel,
+    isOpen: isOpenCancel,
+    onOpenChange: onOpenChangeCancel,
+  } = useDisclosure();
 
   useEffect(() => {
     setSelectedScenario(event.scenario);
@@ -48,6 +61,44 @@ export default function EventPage({ params }: any) {
         </SelectItem>
       ))}
     </Select>
+  );
+
+  const confirmDelete = (
+    <ConfirmActionModal
+      handleOnConfirm={() => {
+        alert("Event will be deleted");
+      }}
+      isOpen={isOpenDelete}
+      prompt={intl.formatMessage({
+        id: "events.id.page.delete",
+        defaultMessage:
+          "Are you sure you want to delete this event? This action will not be reversible.",
+      })}
+      title={intl.formatMessage({
+        id: "events.id.page.deleteTitle",
+        defaultMessage: "Do you want to delete this event?",
+      })}
+      onOpenChange={onOpenChangeDelete}
+    />
+  );
+
+  const confirmCancel = (
+    <ConfirmActionModal
+      handleOnConfirm={() => {
+        setIsBeingEdited(false);
+      }}
+      isOpen={isOpenCancel}
+      prompt={intl.formatMessage({
+        id: "events.id.page.cancelEdit",
+        defaultMessage:
+          "Are you sure you want to cancel your changes? This action will not be reversible.",
+      })}
+      title={intl.formatMessage({
+        id: "event.id.page.cancelEditTitle",
+        defaultMessage: "Do you want to cancel added changes?",
+      })}
+      onOpenChange={onOpenChangeCancel}
+    />
   );
 
   return (
@@ -142,52 +193,23 @@ export default function EventPage({ params }: any) {
           </div>
         </div>
         <div className="w-full flex justify-end">
-          <div className="flex justify-between space-x-3">
-            {!isBeingEdited && (
-              <div className="space-x-3">
-                <Button color="danger" size="lg">
-                  <FormattedMessage
-                    defaultMessage="Delete"
-                    id="events.page.display.delete"
-                  />
-                </Button>
-                <Button
-                  color="warning"
-                  size="lg"
-                  onPress={() => setIsBeingEdited(true)}
-                >
-                  <FormattedMessage
-                    defaultMessage="Edit"
-                    id="events.page.display.edit"
-                  />
-                </Button>
-              </div>
-            )}
-            {isBeingEdited && (
-              <div className="flex space-x-3">
-                <Button
-                  color="danger"
-                  size="lg"
-                  onPress={() => setIsBeingEdited(false)}
-                >
-                  <FormattedMessage
-                    defaultMessage="Cancel"
-                    id="events.page.display.cancel"
-                  />
-                </Button>
-                <Button
-                  color="success"
-                  size="lg"
-                  onPress={() => setIsBeingEdited(false)}
-                >
-                  <FormattedMessage
-                    defaultMessage="Save"
-                    id="events.page.display.save"
-                  />
-                </Button>
-              </div>
-            )}
-          </div>
+          <ButtonPanel
+            isBeingEdited={isBeingEdited}
+            onCancelEditClicked={() => {
+              onOpenCancel();
+            }}
+            onDeleteClicked={() => {
+              onOpenDelete();
+            }}
+            onEditClicked={() => {
+              setIsBeingEdited(true);
+            }}
+            onSaveClicked={() => {
+              setIsBeingEdited(false);
+            }}
+          />
+          {confirmCancel}
+          {confirmDelete}
         </div>
       </div>
     </div>

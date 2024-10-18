@@ -140,6 +140,8 @@ export const role = {
   name: "Warrior",
   description: "A strong and brave warrior.",
   gmNotes: "Notes for the game master.",
+  imageUrl:
+    "https://media.mythopedia.com/6cugv2Onrb7n1IDYjJBTmD/e309806f7646daef4b8abb7b0fc19dcc/wizard-name-generator.jpg?w=1280&h=720&fit=crop&crop=top2",
   attributes: [
     { name: "strength", value: 75 },
     { name: "agility", value: 60 },
@@ -209,13 +211,25 @@ export const getEvent = (id: number) => {
   return { ...event, id: id, title: `Wydarzenie #${id}` };
 };
 
-export const possibleAttributes = [
-  { key: "strength", name: "Strength" },
-  { key: "dexterity", name: "Dexterity" },
-  { key: "intelligence", name: "Intelligence" },
-  { key: "charisma", name: "Charisma" },
-  { key: "wisdom", name: "Wisdom" },
-  { key: "agility", name: "Agility" },
+export const possibleSkills = [
+  "Strength",
+  "Agility",
+  "Intelligence",
+  "Wisdom",
+  "Charisma",
+  "Dexterity",
+  "Constitution",
+  "Perception",
 ];
 
 export const possibleTags = ["Brave", "Impulsive", "Strong", "Quick", "Clever"];
+
+export const possibleRoles: string[] = [
+  "Wizard",
+  "Warrior",
+  "Thief",
+  "Sorcerer",
+  "Priest",
+  "Archer",
+  "Blade Dancer",
+];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Image,
@@ -8,11 +8,14 @@ import {
   Select,
   SelectItem,
   Textarea,
+  useDisclosure,
 } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { uuidv4 } from "@firebase/util";
 
 import { role as initialRole, scenarios } from "@/data/mock-data";
+import { ButtonPanel } from "@/components/buttons/button-pannel";
+import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 
 const AttributeDisplay = ({
   attribute,
@@ -65,18 +68,28 @@ const AttributeDisplay = ({
 
 export default function RoleDisplayPage({ params }: any) {
   const intl = useIntl();
-  const [imageUrl, setImageUrl] = useState(
-    "https://media.mythopedia.com/6cugv2Onrb7n1IDYjJBTmD/e309806f7646daef4b8abb7b0fc19dcc/wizard-name-generator.jpg?w=1280&h=720&fit=crop&crop=top2",
-  );
+
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState([scenarios[0]]);
   const [role, setRole] = useState(initialRole);
+  const [imageUrl, setImageUrl] = useState(role.imageUrl);
   const [tags, setTags] = useState(
     role.tags.map((tag) => ({ id: uuidv4(), value: tag })),
   );
   const [attributes, setAttributes] = useState(
     role.attributes.map((attr) => ({ ...attr, id: uuidv4() })),
   );
+  const {
+    onOpen: onOpenDelete,
+    isOpen: isOpenDelete,
+    onOpenChange: onOpenChangeDelete,
+  } = useDisclosure();
+  const {
+    onOpen: onOpenCancel,
+    isOpen: isOpenCancel,
+    onOpenChange: onOpenChangeCancel,
+  } = useDisclosure();
+
   const handleAttributeChange = (
     index: number,
     field: string,
@@ -118,17 +131,17 @@ export default function RoleDisplayPage({ params }: any) {
     <Select
       defaultSelectedKeys={selectedScenario}
       description={intl.formatMessage({
-        id: "events.page.display.scenario.description",
+        id: "role.page.display.scenario.description",
         defaultMessage:
           "Select one or more scenarios that will include this role",
       })}
       isDisabled={!isBeingEdited}
       label={intl.formatMessage({
-        id: "events.page.display.scenario",
+        id: "role.page.display.scenario",
         defaultMessage: "Scenarios",
       })}
       placeholder={intl.formatMessage({
-        id: "events.page.display.selectScenario",
+        id: "role.page.display.selectScenario",
         defaultMessage: "Select a scenario...",
       })}
       selectionMode="multiple"
@@ -149,35 +162,18 @@ export default function RoleDisplayPage({ params }: any) {
   const roleDescription = (
     <Textarea
       description={intl.formatMessage({
-        id: "role.display.description.description",
-        defaultMessage: "Description of the character visible to the user",
+        id: "events.id.page.description.description",
+        defaultMessage: "Base description of the character",
       })}
       isDisabled={!isBeingEdited}
       label={intl.formatMessage({
-        id: "role.display.description.label",
+        id: "events.id.page.description.label",
         defaultMessage: "Description",
       })}
       size="lg"
       value={role.description}
       variant="underlined"
       onChange={(e) => setRole({ ...role, description: e.target.value })}
-    />
-  );
-  const roleGMNotes = (
-    <Textarea
-      description={intl.formatMessage({
-        id: "role.display.gm.notes.description",
-        defaultMessage: "Roles notes visible only to the GM",
-      })}
-      isDisabled={!isBeingEdited}
-      label={intl.formatMessage({
-        id: "role.display.gm.notes.label",
-        defaultMessage: "GM Notes",
-      })}
-      size="lg"
-      value={role.gmNotes}
-      variant="underlined"
-      onChange={(e) => setRole({ ...role, gmNotes: e.target.value })}
     />
   );
   const roleName = (
@@ -266,7 +262,7 @@ export default function RoleDisplayPage({ params }: any) {
       <p className="text-xl font-bold">
         <FormattedMessage
           defaultMessage="Character's tags:"
-          id="role.display.tags"
+          id="role.id.page.display.tags"
         />
       </p>
       {tags.length === 0 ? (
@@ -341,27 +337,6 @@ export default function RoleDisplayPage({ params }: any) {
     </div>
   );
 
-  const editButtons = (
-    <div className="flex space-x-3">
-      <Button color="danger" size="lg" onPress={() => setIsBeingEdited(false)}>
-        <FormattedMessage defaultMessage="Cancel" id="role.display.cancel" />
-      </Button>
-      <Button color="success" size="lg" onPress={() => setIsBeingEdited(false)}>
-        <FormattedMessage defaultMessage="Save" id="role.display.save" />
-      </Button>
-    </div>
-  );
-  const controlButtons = (
-    <div className="space-x-3">
-      <Button color="danger" size="lg">
-        <FormattedMessage defaultMessage="Delete" id="role.display.delete" />
-      </Button>
-      <Button color="warning" size="lg" onPress={() => setIsBeingEdited(true)}>
-        <FormattedMessage defaultMessage="Edit" id="role.display.edit" />
-      </Button>
-    </div>
-  );
-
   const imageInput = (
     <div className="w-full flex sm:flex-row sm:space-x-3 sm:space-y-0 flex-col-reverse space-x-0 space-y-3  sm:items-center">
       <Textarea
@@ -384,11 +359,48 @@ export default function RoleDisplayPage({ params }: any) {
         <Image
           alt="Character's image"
           className="max-w-full"
-          fallbackSrc="images/role-fallback.jpg"
+          fallbackSrc="/images/role-fallback.jpg"
           src={imageUrl}
         />
       </div>
     </div>
+  );
+  const confirmDelete = (
+    <ConfirmActionModal
+      handleOnConfirm={() => {
+        alert("Role will be deleted");
+      }}
+      isOpen={isOpenDelete}
+      prompt={intl.formatMessage({
+        id: "roles.id.page.delete",
+        defaultMessage:
+          "Are you sure you want to delete this role? This action will not be reversible.",
+      })}
+      title={intl.formatMessage({
+        id: "roles.id.page.deleteTitle",
+        defaultMessage: "Do you want to delete this role?",
+      })}
+      onOpenChange={onOpenChangeDelete}
+    />
+  );
+
+  const confirmCancel = (
+    <ConfirmActionModal
+      handleOnConfirm={() => {
+        setIsBeingEdited(false);
+      }}
+      isOpen={isOpenCancel}
+      prompt={intl.formatMessage({
+        id: "roles.id.page.cancelEdit",
+        defaultMessage:
+          "Are you sure you want to cancel your changes? This action will not be reversible.",
+      })}
+      title={intl.formatMessage({
+        id: "roles.id.page.cancelEditTitle",
+        defaultMessage: "Do you want to cancel added changes?",
+      })}
+      onOpenChange={onOpenChangeCancel}
+    />
   );
 
   return (
@@ -403,7 +415,6 @@ export default function RoleDisplayPage({ params }: any) {
           </div>
           {imageInput}
           {roleDescription}
-          {roleGMNotes}
         </div>
 
         <div className="w-full flex flex-col space-y-3 space-x-0 sm:flex-row sm:space-x-3 sm:space-y-0">
@@ -411,8 +422,22 @@ export default function RoleDisplayPage({ params }: any) {
           {tagsElement}
         </div>
 
-        <div className="w-full flex justify-end space-x-3">
-          {isBeingEdited ? editButtons : controlButtons}
+        <div className="w-full flex justify-end">
+          <ButtonPanel
+            isBeingEdited={isBeingEdited}
+            onCancelEditClicked={() => {
+              onOpenCancel();
+            }}
+            onDeleteClicked={() => {
+              onOpenDelete();
+            }}
+            onEditClicked={() => setIsBeingEdited(true)}
+            onSaveClicked={() => {
+              setIsBeingEdited(false);
+            }}
+          />
+          {confirmCancel}
+          {confirmDelete}
         </div>
       </div>
     </div>

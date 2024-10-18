@@ -1,20 +1,16 @@
 "use client";
 
 import { Button, Input, Textarea } from "@nextui-org/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import MultiSelect from "@/components/multi-select";
 import ItemCreator from "@/components/scenarios/item-creator";
-
-const roles: string[] = ["mag", "wojownik", "złodziej", "czarodziej", "kapłan"];
-
-const skills: string[] = ["skill1", "skill2", "skill3", "skill4", "skill5"];
-
-const tags: string[] = ["tag1", "tag2", "tag3", "tag4"];
+import { RolesCreator } from "@/components/scenarios/role-creator";
+import { possibleRoles, possibleSkills, possibleTags } from "@/data/mock-data";
 
 export default function ScenariosPage() {
-  const [showSection, setShowSection] = useState(true);
+  const [showItemsSection, setShowItemsSection] = useState(true);
+  const [showRolesSection, setShowRolesSection] = useState(true);
   const intl = useIntl();
 
   return (
@@ -55,53 +51,46 @@ export default function ScenariosPage() {
           size="lg"
           variant="underlined"
         />
-        <div className="w-full border-1 p-3 space-y-3">
-          <p>
-            <FormattedMessage
-              defaultMessage={"Role in scenario:"}
-              id={"scenarios.new.page.rolesInScenario"}
-            />
-          </p>
-          <MultiSelect
-            addButtonLabel={intl.formatMessage({
-              id: "scenarios.new.page.addRole",
-              defaultMessage: "Add role",
-            })}
-            counterLabel={intl.formatMessage({
-              id: "scenarios.new.page.roleCount",
-              defaultMessage: "Role count",
-            })}
-            defaultCounterValue="1"
-            minCounterValue={1}
-            options={roles}
-            removeButtonLabel={intl.formatMessage({
-              id: "scenarios.new.page.removeRole",
-              defaultMessage: "Delete role",
-            })}
-            selectLabel={intl.formatMessage({
-              id: "scenarios.new.page.selectRole",
-              defaultMessage: "Select role",
-            })}
-          />
-        </div>
-        <div className="w-full border-1 p-3 space-y-3">
-          <div className="w-full flex flex-row justify-between">
-            <p>
-              <FormattedMessage
-                defaultMessage={"Items in scenario:"}
-                id={"scenarios.new.page.itemsInScenario"}
-              />
-            </p>
-            <Button
-              size="sm"
-              variant="bordered"
-              onPress={() => setShowSection(!showSection)}
-            >
-              {showSection ? "-" : "+"}
-            </Button>
+        <div className="w-full flex flex-col space-y-3 space-x-0 lg:flex-row lg:space-x-3 lg:space-y-0">
+          <div className="w-full border-1 p-3 space-y-3">
+            <div className="w-full flex flex-row justify-between">
+              <p className="text-xl">
+                <FormattedMessage
+                  defaultMessage={"Roles in scenario:"}
+                  id={"scenarios.new.page.rolesInScenario"}
+                />
+              </p>
+              <Button
+                size="sm"
+                variant="bordered"
+                onPress={() => setShowRolesSection(!showRolesSection)}
+              >
+                {showRolesSection ? "-" : "+"}
+              </Button>
+            </div>
+            <div className={showRolesSection ? "" : "hidden"}>
+              <RolesCreator availableRoles={possibleRoles} />
+            </div>
           </div>
-          <div className={showSection ? "" : "hidden"}>
-            <ItemCreator skills={skills} tags={tags} />
+          <div className="w-full border-1 p-3 space-y-3">
+            <div className="w-full flex flex-row justify-between">
+              <p className="text-xl">
+                <FormattedMessage
+                  defaultMessage={"Items in scenario:"}
+                  id={"scenarios.new.page.itemsInScenario"}
+                />
+              </p>
+              <Button
+                size="sm"
+                variant="bordered"
+                onPress={() => setShowItemsSection(!showItemsSection)}
+              >
+                {showItemsSection ? "-" : "+"}
+              </Button>
+            </div>
+            <div className={showItemsSection ? "" : "hidden"}>
+              <ItemCreator skills={possibleSkills} tags={possibleTags} />
+            </div>
           </div>
         </div>
         <div className="w-full flex justify-end">

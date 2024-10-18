@@ -55,17 +55,13 @@ const MultiSelect = ({
   };
 
   return (
-    <div className="w-full space-y-10 lg:space-y-3 overflow-y-auto">
+    <div className="w-full space-y-10 lg:space-y-3 overflow-y-auto ">
       {selectedOptions.map((selectedOption, index) => (
-        <div
-          key={`option-${selectedOption}-container`}
-          className="lg:w-3/4 w-full flex justify-between items-baseline"
-        >
+        <div key={selectedOption} className="w-full flex space-x-3">
           <Select
-            className="w-1/2"
             label={selectLabel}
             size="sm"
-            variant="bordered"
+            variant="underlined"
             onChange={(e) => handleSelectChange(index, e)}
           >
             {getAvailableOptions(selectedOption).map((option: string) => (
@@ -74,29 +70,33 @@ const MultiSelect = ({
               </SelectItem>
             ))}
           </Select>
-          <Input
-            className="w-1/4"
-            defaultValue={defaultCounterValue}
-            label={counterLabel}
-            max={maxCounterValue}
-            min={minCounterValue}
-            size="sm"
-            type="number"
-            variant="underlined"
-          />
-          <Button
-            color="danger"
-            size="sm"
-            variant="bordered"
-            onPress={() => removeSelect(index)}
-          >
-            {removeButtonLabel}
-          </Button>
+          <div className="w-full flex flex-row space-x-3 items-baseline">
+            <Input
+              className="w-1/4"
+              defaultValue={defaultCounterValue}
+              label={counterLabel}
+              max={maxCounterValue}
+              min={minCounterValue}
+              size="sm"
+              type="number"
+              variant="underlined"
+            />
+            <Button
+              color="danger"
+              size="sm"
+              variant="bordered"
+              onPress={() => removeSelect(index)}
+            >
+              {removeButtonLabel}
+            </Button>
+          </div>
         </div>
       ))}
-      <Button color="success" size="sm" onPress={addSelect}>
-        {addButtonLabel}
-      </Button>
+      <div className="w-full flex justify-center">
+        <Button color="success" size="sm" onPress={addSelect}>
+          {addButtonLabel}
+        </Button>
+      </div>
     </div>
   );
 };

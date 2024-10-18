@@ -12,7 +12,9 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import QRCode from "react-qr-code";
-import { useIntl } from "react-intl"; // Import the useIntl hook for translations
+import { useIntl } from "react-intl";
+
+import { scenario } from "@/data/mock-data"; // Import the useIntl hook for translations
 
 const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
   const intl = useIntl();
@@ -69,8 +71,14 @@ const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
   );
 };
 
-const Item = ({ item }: any) => {
-  const intl = useIntl(); // Use react-intl for translations
+const Item = ({
+  item,
+  isBeingEdited,
+}: {
+  item: (typeof scenario.items)[0];
+  isBeingEdited: boolean;
+}) => {
+  const intl = useIntl();
   const [showItem, setShowItem] = React.useState(true);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedItem, setSelectedItem] = React.useState("");
@@ -84,8 +92,8 @@ const Item = ({ item }: any) => {
     <div className="w-full flex flex-col border p-3 space-y-3">
       <div className="w-full flex flex-row justify-between">
         <Input
-          className="sm:w-1/2 w-full"
-          isDisabled={true}
+          className="sm:w-1/2 w-1/4"
+          isDisabled={!isBeingEdited}
           label={intl.formatMessage({
             id: "item.name",
             defaultMessage: "Item Name",
@@ -94,7 +102,7 @@ const Item = ({ item }: any) => {
           value={item.name}
           variant="underlined"
         />
-        <div className="flex sm:space-x-3 space-x-1">
+        <div className="flex flex-row lg:space-x-2 space-x-1">
           <Button
             color="primary"
             size="sm"
@@ -120,7 +128,7 @@ const Item = ({ item }: any) => {
         <>
           <Input
             className="w-full"
-            isDisabled={true}
+            isDisabled={!isBeingEdited}
             label={intl.formatMessage({
               id: "item.description",
               defaultMessage: "Item Description",
@@ -144,7 +152,7 @@ const Item = ({ item }: any) => {
                 <Select
                   className="lg:w-3/4 w-full"
                   defaultSelectedKeys={[skill.name]}
-                  isDisabled={true}
+                  isDisabled={!isBeingEdited}
                   label={intl.formatMessage({
                     id: "item.skill",
                     defaultMessage: "Skill",
@@ -161,7 +169,7 @@ const Item = ({ item }: any) => {
                 </Select>
                 <Input
                   className="lg:w-1/4 w-1/2"
-                  isDisabled={true}
+                  isDisabled={!isBeingEdited}
                   label={intl.formatMessage({
                     id: "item.level",
                     defaultMessage: "Level",
@@ -189,7 +197,7 @@ const Item = ({ item }: any) => {
                 <Select
                   className="lg:w-3/4 w-full"
                   defaultSelectedKeys={item.tags}
-                  isDisabled={true}
+                  isDisabled={!isBeingEdited}
                   placeholder={intl.formatMessage({
                     id: "item.chooseTags",
                     defaultMessage: "Choose Tags",
@@ -218,11 +226,17 @@ const Item = ({ item }: any) => {
   );
 };
 
-const ItemDisplay = ({ items }: any) => {
+const ItemDisplay = ({
+  items,
+  isBeingEdited,
+}: {
+  items: typeof scenario.items;
+  isBeingEdited: boolean;
+}) => {
   return (
     <>
       {items.map((item: any, index: number) => (
-        <Item key={index} item={item} />
+        <Item key={index} isBeingEdited={isBeingEdited} item={item} />
       ))}
     </>
   );
