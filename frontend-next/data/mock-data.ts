@@ -196,9 +196,14 @@ const event = {
   id: 1,
   title: `Wydarzenie #1`,
   date: now(getLocalTimeZone()),
+  location: {
+    name: "Politechnika Warszawska",
+    address: "plac Politechniki 1, 00-661 Warszawa",
+    latitude: 52.22182660273351,
+    longitude: 21.0080534251324,
+  },
   time: "12:00",
   description: "Przykładowy opis wydarzenia.",
-  maxParticipants: 20,
   scenario: "scenario1",
   scenarios: [
     { key: "scenario1", name: "Scenario 1" },
@@ -232,4 +237,17 @@ export const possibleRoles: string[] = [
   "Priest",
   "Archer",
   "Blade Dancer",
+];
+
+export const possibleScenarios = [
+  { key: "scenario1", name: "Scenario 1" },
+  { key: "scenario2", name: "Scenario 2" },
+  { key: "scenario3", name: "Scenario 3" },
+  { key: "scenario4", name: "Scenario 4" },
+  { key: "scenario5", name: "Scenario 5" },
+  { key: "scenario6", name: "Scenario 6" },
+  { key: "scenario7", name: "Scenario 7" },
+  { key: "scenario8", name: "Scenario 8" },
+  { key: "scenario9", name: "Scenario 9" },
+  { key: "scenario10", name: "Scenario 10" },
 ];
