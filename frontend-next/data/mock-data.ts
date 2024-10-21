@@ -149,6 +149,14 @@ export const role = {
   tags: ["Brave", "Impulsive"],
 };
 
+export const emptyRole = {
+  name: "",
+  description: "",
+  imageUrl: "",
+  attributes: [],
+  tags: [],
+};
+
 export const scenarios = [
   "Scenario 1",
   "Scenario 2",
@@ -217,17 +225,24 @@ export const getEvent = (id: number) => {
 };
 
 export const possibleSkills = [
-  "Strength",
-  "Agility",
-  "Intelligence",
-  "Wisdom",
-  "Charisma",
-  "Dexterity",
-  "Constitution",
-  "Perception",
+  { key: "strength", name: "Strength" },
+  { key: "agility", name: "Agility" },
+  { key: "intelligence", name: "Intelligence" },
+  { key: "magic", name: "Magic" },
+  { key: "wisdom", name: "Wisdom" },
+  { key: "charisma", name: "Charisma" },
+  { key: "dexterity", name: "Dexterity" },
+  { key: "constitution", name: "Constitution" },
 ];
 
-export const possibleTags = ["Brave", "Impulsive", "Strong", "Quick", "Clever"];
+export const possibleTags = [
+  { key: "brave", name: "Brave" },
+  { key: "impulsive", name: "Impulsive" },
+  { key: "clever", name: "Clever" },
+  { key: "wise", name: "Wise" },
+  { key: "strong", name: "Strong" },
+  { key: "agile", name: "Agile" },
+];
 
 export const possibleRoles: string[] = [
   "Wizard",
