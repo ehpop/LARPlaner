@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Input,
@@ -7,14 +7,14 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Select,
-  SelectItem,
   useDisclosure,
 } from "@nextui-org/react";
 import QRCode from "react-qr-code";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
-import { scenario } from "@/data/mock-data"; // Import the useIntl hook for translations
+import { possibleSkills } from "@/data/mock-data";
+import MultiselectSearch from "@/components/autocomplete-with-chips";
+import { IScenarioItem, IScenarioItemList } from "@/types"; // Import the useIntl hook for translations
 
 const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
   const intl = useIntl();
@@ -73,14 +73,20 @@ const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
 
 const Item = ({
   item,
+  index,
   isBeingEdited,
+  removeItem,
 }: {
-  item: (typeof scenario.items)[0];
+  item: IScenarioItem;
+  index: number;
   isBeingEdited: boolean;
+  removeItem: (index: number) => void;
 }) => {
   const intl = useIntl();
   const [showItem, setShowItem] = React.useState(true);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  //TODO REPLACE with JSON editing
+  const [itemsName, setItemsName] = React.useState(item.name);
   const [selectedItem, setSelectedItem] = React.useState("");
 
   const onOpenModal = (item: string) => {
@@ -88,26 +94,31 @@ const Item = ({
     onOpen();
   };
 
+  const itemNameElement = (
+    <Input
+      defaultValue={item.name}
+      isDisabled={!isBeingEdited}
+      label={intl.formatMessage({
+        id: "item.name",
+        defaultMessage: "Item Name",
+      })}
+      size="sm"
+      variant="underlined"
+      onChange={(e) => setItemsName(e.target.value)}
+    />
+  );
+
   return (
     <div className="w-full flex flex-col border p-3 space-y-3">
       <div className="w-full flex flex-row justify-between">
-        <Input
-          className="sm:w-1/2 w-1/4"
-          isDisabled={!isBeingEdited}
-          label={intl.formatMessage({
-            id: "item.name",
-            defaultMessage: "Item Name",
-          })}
-          size="sm"
-          value={item.name}
-          variant="underlined"
-        />
+        {itemNameElement}
         <div className="flex flex-row lg:space-x-2 space-x-1">
           <Button
             color="primary"
+            isDisabled={itemsName === ""}
             size="sm"
             variant="bordered"
-            onPress={() => onOpenModal(item.name)}
+            onPress={() => onOpenModal(itemsName)}
           >
             {intl.formatMessage({
               id: "item.qr",
@@ -120,6 +131,18 @@ const Item = ({
             onPress={() => setShowItem(!showItem)}
           >
             {showItem ? "-" : "+"}
+          </Button>
+          <Button
+            className={isBeingEdited ? "" : "hidden"}
+            color="danger"
+            size="sm"
+            variant="bordered"
+            onPress={() => removeItem(index)}
+          >
+            <FormattedMessage
+              defaultMessage={"Remove"}
+              id={"scenarios.new.page.removeItemButton"}
+            />
           </Button>
         </div>
       </div>
@@ -137,55 +160,7 @@ const Item = ({
             value={item.description}
             variant="underlined"
           />
-          <div className="w-full border p-3 space-y-3">
-            <p>
-              {intl.formatMessage({
-                id: "item.requiredSkills",
-                defaultMessage: "Skills Required to Use Item",
-              })}
-            </p>
-            {item.skills.map((skill: any, index: number) => (
-              <div
-                key={index}
-                className="lg:w-1/2 w-full flex flex-row space-x-3 items-baseline"
-              >
-                <Select
-                  className="lg:w-3/4 w-full"
-                  defaultSelectedKeys={[skill.name]}
-                  isDisabled={!isBeingEdited}
-                  label={intl.formatMessage({
-                    id: "item.skill",
-                    defaultMessage: "Skill",
-                  })}
-                  placeholder={intl.formatMessage({
-                    id: "item.chooseSkill",
-                    defaultMessage: "Choose Skill",
-                  })}
-                  variant="underlined"
-                >
-                  <SelectItem key={skill.name} value={skill.name}>
-                    {skill.name}
-                  </SelectItem>
-                </Select>
-                <Input
-                  className="lg:w-1/4 w-1/2"
-                  isDisabled={!isBeingEdited}
-                  label={intl.formatMessage({
-                    id: "item.level",
-                    defaultMessage: "Level",
-                  })}
-                  max="10"
-                  min="1"
-                  size="sm"
-                  type="number"
-                  value={skill.level}
-                  variant="underlined"
-                />
-              </div>
-            ))}
-          </div>
-
-          {item.tags && (
+          {item.requiredTags && (
             <div className="w-full border p-3 space-y-3">
               <p>
                 {intl.formatMessage({
@@ -193,25 +168,15 @@ const Item = ({
                   defaultMessage: "Required Tags",
                 })}
               </p>
-              <div className="lg:w-1/2 w-full">
-                <Select
-                  className="lg:w-3/4 w-full"
-                  defaultSelectedKeys={item.tags}
-                  isDisabled={!isBeingEdited}
-                  placeholder={intl.formatMessage({
-                    id: "item.chooseTags",
-                    defaultMessage: "Choose Tags",
-                  })}
-                  selectionMode="multiple"
-                  variant="underlined"
-                >
-                  {item.tags.map((tag: string) => (
-                    <SelectItem key={tag} value={tag}>
-                      {tag}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </div>
+              <MultiselectSearch
+                array={possibleSkills.map((skill) => skill.name)}
+                initialSelectedItems={item.requiredTags.map((tag) => tag.name)}
+                isDisabled={!isBeingEdited}
+                selectLabel={intl.formatMessage({
+                  id: "item.chooseTags",
+                  defaultMessage: "Choose Tags",
+                })}
+              />
             </div>
           )}
         </>
@@ -227,16 +192,30 @@ const Item = ({
 };
 
 const ItemDisplay = ({
-  items,
+  initialItems,
   isBeingEdited,
 }: {
-  items: typeof scenario.items;
+  initialItems: IScenarioItemList;
   isBeingEdited: boolean;
 }) => {
+  const [items, setItems] = useState(initialItems);
+
+  const removeItem = (index: number) => {
+    const newItems = items.filter((item, i) => i !== index);
+
+    setItems(newItems);
+  };
+
   return (
     <>
       {items.map((item: any, index: number) => (
-        <Item key={index} isBeingEdited={isBeingEdited} item={item} />
+        <Item
+          key={index}
+          index={index}
+          isBeingEdited={isBeingEdited}
+          item={item}
+          removeItem={removeItem}
+        />
       ))}
     </>
   );

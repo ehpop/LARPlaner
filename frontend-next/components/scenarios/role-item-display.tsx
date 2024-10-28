@@ -1,30 +1,45 @@
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 import { Button, Select, SelectItem, Textarea } from "@nextui-org/react";
 
+import { IRoleList, IScenarioRole } from "@/types";
+import { emptyScenarioRole } from "@/data/mock-data";
+
 export const RoleItem = ({
   index,
-  role,
   handleRoleChange,
   handleRoleRemove,
   availableRoles,
+  initialRole,
+  isBeingEdited,
 }: {
   index: number;
-  role: string;
-  handleRoleChange: (index: number, role: string) => void;
+  handleRoleChange: (index: number, role: IScenarioRole) => void;
   handleRoleRemove: (index: number) => void;
-  availableRoles: string[];
+  availableRoles: IRoleList;
+  initialRole?: IScenarioRole;
+  isBeingEdited?: boolean;
 }) => {
   const intl = useIntl();
   const [showRole, setShowRole] = useState(true);
+  const [role, setRole] = useState<IScenarioRole>(
+    initialRole || {
+      ...emptyScenarioRole,
+      id: 1,
+      scenarioId: 1,
+      roleId: 1,
+    },
+  );
 
   const roleDescription = (
     <Textarea
+      defaultValue={role.description}
       description={intl.formatMessage({
         id: "role.display.description.description",
         defaultMessage:
           "Description of the character visible to the user. Description is specific to this scenario.",
       })}
+      isDisabled={!isBeingEdited}
       label={intl.formatMessage({
         id: "role.display.description.label",
         defaultMessage: "Description in the scenario",
@@ -35,10 +50,12 @@ export const RoleItem = ({
   );
   const roleGMNotes = (
     <Textarea
+      defaultValue={role.gmNotes}
       description={intl.formatMessage({
         id: "role.display.gm.notes.description",
         defaultMessage: "Roles notes visible only to the GM",
       })}
+      isDisabled={!isBeingEdited}
       label={intl.formatMessage({
         id: "role.display.gm.notes.label",
         defaultMessage: "GM Notes",
@@ -53,20 +70,28 @@ export const RoleItem = ({
       <div className="w-full flex flex-row justify-between items-baseline">
         <Select
           className="w-1/2"
-          defaultSelectedKeys={[role]}
+          defaultSelectedKeys={role.id ? [String(role.id)] : []}
+          isDisabled={!isBeingEdited}
           label={intl.formatMessage({
-            id: "role.id",
+            id: "role.name",
             defaultMessage: "Role name",
           })}
           size="sm"
           variant="underlined"
           onChange={(e) => {
-            handleRoleChange(index, e.target.value);
+            handleRoleChange(index, {
+              ...role,
+              roleId: parseInt(e.target.value, 10),
+            });
+            setRole({
+              ...role,
+              roleId: parseInt(e.target.value, 10),
+            });
           }}
         >
           {availableRoles.map((role) => (
-            <SelectItem key={role} aria-label={role} value={role}>
-              {role}
+            <SelectItem key={String(role.id)} value={role.name}>
+              {role.name}
             </SelectItem>
           ))}
         </Select>
@@ -81,14 +106,16 @@ export const RoleItem = ({
           >
             {showRole ? "-" : "+"}
           </Button>
-          <Button
-            color="danger"
-            size="sm"
-            variant="bordered"
-            onPress={() => handleRoleRemove(index)}
-          >
-            Remove role
-          </Button>
+          {isBeingEdited && (
+            <Button
+              color="danger"
+              size="sm"
+              variant="bordered"
+              onPress={() => handleRoleRemove(index)}
+            >
+              <FormattedMessage defaultMessage={"Remove"} id={"role.remove"} />
+            </Button>
+          )}
         </div>
       </div>
       <div className={showRole ? "" : "hidden"}>

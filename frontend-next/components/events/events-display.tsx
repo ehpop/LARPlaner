@@ -7,6 +7,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Event } from "./event";
 
 import { SearchIcon } from "@/components/icons";
+import { IEventList } from "@/types";
 
 const EVENTS_PER_PAGE = 3;
 
@@ -16,21 +17,24 @@ export const EventsDisplay = ({
   canAddNewEvent = false,
   isAdmin = false,
 }: {
-  list: any[];
+  list: IEventList;
   title: string;
   canAddNewEvent?: boolean;
   isAdmin?: boolean;
 }) => {
-  const getAmountOfPages = (list: any[]) => {
+  const getAmountOfPages = (list: IEventList) => {
     return Math.ceil(list.length / EVENTS_PER_PAGE);
   };
 
-  const getPages = (list: any[]) => {
-    let pages: any[] = [];
+  const getPages = (list: IEventList) => {
+    let pages: IEventList[] = [];
     let amountOfPages = getAmountOfPages(list);
 
     for (let i = 1; i <= amountOfPages; i++) {
-      let page = list.slice((i - 1) * EVENTS_PER_PAGE, i * EVENTS_PER_PAGE);
+      let page: IEventList = list.slice(
+        (i - 1) * EVENTS_PER_PAGE,
+        i * EVENTS_PER_PAGE,
+      );
 
       pages.push(page);
     }
@@ -63,10 +67,10 @@ export const EventsDisplay = ({
   const EventsElement = (
     <>
       <div className={`gap-4 grid sm:grid-cols-3 grid-cols-1`}>
-        {pages[currentPage - 1]?.map((item: any) => (
+        {pages[currentPage - 1]?.map((event) => (
           <Event
-            key={Math.random()}
-            event={item}
+            key={event.id}
+            event={event}
             link={isAdmin ? "/admin/events" : "/events"}
           />
         ))}

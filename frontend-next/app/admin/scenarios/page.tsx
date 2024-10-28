@@ -3,7 +3,7 @@
 import { FormattedMessage } from "react-intl";
 
 import ScenariosDisplay from "@/components/scenarios/scenarios-display";
-import { scenarios } from "@/data/mock-data";
+import { possibleScenarios } from "@/data/mock-data";
 
 function ScenariosPage() {
   return (
@@ -15,7 +15,7 @@ function ScenariosPage() {
       </div>
       <ScenariosDisplay
         canAddNewScenario={true}
-        scenariosList={scenarios}
+        scenariosList={possibleScenarios}
         title={"Scenarios"}
       />
     </div>

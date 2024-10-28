@@ -5,6 +5,7 @@ import { Button } from "@nextui-org/button";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { SearchIcon } from "@/components/icons";
+import { IRoleList } from "@/types";
 
 const ROLES_PER_PAGE = 6;
 
@@ -13,16 +14,16 @@ export const RolesDisplay = ({
   title,
   canAddNewRole = false,
 }: {
-  rolesList: string[];
+  rolesList: IRoleList;
   title: string;
   canAddNewRole?: boolean;
 }) => {
   const [searchValue, setSearchValue] = useState("");
-  const getAmountOfPages = (list: string[]) => {
+  const getAmountOfPages = (list: IRoleList) => {
     return Math.ceil(list.length / ROLES_PER_PAGE);
   };
-  const getPages = (list: string[]) => {
-    let pages: string[][] = [];
+  const getPages = (list: IRoleList) => {
+    let pages: IRoleList[] = [];
     let amountOfPages = getAmountOfPages(list);
 
     for (let i = 1; i <= amountOfPages; i++) {
@@ -44,7 +45,7 @@ export const RolesDisplay = ({
   useEffect(() => {
     const newFilteredList = searchValue
       ? rolesList.filter((role) =>
-          role.toLowerCase().includes(searchValue.toLowerCase()),
+          role.name.toLowerCase().includes(searchValue.toLowerCase()),
         )
       : rolesList;
 
@@ -58,12 +59,12 @@ export const RolesDisplay = ({
       <div className="gap-4 grid sm:grid-cols-2 grid-cols-1">
         {pages[currentPage - 1]?.map((role) => (
           <Link
-            key={role}
+            key={role.name}
             isBlock
             className="w-full border-1 p-3 space-y-3 text-center"
-            href={`/admin/roles/${role.replace(/\s/g, "-").toLowerCase()}`}
+            href={`/admin/roles/${role.name.replace(/\s/g, "-").toLowerCase()}`}
           >
-            <p className="text-xl">{role}</p>
+            <p className="text-xl">{role.name}</p>
           </Link>
         ))}
       </div>

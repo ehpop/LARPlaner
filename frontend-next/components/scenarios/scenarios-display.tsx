@@ -5,6 +5,7 @@ import { Button } from "@nextui-org/button";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { SearchIcon } from "@/components/icons";
+import { IScenarioList } from "@/types";
 
 const SCENARIOS_PER_PAGE = 6;
 
@@ -13,16 +14,16 @@ export const ScenariosDisplay = ({
   title,
   canAddNewScenario = false,
 }: {
-  scenariosList: string[];
+  scenariosList: IScenarioList;
   title: string;
   canAddNewScenario?: boolean;
 }) => {
-  const getAmountOfPages = (list: string[]) => {
-    return Math.ceil(list.length / SCENARIOS_PER_PAGE);
+  const getAmountOfPages = (list: IScenarioList) => {
+    return list.length ? Math.ceil(list.length / SCENARIOS_PER_PAGE) : 1;
   };
 
-  const getPages = (list: string[]) => {
-    let pages: string[][] = [];
+  const getPages = (list: IScenarioList) => {
+    let pages: IScenarioList[] = [];
     let amountOfPages = getAmountOfPages(list);
 
     for (let i = 1; i <= amountOfPages; i++) {
@@ -50,7 +51,7 @@ export const ScenariosDisplay = ({
   useEffect(() => {
     const newFilteredList = searchValue
       ? scenariosList.filter((scenario) =>
-          scenario.toLowerCase().includes(searchValue.toLowerCase()),
+          scenario.name.toLowerCase().includes(searchValue.toLowerCase()),
         )
       : scenariosList;
 
@@ -64,12 +65,12 @@ export const ScenariosDisplay = ({
       <div className="gap-4 grid sm:grid-cols-2 grid-cols-1">
         {pages[currentPage - 1]?.map((scenario, index) => (
           <Link
-            key={scenario}
+            key={scenario.id}
             isBlock
             className="w-full border-1 p-3 space-y-3 text-center"
             href={`/admin/scenarios/${index + 1}`}
           >
-            <p className="text-xl">{scenario}</p>
+            <p className="text-xl">{scenario.name}</p>
           </Link>
         ))}
       </div>
