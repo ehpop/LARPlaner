@@ -26,10 +26,11 @@ import {
 } from "@nextui-org/react";
 import { FormattedMessage } from "react-intl";
 import { User } from "@firebase/auth";
+import Image from "next/image";
 
 import { SiteConfig, siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { GithubIcon, Logo } from "@/components/icons";
+import { GithubIcon } from "@/components/icons";
 import { LocaleContext } from "@/context/locale-context";
 import { FirebaseContext } from "@/context/firebase-context";
 import { locales } from "@/lang/i18n/i18n-config";
@@ -195,7 +196,7 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 lg:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Logo />
+            <Image alt="brand" height={36} src="/favicon.ico" width={36} />
             <p className="font-bold text-inherit">{siteConfig.name}</p>
           </NextLink>
         </NavbarBrand>

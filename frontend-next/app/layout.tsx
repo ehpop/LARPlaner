@@ -3,6 +3,7 @@ import { Metadata, Viewport } from "next";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { ReactNode } from "react";
+import Script from "next/script";
 
 import { Providers } from "@/providers/providers";
 import { siteConfig } from "@/config/site";
@@ -56,6 +57,26 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </footer>
           </div>
         </Providers>
+        {/* Tawk.to Script */}
+        {process.env.NEXT_PUBLIC_TAWK_TO_ID && (
+          <Script
+            dangerouslySetInnerHTML={{
+              __html: `
+            var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+            (function(){
+            var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+            s1.async=true;
+            s1.src='${process.env.NEXT_PUBLIC_TAWK_TO_ID}';
+            s1.charset='UTF-8';
+            s1.setAttribute('crossorigin','*');
+            s0.parentNode.insertBefore(s1,s0);
+            })();
+          `,
+            }}
+            id="tawk-to-script"
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );
