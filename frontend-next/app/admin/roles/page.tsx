@@ -1,7 +1,7 @@
 "use client";
 
 import RolesDisplay from "@/components/roles/roles-display";
-import { roles } from "@/data/mock-data";
+import { possibleRoles } from "@/data/mock-data";
 
 export default function RolesPage() {
   return (
@@ -9,7 +9,11 @@ export default function RolesPage() {
       <div className="w-full flex justify-center">
         <p className="text-3xl">Roles Page</p>
       </div>
-      <RolesDisplay canAddNewRole={true} rolesList={roles} title={"Rola"} />
+      <RolesDisplay
+        canAddNewRole={true}
+        rolesList={possibleRoles}
+        title={"Rola"}
+      />
     </div>
   );
 }

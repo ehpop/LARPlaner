@@ -1,13 +1,10 @@
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import { Link } from "@nextui-org/link";
 
+import { IEvent } from "@/types";
+
 interface EventProps {
-  event: {
-    id: string;
-    title: string;
-    date: string;
-    img: string;
-  };
+  event: IEvent;
   link?: string;
 }
 
@@ -26,7 +23,7 @@ export const Event = ({ event, link }: EventProps) => {
       </CardBody>
       <CardFooter className="text-small justify-between">
         <b>{event.title}</b>
-        <p className="text-default-500">{event.date}</p>
+        <p className="text-default-500">{event.date.toDate().toDateString()}</p>
       </CardFooter>
     </Card>
   );

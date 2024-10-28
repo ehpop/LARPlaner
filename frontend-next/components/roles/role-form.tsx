@@ -11,58 +11,13 @@ import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 import { uuidv4 } from "@firebase/util";
 
-import { emptyRole, role as exampleRole, scenarios } from "@/data/mock-data";
+import {
+  emptyRole,
+  exampleRole as exampleRole,
+  possibleScenarios,
+} from "@/data/mock-data";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
-
-const AttributeDisplay = ({
-  attribute,
-  isBeingEdited,
-  index,
-  handleAttributeChange,
-}: {
-  attribute: { id: string; name: string; value: number };
-  index: number;
-  isBeingEdited: boolean;
-  handleAttributeChange: (
-    index: number,
-    field: string,
-    value: string | number,
-  ) => void;
-}) => {
-  return (
-    <div className="w-full flex flex-row space-x-3 items-baseline">
-      <Input
-        className="lg:w-3/4 w-full"
-        isDisabled={!isBeingEdited}
-        label={
-          <FormattedMessage
-            defaultMessage="Attribute"
-            id="role.display.attribute"
-          />
-        }
-        placeholder="Attribute name"
-        value={attribute.name}
-        variant="underlined"
-        onChange={(e) => handleAttributeChange(index, "name", e.target.value)}
-      />
-
-      <Input
-        className="lg:w-1/4 w-1/2"
-        isDisabled={!isBeingEdited}
-        label={
-          <FormattedMessage defaultMessage="Value" id="role.display.value" />
-        }
-        type="number"
-        value={attribute.value.toString()}
-        variant="underlined"
-        onChange={(e) =>
-          handleAttributeChange(index, "value", Number(e.target.value))
-        }
-      />
-    </div>
-  );
-};
 
 export default function RoleForm({ roleId }: { roleId?: string }) {
   const intl = useIntl();
@@ -71,14 +26,13 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
   const initialRole = isNewRole ? emptyRole : exampleRole;
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
-  const [selectedScenario, setSelectedScenario] = useState([scenarios[0]]);
+  const [selectedScenariosIds, setSelectedScenariosIds] = useState(
+    possibleScenarios[0].id ? [possibleScenarios[0].id] : [],
+  );
   const [role, setRole] = useState(initialRole);
   const [imageUrl, setImageUrl] = useState(role?.imageUrl);
   const [tags, setTags] = useState(
     role?.tags.map((tag) => ({ id: uuidv4(), value: tag })),
-  );
-  const [attributes, setAttributes] = useState(
-    role?.attributes.map((attr) => ({ ...attr, id: uuidv4() })),
   );
   const {
     onOpen: onOpenDelete,
@@ -90,35 +44,6 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
     isOpen: isOpenCancel,
     onOpenChange: onOpenChangeCancel,
   } = useDisclosure();
-
-  const handleAttributeChange = (
-    index: number,
-    field: string,
-    value: string | number,
-  ) => {
-    const updatedAttributes = attributes?.map((attr, i) =>
-      i === index ? { ...attr, [field]: value } : attr,
-    );
-
-    setAttributes(updatedAttributes);
-  };
-
-  const handleAttributeRemoved = (index: number) => {
-    const updatedAttributes = attributes?.filter((_, i) => i !== index);
-
-    setAttributes(updatedAttributes);
-  };
-
-  const handleAddAttribute = () => {
-    if (
-      !attributes ||
-      attributes.filter((attr) => attr.name === "").length > 0
-    ) {
-      return;
-    }
-
-    setAttributes([...attributes, { id: uuidv4(), name: "", value: 0 }]);
-  };
 
   const handleTagChanged = (tagIndex: number, newTagValue: string) => {
     const updatedTags = [...(tags || [])];
@@ -133,7 +58,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
 
   const selectScenario = (
     <Select
-      defaultSelectedKeys={selectedScenario}
+      defaultSelectedKeys={selectedScenariosIds}
       description={intl.formatMessage({
         id: "role.page.display.scenario.description",
         defaultMessage:
@@ -152,12 +77,13 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       size="lg"
       variant="underlined"
       onChange={(event) => {
-        setSelectedScenario(event.target.value.split(","));
+        setSelectedScenariosIds(event.target.value.split(",").map(Number));
       }}
     >
-      {scenarios.map((scenario) => (
-        <SelectItem key={scenario} value={scenario}>
-          {scenario}
+      {possibleScenarios.map((scenario) => (
+        // @ts-ignore
+        <SelectItem key={scenario.id} value={scenario.name}>
+          {scenario.name}
         </SelectItem>
       ))}
     </Select>
@@ -194,7 +120,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
     />
   );
 
-  const pageTitle = (
+  const titleElement = (
     <div className="w-full flex justify-center">
       <p className="text-3xl">
         {isNewRole ? (
@@ -209,65 +135,8 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       </p>
     </div>
   );
-  const attributesElement = (
-    <div className="w-full sm:w-1/2 min-h-full border-1 p-3 space-y-3">
-      <p className="text-xl font-bold">
-        <FormattedMessage
-          defaultMessage="Attributes:"
-          id="role.display.attributes"
-        />
-      </p>
-      {attributes.length === 0 ? (
-        <div className="w-full h-1/5 text-xl flex justify-center items-center">
-          <p>
-            <FormattedMessage
-              defaultMessage="No attributes"
-              id="role.display.noAttributes"
-            />
-          </p>
-        </div>
-      ) : (
-        attributes.map((attribute, index) => (
-          <div
-            key={attribute.id}
-            className="w-full flex flex-row space-x-3 items-baseline"
-          >
-            <AttributeDisplay
-              attribute={attribute}
-              handleAttributeChange={handleAttributeChange}
-              index={index}
-              isBeingEdited={isBeingEdited || isNewRole}
-            />
-            {(isBeingEdited || isNewRole) && (
-              <Button
-                className="w-1/4"
-                color="danger"
-                size="sm"
-                onClick={() => handleAttributeRemoved(index)}
-              >
-                <FormattedMessage
-                  defaultMessage="Remove"
-                  id="role.display.remove"
-                />
-              </Button>
-            )}
-          </div>
-        ))
-      )}
-      {(isBeingEdited || isNewRole) && (
-        <div className="w-full flex justify-center">
-          <Button color="success" size="md" onClick={handleAddAttribute}>
-            <FormattedMessage
-              defaultMessage="Add attribute"
-              id="role.display.addAttribute"
-            />
-          </Button>
-        </div>
-      )}
-    </div>
-  );
   const tagsElement = (
-    <div className="w-full sm:w-1/2 min-h-full border-1 p-3 space-y-3">
+    <div className="w-full min-h-full border-1 p-3 space-y-3">
       <p className="text-xl font-bold">
         <FormattedMessage
           defaultMessage="Character's tags:"
@@ -441,9 +310,8 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
   );
 
   return (
-    <div className="sm:w-3/4 w-full space-y-10 border-1 p-3">
-      {pageTitle}
-
+    <div className="sm:w-4/5 w-full space-y-10 border-1 p-3">
+      {titleElement}
       <div className="space-y-3">
         <div className="w-full flex sm:flex-row sm:space-x-3 sm:space-y-0 flex-col space-x-0 space-y-3 align-bottom">
           {roleName}
@@ -454,7 +322,6 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       </div>
 
       <div className="w-full flex flex-col space-y-3 space-x-0 sm:flex-row sm:space-x-3 sm:space-y-0">
-        {attributesElement}
         {tagsElement}
       </div>
 

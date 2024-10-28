@@ -5,13 +5,19 @@ import { Autocomplete, AutocompleteItem, Chip } from "@nextui-org/react";
 import { Check, X } from "lucide-react";
 
 const MultiselectSearch = ({
+  isDisabled = false,
   array,
   selectLabel,
+  initialSelectedItems,
 }: {
   array: string[];
   selectLabel: string;
+  isDisabled?: boolean;
+  initialSelectedItems?: string[];
 }) => {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<string[]>(
+    initialSelectedItems || [],
+  );
 
   const handleSelect = (item: string) => {
     if (!selectedItems.includes(item)) {
@@ -29,6 +35,7 @@ const MultiselectSearch = ({
     <div>
       <Autocomplete
         className="w-full"
+        isDisabled={isDisabled}
         label={selectLabel}
         selectedKey={""}
         variant="underlined"
@@ -61,6 +68,7 @@ const MultiselectSearch = ({
                 onClick={() => handleDeleteSelection(item)}
               />
             }
+            isDisabled={isDisabled}
           >
             {item}
           </Chip>
