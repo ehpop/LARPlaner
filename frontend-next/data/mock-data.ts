@@ -49,7 +49,10 @@ export const exampleRole: IRole = {
   description: "A strong and brave warrior.",
   imageUrl:
     "https://media.mythopedia.com/6cugv2Onrb7n1IDYjJBTmD/e309806f7646daef4b8abb7b0fc19dcc/wizard-name-generator.jpg?w=1280&h=720&fit=crop&crop=top2",
-  tags: ["Brave", "Impulsive"],
+  tags: [
+    { key: "brave", name: "Brave" },
+    { key: "strong", name: "Strong" },
+  ] as ITag[],
 };
 
 export const emptyRole: IRole = {

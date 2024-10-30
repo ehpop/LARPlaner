@@ -10,7 +10,7 @@ export type IRole = {
   name: string;
   description: string;
   imageUrl: string;
-  tags: string[];
+  tags: ITag[];
 };
 export type IRoleList = IRole[];
 
