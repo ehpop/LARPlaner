@@ -19,7 +19,15 @@ import AutocompleteWithChips from "@/components/autocomplete-with-chips";
 import { emptyScenarioItem, possibleTags } from "@/data/mock-data";
 import { IScenarioItem, IScenarioItemList } from "@/types";
 
-const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
+const QRModal = ({
+  isOpen,
+  onOpenChange,
+  itemName,
+}: {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  itemName: string;
+}) => {
   const intl = useIntl();
 
   return (
@@ -52,11 +60,11 @@ const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
-              {selectedItem}
+              {itemName}
             </ModalHeader>
             <ModalBody className="dark:bg-white">
               <div className="w-full flex justify-center">
-                <QRCode value={selectedItem} />
+                <QRCode value={itemName} />
               </div>
             </ModalBody>
             <ModalFooter>
@@ -75,12 +83,12 @@ const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
 };
 
 const ItemForm = ({
-  item,
+  initialItem,
   removeItem,
   index,
   isBeingEdited,
 }: {
-  item: IScenarioItem;
+  initialItem: IScenarioItem;
   removeItem: (index: number) => void;
   index: number;
   isBeingEdited: boolean;
@@ -89,9 +97,16 @@ const ItemForm = ({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const [showItem, setShowItem] = useState(true);
-  //TODO REPLACE with JSON editing
-  const [itemsName, setItemsName] = React.useState(item.name);
+  const [item, setItem] = useState(initialItem);
   const [selectedItem, setSelectedItem] = React.useState("");
+  const [touched, setTouched] = useState({
+    name: false,
+    description: false,
+  });
+
+  const handleTouched = (key: keyof typeof touched) => {
+    setTouched({ ...touched, [key]: true });
+  };
 
   const onOpenModal = (item: string) => {
     setSelectedItem(item);
@@ -100,9 +115,15 @@ const ItemForm = ({
 
   const itemNameElement = (
     <Input
+      isRequired
       className="w-1/2"
       defaultValue={item.name}
+      errorMessage={intl.formatMessage({
+        id: "scenarios.new.page.itemName.error",
+        defaultMessage: "Name is required",
+      })}
       isDisabled={!isBeingEdited}
+      isInvalid={touched.name && item.name === ""}
       label={intl.formatMessage({
         id: "scenarios.new.page.itemName",
         defaultMessage: "Name",
@@ -114,22 +135,23 @@ const ItemForm = ({
       size="sm"
       type="text"
       variant="underlined"
-      onChange={(e) => setItemsName(e.target.value)}
+      onChange={(e) => {
+        setItem({ ...item, name: e.target.value });
+        handleTouched("name");
+      }}
     />
   );
+
   const itemActionButtons = (
     <div className="flex flex-row lg:space-x-2 space-x-1">
       <Button
         color="primary"
-        isDisabled={itemsName === ""}
+        isDisabled={item.name === ""}
         size="sm"
         variant="bordered"
-        onPress={() => onOpenModal(itemsName)}
+        onPress={() => onOpenModal(item.name)}
       >
-        {intl.formatMessage({
-          id: "item.qr",
-          defaultMessage: "QR Code",
-        })}
+        <FormattedMessage defaultMessage="QR Code" id="item.qr" />
       </Button>
       <Button
         size="sm"
@@ -154,11 +176,18 @@ const ItemForm = ({
       )}
     </div>
   );
+
   const itemDescription = (
     <Textarea
+      isRequired
       className="w-full"
       defaultValue={item.description}
+      errorMessage={intl.formatMessage({
+        id: "scenarios.new.page.description.error",
+        defaultMessage: "Description is required",
+      })}
       isDisabled={!isBeingEdited}
+      isInvalid={touched.description && item.description === ""}
       label={intl.formatMessage({
         id: "scenarios.new.page.itemDescription",
         defaultMessage: "Description",
@@ -170,6 +199,10 @@ const ItemForm = ({
       size="sm"
       type="text"
       variant="underlined"
+      onChange={(e) => {
+        setItem({ ...item, description: e.target.value });
+        handleTouched("description");
+      }}
     />
   );
   const itemRequiredTags = (
@@ -206,7 +239,7 @@ const ItemForm = ({
       </div>
       <QRModal
         isOpen={isOpen}
-        selectedItem={selectedItem}
+        itemName={selectedItem}
         onOpenChange={onOpenChange}
       />
     </div>
@@ -243,8 +276,8 @@ const ScenarioItemsForm = ({
         <ItemForm
           key={`${item}-${index}`}
           index={index}
+          initialItem={item}
           isBeingEdited={isBeingEdited || false}
-          item={item}
           removeItem={removeItem}
         />
       ))}

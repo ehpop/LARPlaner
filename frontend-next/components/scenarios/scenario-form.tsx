@@ -15,11 +15,22 @@ import { ButtonPanel } from "@/components/buttons/button-pannel";
 export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
   const intl = useIntl();
   const isNewScenario = !scenarioId;
-  const scenario = isNewScenario ? emptyScenario : exampleScenario;
+  const [scenario, setScenario] = useState(
+    isNewScenario ? emptyScenario : exampleScenario,
+  );
 
   const [isBeingEdited, setIsBeingEdited] = useState(isNewScenario);
   const [showItemsSection, setShowItemsSection] = useState(true);
   const [showRolesSection, setShowRolesSection] = useState(true);
+  const [touched, setTouched] = useState({
+    name: false,
+    description: false,
+  });
+
+  const handleTouched = (key: keyof typeof touched) => {
+    setTouched({ ...touched, [key]: true });
+  };
+
   const {
     onOpen: onOpenDelete,
     isOpen: isOpenDelete,
@@ -33,7 +44,15 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
 
   const nameElement = (
     <Input
+      isRequired
       className="w-full"
+      defaultValue={scenario.name}
+      errorMessage={intl.formatMessage({
+        id: "scenarios.new.page.scenarioNameError",
+        defaultMessage: "Scenario name is required",
+      })}
+      isDisabled={!(isBeingEdited || isNewScenario)}
+      isInvalid={touched.name && !scenario.name}
       label={intl.formatMessage({
         id: "scenarios.new.page.scenarioName",
         defaultMessage: "Name",
@@ -43,13 +62,23 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
         defaultMessage: "Insert scenario name",
       })}
       size="lg"
-      value={scenario.name}
       variant="underlined"
+      onChange={(e) => {
+        setScenario({ ...scenario, name: e.target.value });
+        handleTouched("name");
+      }}
     />
   );
   const descriptionElement = (
     <Textarea
+      isRequired
       className="w-full"
+      defaultValue={scenario.description}
+      errorMessage={intl.formatMessage({
+        id: "scenarios.new.page.scenarioDescriptionError",
+        defaultMessage: "Scenario description is required",
+      })}
+      isDisabled={!(isBeingEdited || isNewScenario)}
       label={intl.formatMessage({
         id: "scenarios.new.page.scenarioDescription",
         defaultMessage: "Description",
@@ -59,8 +88,11 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
         defaultMessage: "Insert scenario description",
       })}
       size="lg"
-      value={scenario.description}
       variant="underlined"
+      onChange={(e) => {
+        setScenario({ ...scenario, description: e.target.value });
+        handleTouched("description");
+      }}
     />
   );
   const rolesElement = (
@@ -81,6 +113,7 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
         </Button>
       </div>
       <div className={showRolesSection ? "" : "hidden"}>
+        {/*TODO: Pass setScenario() to form so it is able to change scenario*/}
         <ScenarioRolesForm
           availableRoles={possibleRoles}
           isBeingEdited={isBeingEdited}
@@ -107,6 +140,7 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
         </Button>
       </div>
       <div className={showItemsSection ? "" : "hidden"}>
+        {/*TODO: Pass setScenario() to form so it is able to change scenario*/}
         <ScenarioItemsForm
           initialItems={scenario.items}
           isBeingEdited={isBeingEdited}

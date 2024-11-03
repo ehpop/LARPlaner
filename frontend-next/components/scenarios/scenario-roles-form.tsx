@@ -4,7 +4,7 @@ import { FormattedMessage } from "react-intl";
 
 import { RoleItem } from "@/components/scenarios/role-item-display";
 import { IRoleList, IScenarioRole, IScenarioRoleList } from "@/types";
-import { exampleScenarioRole } from "@/data/mock-data";
+import { emptyScenarioRole } from "@/data/mock-data";
 
 export const ScenarioRolesForm = ({
   availableRoles,
@@ -18,11 +18,11 @@ export const ScenarioRolesForm = ({
   const [roleList, setRoleList] = useState<IScenarioRoleList>(
     rolesPresentInScenario && rolesPresentInScenario.length > 0
       ? rolesPresentInScenario
-      : [{ ...exampleScenarioRole, id: 1 }],
+      : [emptyScenarioRole],
   );
 
   const addRole = () => {
-    setRoleList([...roleList, exampleScenarioRole]);
+    setRoleList([...roleList, emptyScenarioRole]);
   };
 
   const handleRoleChange = (index: number, value: IScenarioRole) => {
@@ -42,7 +42,7 @@ export const ScenarioRolesForm = ({
       <div className="w-full flex flex-col space-y-3">
         {roleList.map((role, index) => (
           <RoleItem
-            key={`${role.name}-${index}`}
+            key={`${role.id}-${index}`}
             availableRoles={availableRoles}
             handleRoleChange={handleRoleChange}
             handleRoleRemove={handleRoleRemove}
