@@ -67,8 +67,7 @@ export const exampleScenarioRole: IScenarioRole = {
   id: 1,
   scenarioId: 1,
   roleId: 1,
-  name: "Warrior",
-  description: "A strong and brave warrior.",
+  scenarioDescription: "A strong and brave warrior.",
   gmNotes: "Notes for the game master.",
 };
 
@@ -76,28 +75,26 @@ export const emptyScenarioRole: IScenarioRole = {
   id: null,
   scenarioId: null,
   roleId: null,
-  name: "",
-  description: "",
+  scenarioDescription: "",
   gmNotes: "",
 };
 
 export const possibleScenarioRoles: IScenarioRoleList = [
-  { ...exampleScenarioRole, id: 1, scenarioId: 1, roleId: 1, name: "Warrior" },
-  { ...exampleScenarioRole, id: 2, scenarioId: 1, roleId: 2, name: "Mage" },
-  { ...exampleScenarioRole, id: 3, scenarioId: 1, roleId: 3, name: "Rogue" },
-  { ...exampleScenarioRole, id: 4, scenarioId: 1, roleId: 4, name: "Cleric" },
-  { ...exampleScenarioRole, id: 5, scenarioId: 1, roleId: 5, name: "Bard" },
-  { ...exampleScenarioRole, id: 6, scenarioId: 1, roleId: 6, name: "Druid" },
+  { ...exampleScenarioRole, id: 1, scenarioId: 1, roleId: 1 },
+  { ...exampleScenarioRole, id: 2, scenarioId: 1, roleId: 2 },
+  { ...exampleScenarioRole, id: 3, scenarioId: 1, roleId: 3 },
+  { ...exampleScenarioRole, id: 4, scenarioId: 1, roleId: 4 },
+  { ...exampleScenarioRole, id: 5, scenarioId: 1, roleId: 5 },
+  { ...exampleScenarioRole, id: 6, scenarioId: 1, roleId: 6 },
   {
     ...exampleScenarioRole,
     id: 7,
     scenarioId: 1,
     roleId: 7,
-    name: "Barbarian",
   },
-  { ...exampleScenarioRole, id: 8, scenarioId: 1, roleId: 8, name: "Monk" },
-  { ...exampleScenarioRole, id: 9, scenarioId: 1, roleId: 9, name: "Paladin" },
-  { ...exampleScenarioRole, id: 10, scenarioId: 1, roleId: 10, name: "Ranger" },
+  { ...exampleScenarioRole, id: 8, scenarioId: 1, roleId: 8 },
+  { ...exampleScenarioRole, id: 9, scenarioId: 1, roleId: 9 },
+  { ...exampleScenarioRole, id: 10, scenarioId: 1, roleId: 10 },
 ];
 
 export const possibleRoles: IRoleList = [
@@ -154,16 +151,14 @@ export const exampleScenario: IScenario = {
       id: 1,
       scenarioId: 1,
       roleId: 1,
-      name: "Mag",
-      description: "Potężny czarodziej, który włada magią.",
+      scenarioDescription: "Potężny czarodziej, który włada magią.",
       gmNotes: "Notatki dla mistrza gry.",
     },
     {
       id: 2,
       scenarioId: 1,
       roleId: 2,
-      name: "Wojownik",
-      description: "Silny i odważny wojownik.",
+      scenarioDescription: "Silny i odważny wojownik.",
       gmNotes: "Notatki dla mistrza gry.",
     },
   ] as IScenarioRoleList,
@@ -192,15 +187,9 @@ export const possibleScenarioItems: IScenarioItemList = [
 
 export const emptyEvent: IEvent = {
   id: null,
-  title: "",
+  name: "",
   img: "",
-  date: now(getLocalTimeZone()),
-  location: {
-    name: "",
-    address: "",
-    latitude: 0,
-    longitude: 0,
-  },
+  date: now(getLocalTimeZone()).add({ days: 1 }),
   description: "",
   scenarioId: null,
   assignedRoles: [],
@@ -208,15 +197,9 @@ export const emptyEvent: IEvent = {
 
 export const exampleEvent: IEvent = {
   id: 1,
-  title: `Wydarzenie #1`,
-  date: now(getLocalTimeZone()),
+  name: `Wydarzenie #1`,
+  date: now(getLocalTimeZone()).add({ days: 1 }),
   img: "/images/event-1.jpg",
-  location: {
-    name: "Gmach Główny Politechniki Warszawskiej",
-    address: "plac Politechniki 1, 00-661 Warszawa",
-    latitude: 52.220738829777886,
-    longitude: 21.009989954884936,
-  },
   description: "Przykładowy opis wydarzenia.",
   scenarioId: 1,
   assignedRoles: [
@@ -231,36 +214,37 @@ export const exampleEvent: IEvent = {
   ],
 };
 
-export const getEvent = (id: number): IEvent => {
-  return {
-    ...exampleEvent,
-    id: id,
-    title: `Wydarzenie #${id}`,
-    img: `/images/event-${id}.jpg`,
-  };
-};
-
-export const getScenario = (id: number): IScenario => {
-  return {
-    ...exampleScenario,
-    id: id,
-    name: `Scenario ${id}`,
-  };
-};
-
-export const getRole = (id: number): IRole => {
-  return {
-    ...exampleRole,
-    id: id,
-    name: `Role ${id}`,
-  };
-};
-
-export const eventsList: IEventList = Array.from({ length: 20 }, (_, i) =>
-  getEvent(i + 1),
-);
+export const eventsList: IEventList = Array.from({ length: 20 }, (_, i) => ({
+  ...exampleEvent,
+  id: i + 1,
+  name: `Wydarzenie #${i + 1}`,
+  img: `/images/event-${i + 1}.jpg`,
+}));
 
 export const possibleScenarios: IScenarioList = Array.from(
   { length: 5 },
-  (_, i) => getScenario(i + 1),
+  (_, i) => ({
+    ...exampleScenario,
+    id: i + 1,
+    name: `Scenario #${i + 1}`,
+    description: `Description of scenario #${i + 1}`,
+    roles: possibleScenarioRoles
+      .slice((i - 1) * 2, (i - 1) * 2 + 2)
+      .map((role) => ({
+        ...role,
+        scenarioId: i + 1,
+      })),
+  }),
 );
+
+export const getEvent = (id: number): IEvent => {
+  return eventsList[id % eventsList.length];
+};
+
+export const getScenario = (id: number): IScenario => {
+  return possibleScenarios[id % possibleScenarios.length];
+};
+
+export const getRole = (id: number): IRole => {
+  return possibleRoles[id % possibleRoles.length];
+};

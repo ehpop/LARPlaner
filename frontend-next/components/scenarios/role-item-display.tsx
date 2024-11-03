@@ -33,7 +33,7 @@ export const RoleItem = ({
 
   const roleDescription = (
     <Textarea
-      defaultValue={role.description}
+      defaultValue={role.scenarioDescription}
       description={intl.formatMessage({
         id: "role.display.description.description",
         defaultMessage:

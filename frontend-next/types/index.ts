@@ -25,15 +25,9 @@ export type IScenarioList = IScenario[];
 
 export type IEvent = {
   id: number | null;
-  title: string;
+  name: string;
   img: string;
   date: ZonedDateTime;
-  location: {
-    name: string;
-    address: string;
-    latitude: number;
-    longitude: number;
-  };
   description: string;
   scenarioId: number | null;
   assignedRoles: {
@@ -47,8 +41,7 @@ export type IScenarioRole = {
   id: number | null;
   roleId: number | null;
   scenarioId: number | null;
-  name: string;
-  description: string;
+  scenarioDescription: string;
   gmNotes: string;
 };
 export type IScenarioRoleList = IScenarioRole[];

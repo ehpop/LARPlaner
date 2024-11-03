@@ -13,6 +13,14 @@ import {
 } from "@nextui-org/react";
 import React, { Key, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
+import {
+  fromDate,
+  getLocalTimeZone,
+  today,
+  ZonedDateTime,
+} from "@internationalized/date";
+import { useRouter } from "next/navigation";
+import { Link } from "@nextui-org/link";
 
 import {
   emptyEvent,
@@ -24,26 +32,78 @@ import {
 } from "@/data/mock-data";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
+import { IEvent } from "@/types";
 
 export default function EventForm({ eventId }: { eventId?: number }) {
   const intl = useIntl();
+  const router = useRouter();
 
   const isNewEvent = !eventId;
   const [event, setEvent] = useState(
     !isNewEvent ? getEvent(eventId) : emptyEvent,
   );
-
   const [isBeingEdited, setIsBeingEdited] = useState(false);
-  const {
-    onOpen: onOpenDelete,
-    isOpen: isOpenDelete,
-    onOpenChange: onOpenChangeDelete,
-  } = useDisclosure();
-  const {
-    onOpen: onOpenCancel,
-    isOpen: isOpenCancel,
-    onOpenChange: onOpenChangeCancel,
-  } = useDisclosure();
+
+  const mapAllAssignedRolesToUntouched = (scenarioId: number | null) => {
+    if (scenarioId === null) {
+      return [];
+    }
+    const scenario = getScenario(scenarioId);
+    const scenarioRoles = scenario.roles;
+
+    return scenarioRoles.map((role) => ({
+      scenarioRoleId: role.id,
+      touched: false,
+    }));
+  };
+
+  const [touched, setTouched] = useState({
+    name: false,
+    description: false,
+    scenarioId: false,
+    date: false,
+    assignedRoles: mapAllAssignedRolesToUntouched(event.scenarioId),
+  });
+
+  const handleTouched = (key: keyof typeof touched) => {
+    if (touched[key]) {
+      return;
+    }
+    setTouched({ ...touched, [key]: true });
+  };
+
+  const isInvalidProperty = (name: keyof typeof touched) => {
+    if (!touched[name]) {
+      return false;
+    }
+
+    return (
+      event[name as keyof IEvent] === undefined ||
+      event[name as keyof IEvent] === "" ||
+      event[name as keyof IEvent] === null
+    );
+  };
+
+  const isInvalidEmailForRoleId = (scenarioRoleId: number) => {
+    const touchedEntry = touched.assignedRoles.find(
+      (assignedRole) => assignedRole.scenarioRoleId === scenarioRoleId,
+    );
+
+    if (touchedEntry && !touchedEntry.touched) {
+      return false;
+    }
+
+    const assignedRoleInEvent = event.assignedRoles.find(
+      (assignedRole) => assignedRole.scenarioRoleId === scenarioRoleId,
+    );
+
+    return (
+      assignedRoleInEvent === undefined ||
+      assignedRoleInEvent.assignedEmail === "" ||
+      assignedRoleInEvent.assignedEmail === undefined ||
+      assignedRoleInEvent.assignedEmail === null
+    );
+  };
 
   const assignNewRoleOrUpdateOldOne = (
     assignedRoles: any,
@@ -58,7 +118,23 @@ export default function EventForm({ eventId }: { eventId?: number }) {
 
     return newAssignedRoles;
   };
+
   const handleRoleAssignment = (roleId: number, key: Key | null) => {
+    const assignedRole = touched.assignedRoles.find(
+      (assignedRole) => assignedRole.scenarioRoleId === roleId,
+    );
+
+    if (assignedRole !== undefined) {
+      setTouched({
+        ...touched,
+        assignedRoles: touched.assignedRoles.map((role) =>
+          role.scenarioRoleId === assignedRole.scenarioRoleId
+            ? { ...role, touched: true }
+            : role,
+        ),
+      });
+    }
+
     if (key !== null) {
       setEvent({
         ...event,
@@ -77,6 +153,17 @@ export default function EventForm({ eventId }: { eventId?: number }) {
       });
     }
   };
+
+  const {
+    onOpen: onOpenDelete,
+    isOpen: isOpenDelete,
+    onOpenChange: onOpenChangeDelete,
+  } = useDisclosure();
+  const {
+    onOpen: onOpenCancel,
+    isOpen: isOpenCancel,
+    onOpenChange: onOpenChangeCancel,
+  } = useDisclosure();
 
   const confirmDelete = (
     <ConfirmActionModal
@@ -118,36 +205,94 @@ export default function EventForm({ eventId }: { eventId?: number }) {
 
   const nameElement = (
     <Input
+      isRequired
       className="w-full"
-      defaultValue={event?.title}
+      defaultValue={event?.name}
+      errorMessage={intl.formatMessage({
+        id: "events.page.display.nameError",
+        defaultMessage: "Name cannot be empty",
+      })}
       isDisabled={!(isNewEvent || isBeingEdited)}
+      isInvalid={isInvalidProperty("name")}
       label={intl.formatMessage({
         id: "events.page.display.name",
         defaultMessage: "Name",
       })}
       size="lg"
       variant="underlined"
+      onChange={(e) => {
+        handleTouched("name");
+
+        setEvent({
+          ...event,
+          name: e.target.value,
+        });
+      }}
     />
   );
+
+  const isInvalidDate = (date: ZonedDateTime | undefined) => {
+    if (!touched.date) {
+      return false;
+    }
+
+    if (
+      date === undefined ||
+      date.hour === undefined ||
+      date.minute === undefined ||
+      date.day === undefined ||
+      date.month === undefined ||
+      date.year === undefined
+    ) {
+      return true;
+    }
+
+    return date.compare(fromDate(new Date(), date.timeZone)) < 0;
+  };
 
   const dateTimeElement = (
     <div className="w-full flex justify-between space-x-3">
       <DatePicker
         className="w-1/2"
         defaultValue={event?.date}
+        errorMessage={intl.formatMessage({
+          id: "events.page.display.dateError",
+          defaultMessage: "Date cannot be empty and must be in the future",
+        })}
         granularity="day"
         isDisabled={!(isNewEvent || isBeingEdited)}
+        isInvalid={isInvalidDate(event?.date)}
         label={intl.formatMessage({
           id: "events.page.display.date",
           defaultMessage: "Date",
         })}
+        minValue={today(getLocalTimeZone())}
         size="lg"
         variant="underlined"
+        onChange={(date) => {
+          handleTouched("date");
+
+          const newDate = event.date.set({
+            year: date.year,
+            month: date.month,
+            day: date.day,
+          });
+
+          setEvent({
+            ...event,
+            date: newDate,
+          });
+        }}
       />
       <Input
         className="w-1/2"
         defaultValue={event?.date.hour + ":" + event?.date.minute}
+        errorMessage={intl.formatMessage({
+          id: "events.page.display.timeError",
+          defaultMessage: "Time cannot be empty and must be in the future",
+        })}
         isDisabled={!(isNewEvent || isBeingEdited)}
+        isInvalid={isInvalidDate(event?.date)}
         label={intl.formatMessage({
           id: "events.page.display.time",
           defaultMessage: "Time",
@@ -155,80 +300,67 @@ export default function EventForm({ eventId }: { eventId?: number }) {
         size="lg"
         type="time"
         variant="underlined"
+        onChange={(e) => {
+          handleTouched("date");
+          const time = e.target.value;
+          const [hour, minute] = !time.match(/^[0-9]{2}:[0-9]{2}$/)
+            ? [0, 0]
+            : time.split(":");
+          const newDate = event.date.set({
+            hour: Number(hour),
+            minute: Number(minute),
+          });
+
+          setEvent({
+            ...event,
+            date: newDate,
+          });
+        }}
       />
     </div>
   );
 
-  const locationElement = (
-    <div className="w-full flex flex-col space-y-3 justify-center border-1 p-3">
-      <p className="text-xl">
-        <FormattedMessage
-          defaultMessage="Location"
-          id="events.page.display.location"
-        />
-      </p>
-      <Input
-        className="w-full"
-        defaultValue={event?.location.name}
-        isDisabled={!(isNewEvent || isBeingEdited)}
-        label={intl.formatMessage({
-          id: "events.page.display.location.name",
-          defaultMessage: "Name of location",
-        })}
-        size="lg"
-        variant="underlined"
-      />
-      <Input
-        className="w-full"
-        defaultValue={event?.location.address}
-        isDisabled={!(isNewEvent || isBeingEdited)}
-        label={intl.formatMessage({
-          id: "events.page.display.location.address",
-          defaultMessage: "Address",
-        })}
-        size="lg"
-        variant="underlined"
-      />
-      <div className="w-full flex justify-center">
-        {event && (
-          <Button
-            color="primary"
-            onPress={() => {
-              window.open(
-                `https://www.google.com/maps/search/?api=1&query=${event.location.name}`,
-              );
-            }}
-          >
-            <FormattedMessage
-              defaultMessage="Open in Google Maps"
-              id="events.page.display.location.openInMaps"
-            />
-          </Button>
-        )}
-      </div>
-    </div>
-  );
   const descriptionElement = (
     <Textarea
+      isRequired
       className="w-full"
       defaultValue={event?.description}
+      errorMessage={intl.formatMessage({
+        id: "events.page.display.descriptionError",
+        defaultMessage: "Description cannot be empty",
+      })}
       isDisabled={!(isNewEvent || isBeingEdited)}
+      isInvalid={isInvalidProperty("description")}
       label={intl.formatMessage({
         id: "events.page.display.description",
         defaultMessage: "Description",
       })}
       size="lg"
       variant="underlined"
+      onChange={(e) => {
+        handleTouched("description");
+
+        setEvent({
+          ...event,
+          description: e.target.value,
+        });
+      }}
     />
   );
 
   const scenarioElement = (
     <div className="w-full flex flex-row items-baseline space-x-3">
       <Select
+        isRequired
         defaultSelectedKeys={
           event?.scenarioId ? [String(event.scenarioId)] : []
         }
+        errorMessage={intl.formatMessage({
+          id: "events.page.display.scenarioError",
+          defaultMessage: "Scenario cannot be empty",
+        })}
         isDisabled={!(isNewEvent || isBeingEdited)}
+        isInvalid={isInvalidProperty("scenarioId")}
         label={intl.formatMessage({
           id: "events.page.display.scenario",
           defaultMessage: "Scenario",
@@ -240,7 +372,19 @@ export default function EventForm({ eventId }: { eventId?: number }) {
         size="lg"
         variant="underlined"
         onChange={(e) => {
-          setEvent({ ...event, scenarioId: Number(e.target.value) });
+          const scenarioId =
+            e.target.value !== "" ? Number(e.target.value) : null;
+
+          setEvent({
+            ...event,
+            scenarioId: scenarioId,
+            assignedRoles: [],
+          });
+          setTouched({
+            ...touched,
+            scenarioId: true,
+            assignedRoles: mapAllAssignedRolesToUntouched(scenarioId),
+          });
         }}
       >
         {possibleScenarios.map((scenario) => (
@@ -249,6 +393,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
       </Select>
       <div className="flex flex-row sm:space-x-3 space-x-1">
         <Button
+          as={Link}
           color="success"
           href={"/admin/scenarios/new"}
           isDisabled={!(isNewEvent || isBeingEdited)}
@@ -258,7 +403,12 @@ export default function EventForm({ eventId }: { eventId?: number }) {
             id="events.page.display.addScenario"
           />
         </Button>
-        <Button color="warning" isDisabled={!(isNewEvent || isBeingEdited)}>
+        <Button
+          as={Link}
+          color="warning"
+          href={`/admin/scenarios/${event.scenarioId}`}
+          isDisabled={!((isNewEvent || isBeingEdited) && event.scenarioId)}
+        >
           <FormattedMessage
             defaultMessage="Edit"
             id="events.page.display.editScenario"
@@ -313,9 +463,10 @@ export default function EventForm({ eventId }: { eventId?: number }) {
       </div>
       <div className="w-full flex flex-col">
         {event.scenarioId ? (
-          getScenario(event?.scenarioId as number)
-            .roles.map((scenarioRole) => getRole(scenarioRole.roleId as number))
-            .map((role) => (
+          getScenario(event?.scenarioId as number).roles.map((scenarioRole) => {
+            const role = getRole((scenarioRole.roleId as number) - 1);
+
+            return (
               <div
                 key={role.id}
                 className="w-full flex flex-row space-x-3 items-baseline"
@@ -338,7 +489,14 @@ export default function EventForm({ eventId }: { eventId?: number }) {
                   disabledKeys={event.assignedRoles.map(
                     (role) => role.assignedEmail,
                   )}
+                  errorMessage={intl.formatMessage({
+                    id: "events.page.display.selectEmail.error",
+                    defaultMessage: "You have to select email from the list",
+                  })}
                   isDisabled={!(isNewEvent || isBeingEdited)}
+                  isInvalid={isInvalidEmailForRoleId(
+                    scenarioRole.roleId as number,
+                  )}
                   label={intl.formatMessage({
                     id: "events.page.display.assignEmail",
                     defaultMessage: "Assign email",
@@ -351,7 +509,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
                     event.assignedRoles
                       .filter(
                         (assignedRole) =>
-                          assignedRole.scenarioRoleId === role.id,
+                          assignedRole.scenarioRoleId === scenarioRole.id,
                       )
                       .map((assignedRole) => assignedRole.assignedEmail)
                       .at(0) || null
@@ -368,7 +526,8 @@ export default function EventForm({ eventId }: { eventId?: number }) {
                   )}
                 </Autocomplete>
               </div>
-            ))
+            );
+          })
         ) : (
           <div className="w-full flex justify-center p-3">
             <p className="text-large">
@@ -386,8 +545,12 @@ export default function EventForm({ eventId }: { eventId?: number }) {
   const titleElement = (
     <div className="w-full flex justify-center">
       <p className="text-3xl" id="view-event-modal">
-        {event ? (
-          event.title
+        {event.id ? (
+          <FormattedMessage
+            defaultMessage='Event "{eventName}"'
+            id="event.form.title.edit"
+            values={{ eventName: event.name }}
+          />
         ) : (
           <FormattedMessage
             defaultMessage="Add Event"
@@ -403,7 +566,6 @@ export default function EventForm({ eventId }: { eventId?: number }) {
       {titleElement}
       {nameElement}
       {dateTimeElement}
-      {locationElement}
       {descriptionElement}
       {scenarioElement}
       {assignRolesElement}

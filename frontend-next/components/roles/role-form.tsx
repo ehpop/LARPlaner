@@ -12,7 +12,7 @@ import { uuidv4 } from "@firebase/util";
 import { emptyRole, exampleRole as exampleRole } from "@/data/mock-data";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
-import { ITag } from "@/types";
+import { IRole, ITag } from "@/types";
 
 export default function RoleForm({ roleId }: { roleId?: string }) {
   const intl = useIntl();
@@ -24,6 +24,36 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
   const [role, setRole] = useState(initialRole);
   const [imageUrl, setImageUrl] = useState(initialRole.imageUrl);
   const [tags, setTags] = useState(initialRole.tags);
+
+  const mapAllTags = () => {
+    return role.tags.map((tag) => ({ tagId: tag.key, touched: false }));
+  };
+
+  const [touched, setTouched] = useState({
+    name: false,
+    description: false,
+    tags: mapAllTags(),
+  });
+
+  const handleTouched = (key: keyof typeof touched) => {
+    if (touched[key]) {
+      return;
+    }
+    setTouched({ ...touched, [key]: true });
+  };
+
+  const isInvalidProperty = (name: keyof typeof touched) => {
+    if (!touched[name]) {
+      return false;
+    }
+
+    return (
+      role[name as keyof IRole] === undefined ||
+      role[name as keyof IRole] === "" ||
+      role[name as keyof IRole] === null
+    );
+  };
+
   const {
     onOpen: onOpenDelete,
     isOpen: isOpenDelete,
@@ -40,15 +70,48 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
 
     updatedTags[tagIndex] = newTag;
     setTags(updatedTags);
+    setTouched({
+      ...touched,
+      tags: touched.tags.map((tag) =>
+        tag.tagId === newTag.key ? { ...tag, touched: true } : tag,
+      ),
+    });
   };
 
-  const handleTagRemoved = (tagIndex: number) => {
+  const handleTagRemoved = (tagIndex: number, tagKey: string) => {
     setTags(tags.filter((_, index) => index !== tagIndex));
+    setTouched({
+      ...touched,
+      tags: touched.tags.filter((tag) => tag.tagId !== tagKey),
+    });
+  };
+
+  const handleAddTag = () => {
+    if (tags[tags?.length - 1]?.name === "") {
+      return;
+    }
+    const newTag = { key: uuidv4(), name: "" };
+
+    setTags([...(tags || []), newTag]);
+    setTouched({
+      ...touched,
+      tags: touched.tags.concat({ tagId: newTag.key, touched: false }),
+    });
+  };
+
+  const isInvalidTag = (tag: ITag) => {
+    const touchedTag = touched.tags.find((t) => t.tagId === tag.key);
+
+    if (touchedTag && !touchedTag.touched) {
+      return false;
+    }
+
+    return tag.name === "" || tag.name === undefined || tag.name === null;
   };
 
   const handleSave = () => {
     setRole({ ...role, tags: tags?.filter((tag) => tag.name !== "") });
-    alert(String(role));
+    // Save role
   };
 
   const roleDescription = (
@@ -64,7 +127,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
         defaultMessage: "Description cannot be empty",
       })}
       isDisabled={!(isBeingEdited || isNewRole)}
-      isInvalid={role.description === ""}
+      isInvalid={isInvalidProperty("description")}
       label={intl.formatMessage({
         id: "events.id.page.description.label",
         defaultMessage: "Description",
@@ -75,7 +138,10 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       })}
       size="lg"
       variant="underlined"
-      onChange={(e) => setRole({ ...role, description: e.target.value })}
+      onChange={(e) => {
+        setRole({ ...role, description: e.target.value });
+        handleTouched("description");
+      }}
     />
   );
   const roleName = (
@@ -87,7 +153,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
         defaultMessage: "Role name cannot be empty",
       })}
       isDisabled={!(isBeingEdited || isNewRole)}
-      isInvalid={role.name === ""}
+      isInvalid={isInvalidProperty("name")}
       label={intl.formatMessage({
         id: "role.display.name",
         defaultMessage: "Name",
@@ -98,7 +164,10 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       })}
       size="lg"
       variant="underlined"
-      onChange={(e) => setRole({ ...role, name: e.target.value })}
+      onChange={(e) => {
+        setRole({ ...role, name: e.target.value });
+        handleTouched("name");
+      }}
     />
   );
 
@@ -117,6 +186,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       </p>
     </div>
   );
+
   const tagsElement = (
     <div className="w-full min-h-full border-1 p-3 space-y-3">
       <p className="text-xl font-bold">
@@ -149,7 +219,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
                 id: "role.display.tag.name.error",
               })}
               isDisabled={!(isBeingEdited || isNewRole)}
-              isInvalid={tag.name === ""}
+              isInvalid={isInvalidTag(tag)}
               label={intl.formatMessage({
                 defaultMessage: "Tag's Name",
                 id: "role.display.tag.name",
@@ -173,7 +243,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
                 color="danger"
                 size="sm"
                 onClick={(_event) => {
-                  handleTagRemoved(index);
+                  handleTagRemoved(index, tag.key);
                 }}
               >
                 <FormattedMessage
@@ -187,14 +257,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       )}
       {(isBeingEdited || isNewRole) && (
         <div className="w-full flex justify-center">
-          <Button
-            color="success"
-            size="md"
-            onPress={() => {
-              if (tags[tags?.length - 1]?.name === "") return;
-              setTags([...(tags || []), { key: uuidv4(), name: "" }]);
-            }}
-          >
+          <Button color="success" size="md" onPress={handleAddTag}>
             <FormattedMessage
               defaultMessage="Add tag"
               id="role.display.addTag"
@@ -254,7 +317,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       prompt={intl.formatMessage({
         id: "roles.id.page.delete",
         defaultMessage:
-          "Are you sure you want to delete this role? This action will not be reversible.",
+          "Are you sure you want to delete this role? Role will be deleted from all scenarios. This action will not be reversible.",
       })}
       title={intl.formatMessage({
         id: "roles.id.page.deleteTitle",
@@ -295,6 +358,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
         }}
         onEditClicked={() => setIsBeingEdited(true)}
         onSaveClicked={() => {
+          handleSave();
           setIsBeingEdited(false);
         }}
       />
