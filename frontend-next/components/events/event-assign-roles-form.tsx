@@ -1,5 +1,5 @@
 import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { Key, useState } from "react";
 
 import { IEvent, IScenarioRole } from "@/types";
@@ -176,7 +176,16 @@ const EventAssignRolesForm = ({
     );
   };
 
-  return (
+  return scenario.roles.length === 0 ? (
+    <div className="w-full flex flex-row space-x-3 items-baseline">
+      <p>
+        <FormattedMessage
+          defaultMessage="No roles"
+          id="events.page.display.noRoles"
+        />
+      </p>
+    </div>
+  ) : (
     <div className="w-full flex flex-col">
       {scenario.roles.map((scenarioRole) => (
         <RoleAssignmentEntry

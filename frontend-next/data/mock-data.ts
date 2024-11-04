@@ -203,11 +203,11 @@ export const exampleEvent: IEvent = {
   scenarioId: 1,
   assignedRoles: [
     {
-      scenarioRoleId: possibleScenarioRoles[0].id,
+      scenarioRoleId: possibleScenarioRoles[0].roleId,
       assignedEmail: userEmails[0].value,
     },
     {
-      scenarioRoleId: possibleScenarioRoles[1].id,
+      scenarioRoleId: possibleScenarioRoles[1].roleId,
       assignedEmail: userEmails[1].value,
     },
   ],
