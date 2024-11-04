@@ -18,8 +18,6 @@ export const ScenarioRolesForm = ({
   scenario: IScenario;
   setScenario: (scenario: IScenario) => void;
 }) => {
-  // const [roleList, setRoleList] = useState(scenario.roles);
-
   const addRole = () => {
     const newScenarioRoles = [
       ...scenario.roles,
@@ -31,7 +29,6 @@ export const ScenarioRolesForm = ({
     ];
 
     setScenario({ ...scenario, roles: newScenarioRoles });
-    // setRoleList(newScenarioRoles);
   };
 
   const handleRoleChange = (index: number, newScenarioRole: IScenarioRole) => {
@@ -39,7 +36,6 @@ export const ScenarioRolesForm = ({
 
     newScenarioRoles[index] = newScenarioRole;
     setScenario({ ...scenario, roles: newScenarioRoles });
-    // setRoleList(newScenarioRoles);
   };
 
   const handleRoleRemove = (index: number) => {
@@ -50,17 +46,14 @@ export const ScenarioRolesForm = ({
       ...scenario,
       roles: newScenarioRoles,
     });
-    // setRoleList(newScenarioRoles);
   };
-
-  console.log(scenario.roles);
 
   return (
     <div className="w-full flex flex-col space-y-3">
       <div className="w-full flex flex-col space-y-3">
         {scenario.roles.map((role, index) => (
           <RoleItem
-            key={`${role.id}`}
+            key={role.id}
             availableRoles={availableRoles}
             handleRoleChange={handleRoleChange}
             handleRoleRemove={handleRoleRemove}
