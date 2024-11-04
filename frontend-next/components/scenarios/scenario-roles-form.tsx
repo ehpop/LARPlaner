@@ -51,17 +51,28 @@ export const ScenarioRolesForm = ({
   return (
     <div className="w-full flex flex-col space-y-3">
       <div className="w-full flex flex-col space-y-3">
-        {scenario.roles.map((role, index) => (
-          <RoleItem
-            key={role.id}
-            availableRoles={availableRoles}
-            handleRoleChange={handleRoleChange}
-            handleRoleRemove={handleRoleRemove}
-            index={index}
-            initialRole={role}
-            isBeingEdited={isBeingEdited || false}
-          />
-        ))}
+        {scenario.roles.length === 0 ? (
+          <div className="w-full flex justify-center">
+            <p>
+              <FormattedMessage
+                defaultMessage={"No roles in scenario"}
+                id={"scenarios.id.page.noRolesInScenario"}
+              />
+            </p>
+          </div>
+        ) : (
+          scenario.roles.map((role, index) => (
+            <RoleItem
+              key={role.id}
+              availableRoles={availableRoles}
+              handleRoleChange={handleRoleChange}
+              handleRoleRemove={handleRoleRemove}
+              index={index}
+              initialRole={role}
+              isBeingEdited={isBeingEdited || false}
+            />
+          ))
+        )}
       </div>
       {isBeingEdited && (
         <div className="w-full flex justify-center">

@@ -291,16 +291,27 @@ const ScenarioItemsForm = ({
 
   return (
     <div className="w-full space-y-10 lg:space-y-3 overflow-y-auto">
-      {scenario.items.map((item, index) => (
-        <ItemForm
-          key={item.id}
-          handleItemChange={handleItemChange}
-          handleItemRemove={handleItemRemove}
-          index={index}
-          isBeingEdited={isBeingEdited || false}
-          item={item}
-        />
-      ))}
+      {scenario.items.length === 0 ? (
+        <div className="w-full flex justify-center">
+          <p>
+            <FormattedMessage
+              defaultMessage={"No items in scenario"}
+              id={"scenarios.id.page.noItemsInScenario"}
+            />
+          </p>
+        </div>
+      ) : (
+        scenario.items.map((item, index) => (
+          <ItemForm
+            key={item.id}
+            handleItemChange={handleItemChange}
+            handleItemRemove={handleItemRemove}
+            index={index}
+            isBeingEdited={isBeingEdited || false}
+            item={item}
+          />
+        ))
+      )}
       {isBeingEdited && (
         <div className="w-full flex justify-center">
           <Button color="success" variant="solid" onPress={() => addItem()}>
