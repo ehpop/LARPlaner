@@ -110,6 +110,27 @@ export const possibleScenarioRoles: IScenarioRoleList = [
   { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 10 },
 ];
 
+export const possibleScenarioItems: IScenarioItemList = [
+  {
+    id: uuidv4(),
+    scenarioId: 1,
+    name: "Magic Sword",
+    description: "A powerful sword imbued with magical properties.",
+    requiredTags: [
+      { key: "agile", name: "Agile" },
+      { key: "wise", name: "Wise" },
+      { key: "brave", name: "Brave" },
+    ] as ITag[],
+  },
+  {
+    id: uuidv4(),
+    scenarioId: 1,
+    name: "Healing Potion",
+    description: "A potion that heals the user's wounds.",
+    requiredTags: [{ key: "strong", name: "Strong" }] as ITag[],
+  },
+];
+
 export const possibleRoles: IRoleList = [
   { ...exampleRole, id: 1, name: "Warrior" },
   { ...exampleRole, id: 2, name: "Mage" },
@@ -124,7 +145,7 @@ export const possibleRoles: IRoleList = [
 ];
 
 export const exampleScenarioItem: IScenarioItem = {
-  id: 1,
+  id: uuidv4(),
   scenarioId: 1,
   name: "Magic Sword",
   description: "A powerful sword imbued with magical properties.",
@@ -160,28 +181,8 @@ export const exampleScenario: IScenario = {
   description:
     "Opis przykładowego scenariusza, który zawiera szczegóły dotyczące fabuły, tła, oraz celu.",
   roles: possibleScenarioRoles.slice(0, 2),
-  items: [
-    {
-      name: "Magic Sword",
-      description: "A powerful sword imbued with magical properties.",
-      requiredTags: [
-        { key: "agile", name: "Agile" },
-        { key: "wise", name: "Wise" },
-        { key: "brave", name: "Brave" },
-      ] as ITag[],
-    },
-    {
-      name: "Healing Potion",
-      description: "A potion that heals the user's wounds.",
-      requiredTags: [{ key: "strong", name: "Strong" }] as ITag[],
-    },
-  ] as IScenarioItemList,
+  items: possibleScenarioItems,
 };
-
-export const possibleScenarioItems: IScenarioItemList = [
-  { ...exampleScenarioItem, id: 1, name: "Magic Sword" },
-  { ...exampleScenarioItem, id: 2, name: "Healing Potion" },
-];
 
 export const emptyEvent: IEvent = {
   id: null,

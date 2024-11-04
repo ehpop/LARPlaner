@@ -111,7 +111,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
 
   const handleSave = () => {
     setRole({ ...role, tags: tags?.filter((tag) => tag.name !== "") });
-    // Save role
+    alert("Saving role: " + JSON.stringify(role));
   };
 
   const roleDescription = (
@@ -369,7 +369,13 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
 
   const saveButton = (
     <div className="w-full flex justify-end space-x-3">
-      <Button color="success" size="lg" onPress={(_) => handleSave()}>
+      <Button
+        color="success"
+        size="lg"
+        onPress={() => {
+          handleSave();
+        }}
+      >
         <FormattedMessage defaultMessage="Save" id="role.display.save" />
       </Button>
     </div>

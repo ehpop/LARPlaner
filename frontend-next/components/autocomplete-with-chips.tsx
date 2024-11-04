@@ -1,34 +1,39 @@
 "use client";
 
-import { useState } from "react";
 import { Autocomplete, AutocompleteItem, Chip } from "@nextui-org/react";
 import { Check, X } from "lucide-react";
 
-const MultiselectSearch = ({
-  isDisabled = false,
-  array,
-  selectLabel,
-  initialSelectedItems,
-}: {
-  array: string[];
+import { ITag } from "@/types";
+
+interface MultiselectSearchProps {
+  allItems: ITag[];
   selectLabel: string;
   isDisabled?: boolean;
-  initialSelectedItems?: string[];
-}) => {
-  const [selectedItems, setSelectedItems] = useState<string[]>(
-    initialSelectedItems || [],
-  );
+  selectedItems: ITag[];
+  setSelectedItems: (items: ITag[]) => void;
+}
 
-  const handleSelect = (item: string) => {
-    if (!selectedItems.includes(item)) {
+const MultiselectSearch = ({
+  isDisabled = false,
+  allItems,
+  selectLabel,
+  selectedItems,
+  setSelectedItems,
+}: MultiselectSearchProps) => {
+  const handleSelect = (item: ITag) => {
+    if (!selectedItems.map((i) => i.key).includes(item.key)) {
       setSelectedItems([...selectedItems, item]);
     } else {
-      setSelectedItems(selectedItems.filter((selection) => selection !== item));
+      setSelectedItems(
+        selectedItems.filter((selection) => selection.key !== item.key),
+      );
     }
   };
 
-  const handleDeleteSelection = (item: string) => {
-    setSelectedItems(selectedItems.filter((selection) => selection !== item));
+  const handleDeleteSelection = (item: ITag) => {
+    setSelectedItems(
+      selectedItems.filter((selection) => selection.key !== item.key),
+    );
   };
 
   return (
@@ -40,7 +45,7 @@ const MultiselectSearch = ({
         selectedKey={""}
         variant="underlined"
       >
-        {array.map((item, index) => (
+        {allItems.map((item, index) => (
           <AutocompleteItem
             key={index}
             endContent={
@@ -48,17 +53,17 @@ const MultiselectSearch = ({
                 <Check className="mr-2 text-green-500" size={16} />
               )
             }
-            value={item}
+            value={item.name}
             onClick={() => handleSelect(item)}
           >
-            {item}
+            {item.name}
           </AutocompleteItem>
         ))}
       </Autocomplete>
       <div className="flex mt-2 w-full flex-wrap">
         {selectedItems.map((item) => (
           <Chip
-            key={item}
+            key={item.name}
             className="mr-2 mt-2"
             color={"primary"}
             endContent={
@@ -70,7 +75,7 @@ const MultiselectSearch = ({
             }
             isDisabled={isDisabled}
           >
-            {item}
+            {item.name}
           </Chip>
         ))}
       </div>

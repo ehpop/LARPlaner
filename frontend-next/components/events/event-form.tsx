@@ -19,7 +19,6 @@ import {
   today,
   ZonedDateTime,
 } from "@internationalized/date";
-import { useRouter } from "next/navigation";
 import { Link } from "@nextui-org/link";
 
 import {
@@ -36,7 +35,6 @@ import { IEvent } from "@/types";
 
 export default function EventForm({ eventId }: { eventId?: number }) {
   const intl = useIntl();
-  const router = useRouter();
 
   const isNewEvent = !eventId;
   const [event, setEvent] = useState(
@@ -52,7 +50,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
     const scenarioRoles = scenario.roles;
 
     return scenarioRoles.map((role) => ({
-      scenarioRoleId: role.id,
+      scenarioRoleId: role.roleId,
       touched: false,
     }));
   };
@@ -119,9 +117,9 @@ export default function EventForm({ eventId }: { eventId?: number }) {
     return newAssignedRoles;
   };
 
-  const handleRoleAssignment = (roleId: number, key: Key | null) => {
+  const handleRoleAssignment = (scenarioRoleId: number, key: Key | null) => {
     const assignedRole = touched.assignedRoles.find(
-      (assignedRole) => assignedRole.scenarioRoleId === roleId,
+      (assignedRole) => assignedRole.scenarioRoleId === scenarioRoleId,
     );
 
     if (assignedRole !== undefined) {
@@ -140,7 +138,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
         ...event,
         assignedRoles: assignNewRoleOrUpdateOldOne(
           event.assignedRoles,
-          roleId,
+          scenarioRoleId,
           key as string,
         ),
       });
@@ -148,10 +146,14 @@ export default function EventForm({ eventId }: { eventId?: number }) {
       setEvent({
         ...event,
         assignedRoles: event.assignedRoles.filter(
-          (assignedRole) => assignedRole.scenarioRoleId !== roleId,
+          (assignedRole) => assignedRole.scenarioRoleId !== scenarioRoleId,
         ),
       });
     }
+  };
+
+  const handleSave = () => {
+    alert("Saving event: " + JSON.stringify(event));
   };
 
   const {
@@ -432,6 +434,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
           setIsBeingEdited(true);
         }}
         onSaveClicked={() => {
+          handleSave();
           setIsBeingEdited(false);
         }}
       />
@@ -442,7 +445,13 @@ export default function EventForm({ eventId }: { eventId?: number }) {
 
   const saveButton = (
     <div className="w-full flex justify-end">
-      <Button color="success" size="lg">
+      <Button
+        color="success"
+        size="lg"
+        onPress={() => {
+          handleSave();
+        }}
+      >
         <FormattedMessage
           defaultMessage="Save"
           id="events.page.new.addEvent.save"
@@ -516,7 +525,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
                   }
                   variant="underlined"
                   onSelectionChange={(key) => {
-                    handleRoleAssignment(role.id as number, key);
+                    handleRoleAssignment(scenarioRole.roleId as number, key);
                   }}
                 >
                   {(item) => (

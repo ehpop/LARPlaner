@@ -42,6 +42,10 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
     onOpenChange: onOpenChangeCancel,
   } = useDisclosure();
 
+  const handleSave = () => {
+    alert("Saving scenario: " + JSON.stringify(scenario));
+  };
+
   const nameElement = (
     <Input
       isRequired
@@ -79,6 +83,7 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
         defaultMessage: "Scenario description is required",
       })}
       isDisabled={!(isBeingEdited || isNewScenario)}
+      isInvalid={touched.description && !scenario.description}
       label={intl.formatMessage({
         id: "scenarios.new.page.scenarioDescription",
         defaultMessage: "Description",
@@ -140,10 +145,11 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
         </Button>
       </div>
       <div className={showItemsSection ? "" : "hidden"}>
-        {/*TODO: Pass setScenario() to form so it is able to change scenario*/}
         <ScenarioItemsForm
           initialItems={scenario.items}
           isBeingEdited={isBeingEdited}
+          scenario={scenario}
+          setScenario={setScenario}
         />
       </div>
     </div>
@@ -151,7 +157,13 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
   const saveButton = (
     <div className="w-full flex justify-end">
       <div className="flex justify-between space-x-3">
-        <Button color="success" size="lg">
+        <Button
+          color="success"
+          size="lg"
+          onPress={() => {
+            handleSave();
+          }}
+        >
           <FormattedMessage
             defaultMessage={"Save"}
             id={"scenarios.new.page.save"}
@@ -213,6 +225,7 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
           setIsBeingEdited(true);
         }}
         onSaveClicked={() => {
+          handleSave();
           setIsBeingEdited(false);
         }}
       />

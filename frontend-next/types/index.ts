@@ -31,7 +31,7 @@ export type IEvent = {
   description: string;
   scenarioId: number | null;
   assignedRoles: {
-    scenarioRoleId: IScenarioRole["id"];
+    scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
   }[];
 };
@@ -47,11 +47,11 @@ export type IScenarioRole = {
 export type IScenarioRoleList = IScenarioRole[];
 
 export type IScenarioItem = {
-  id: number | null;
+  id: string | null;
   scenarioId: number | null;
   name: string;
   description: string;
-  imageUrl: string;
+  imageUrl?: string;
   requiredTags: ITag[];
 };
 export type IScenarioItemList = IScenarioItem[];
