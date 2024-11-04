@@ -23,7 +23,6 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [role, setRole] = useState(initialRole);
   const [imageUrl, setImageUrl] = useState(initialRole.imageUrl);
-  const [tags, setTags] = useState(initialRole.tags);
   const [showTags, setShowTags] = useState(true);
 
   const [touched, setTouched] = useState({
@@ -62,7 +61,6 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
   } = useDisclosure();
 
   const handleSave = () => {
-    setRole({ ...role, tags: tags?.filter((tag) => tag.name !== "") });
     alert("Saving role: " + JSON.stringify(role));
   };
 

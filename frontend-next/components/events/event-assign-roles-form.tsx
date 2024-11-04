@@ -1,6 +1,6 @@
 import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Key, useState } from "react";
+import React, { Key, useState } from "react";
 
 import { IEvent, IScenarioRole } from "@/types";
 import { getRole, getScenario, userEmails } from "@/data/mock-data";
@@ -176,27 +176,41 @@ const EventAssignRolesForm = ({
     );
   };
 
-  return scenario.roles.length === 0 ? (
-    <div className="w-full flex flex-row space-x-3 items-baseline">
-      <p>
+  const assignRolesElement =
+    scenario.roles.length === 0 ? (
+      <div className="w-full flex flex-row space-x-3 items-baseline">
+        <p>
+          <FormattedMessage
+            defaultMessage="No roles"
+            id="events.page.display.noRoles"
+          />
+        </p>
+      </div>
+    ) : (
+      <div className="w-full flex flex-col">
+        {scenario.roles.map((scenarioRole) => (
+          <RoleAssignmentEntry
+            key={scenarioRole.roleId}
+            event={event}
+            handleRoleAssignment={handleRoleAssignment}
+            isBeingEdited={isBeingEdited}
+            isInvalidEmailForRoleId={isInvalidEmailForRoleId}
+            scenarioRole={scenarioRole}
+          />
+        ))}
+      </div>
+    );
+
+  return event.scenarioId ? (
+    assignRolesElement
+  ) : (
+    <div className="w-full flex justify-center p-3">
+      <p className="text-large">
         <FormattedMessage
-          defaultMessage="No roles"
-          id="events.page.display.noRoles"
+          defaultMessage="Select scenario to assign roles"
+          id="events.page.display.selectScenarioToAssignRoles"
         />
       </p>
-    </div>
-  ) : (
-    <div className="w-full flex flex-col">
-      {scenario.roles.map((scenarioRole) => (
-        <RoleAssignmentEntry
-          key={scenarioRole.roleId}
-          event={event}
-          handleRoleAssignment={handleRoleAssignment}
-          isBeingEdited={isBeingEdited}
-          isInvalidEmailForRoleId={isInvalidEmailForRoleId}
-          scenarioRole={scenarioRole}
-        />
-      ))}
     </div>
   );
 };

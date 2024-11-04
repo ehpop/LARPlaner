@@ -33,6 +33,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
     !isNewEvent ? getEvent(eventId) : emptyEvent,
   );
   const [isBeingEdited, setIsBeingEdited] = useState(false);
+  const [showAssignRoles, setShowAssignRoles] = useState(true);
 
   const [touched, setTouched] = useState({
     name: false,
@@ -369,30 +370,27 @@ export default function EventForm({ eventId }: { eventId?: number }) {
 
   const assignRolesElement = (
     <div className="w-full flex flex-col p-3 border-1">
-      <div className="w-full flex justify-start">
+      <div className="w-full flex flex-row justify-between">
         <p className="text-xl">
           <FormattedMessage
             defaultMessage="Assign roles"
             id="events.page.display.tags"
           />
         </p>
+        <Button
+          size="sm"
+          variant="bordered"
+          onPress={() => setShowAssignRoles(!showAssignRoles)}
+        >
+          {showAssignRoles ? "-" : "+"}
+        </Button>
       </div>
-
-      {event.scenarioId ? (
+      {showAssignRoles && (
         <EventAssignRolesForm
           event={event}
-          isBeingEdited={isNewEvent || isBeingEdited}
+          isBeingEdited={isBeingEdited}
           setEvent={setEvent}
         />
-      ) : (
-        <div className="w-full flex justify-center p-3">
-          <p className="text-large">
-            <FormattedMessage
-              defaultMessage="Select scenario to assign roles"
-              id="events.page.display.selectScenarioToAssignRoles"
-            />
-          </p>
-        </div>
       )}
     </div>
   );
