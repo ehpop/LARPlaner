@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  Autocomplete,
-  AutocompleteItem,
   Button,
   DatePicker,
   Input,
@@ -11,7 +9,7 @@ import {
   Textarea,
   useDisclosure,
 } from "@nextui-org/react";
-import React, { Key, useState } from "react";
+import React, { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   fromDate,
@@ -21,17 +19,11 @@ import {
 } from "@internationalized/date";
 import { Link } from "@nextui-org/link";
 
-import {
-  emptyEvent,
-  getEvent,
-  getRole,
-  getScenario,
-  possibleScenarios,
-  userEmails,
-} from "@/data/mock-data";
+import { emptyEvent, getEvent, possibleScenarios } from "@/data/mock-data";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { IEvent } from "@/types";
+import EventAssignRolesForm from "@/components/events/event-assign-roles-form";
 
 export default function EventForm({ eventId }: { eventId?: number }) {
   const intl = useIntl();
@@ -42,25 +34,11 @@ export default function EventForm({ eventId }: { eventId?: number }) {
   );
   const [isBeingEdited, setIsBeingEdited] = useState(false);
 
-  const mapAllAssignedRolesToUntouched = (scenarioId: number | null) => {
-    if (scenarioId === null) {
-      return [];
-    }
-    const scenario = getScenario(scenarioId);
-    const scenarioRoles = scenario.roles;
-
-    return scenarioRoles.map((role) => ({
-      scenarioRoleId: role.roleId,
-      touched: false,
-    }));
-  };
-
   const [touched, setTouched] = useState({
     name: false,
     description: false,
     scenarioId: false,
     date: false,
-    assignedRoles: mapAllAssignedRolesToUntouched(event.scenarioId),
   });
 
   const handleTouched = (key: keyof typeof touched) => {
@@ -80,76 +58,6 @@ export default function EventForm({ eventId }: { eventId?: number }) {
       event[name as keyof IEvent] === "" ||
       event[name as keyof IEvent] === null
     );
-  };
-
-  const isInvalidEmailForRoleId = (scenarioRoleId: number) => {
-    const touchedEntry = touched.assignedRoles.find(
-      (assignedRole) => assignedRole.scenarioRoleId === scenarioRoleId,
-    );
-
-    if (touchedEntry && !touchedEntry.touched) {
-      return false;
-    }
-
-    const assignedRoleInEvent = event.assignedRoles.find(
-      (assignedRole) => assignedRole.scenarioRoleId === scenarioRoleId,
-    );
-
-    return (
-      assignedRoleInEvent === undefined ||
-      assignedRoleInEvent.assignedEmail === "" ||
-      assignedRoleInEvent.assignedEmail === undefined ||
-      assignedRoleInEvent.assignedEmail === null
-    );
-  };
-
-  const assignNewRoleOrUpdateOldOne = (
-    assignedRoles: any,
-    roleId: number,
-    email: string,
-  ) => {
-    const newAssignedRoles = assignedRoles.filter(
-      (assignedRole: any) => assignedRole.scenarioRoleId !== roleId,
-    );
-
-    newAssignedRoles.push({ scenarioRoleId: roleId, assignedEmail: email });
-
-    return newAssignedRoles;
-  };
-
-  const handleRoleAssignment = (scenarioRoleId: number, key: Key | null) => {
-    const assignedRole = touched.assignedRoles.find(
-      (assignedRole) => assignedRole.scenarioRoleId === scenarioRoleId,
-    );
-
-    if (assignedRole !== undefined) {
-      setTouched({
-        ...touched,
-        assignedRoles: touched.assignedRoles.map((role) =>
-          role.scenarioRoleId === assignedRole.scenarioRoleId
-            ? { ...role, touched: true }
-            : role,
-        ),
-      });
-    }
-
-    if (key !== null) {
-      setEvent({
-        ...event,
-        assignedRoles: assignNewRoleOrUpdateOldOne(
-          event.assignedRoles,
-          scenarioRoleId,
-          key as string,
-        ),
-      });
-    } else {
-      setEvent({
-        ...event,
-        assignedRoles: event.assignedRoles.filter(
-          (assignedRole) => assignedRole.scenarioRoleId !== scenarioRoleId,
-        ),
-      });
-    }
   };
 
   const handleSave = () => {
@@ -385,7 +293,6 @@ export default function EventForm({ eventId }: { eventId?: number }) {
           setTouched({
             ...touched,
             scenarioId: true,
-            assignedRoles: mapAllAssignedRolesToUntouched(scenarioId),
           });
         }}
       >
@@ -470,84 +377,23 @@ export default function EventForm({ eventId }: { eventId?: number }) {
           />
         </p>
       </div>
-      <div className="w-full flex flex-col">
-        {event.scenarioId ? (
-          getScenario(event?.scenarioId as number).roles.map((scenarioRole) => {
-            const role = getRole((scenarioRole.roleId as number) - 1);
 
-            return (
-              <div
-                key={role.id}
-                className="w-full flex flex-row space-x-3 items-baseline"
-              >
-                <Input
-                  isDisabled
-                  className="w-1/2"
-                  defaultValue={role.name}
-                  label={intl.formatMessage({
-                    id: "events.page.display.roles",
-                    defaultMessage: "Role",
-                  })}
-                  size="lg"
-                  variant="underlined"
-                />
-                <Autocomplete
-                  key={role.id}
-                  className="max-w-xs"
-                  defaultItems={userEmails}
-                  disabledKeys={event.assignedRoles.map(
-                    (role) => role.assignedEmail,
-                  )}
-                  errorMessage={intl.formatMessage({
-                    id: "events.page.display.selectEmail.error",
-                    defaultMessage: "You have to select email from the list",
-                  })}
-                  isDisabled={!(isNewEvent || isBeingEdited)}
-                  isInvalid={isInvalidEmailForRoleId(
-                    scenarioRole.roleId as number,
-                  )}
-                  label={intl.formatMessage({
-                    id: "events.page.display.assignEmail",
-                    defaultMessage: "Assign email",
-                  })}
-                  placeholder={intl.formatMessage({
-                    id: "events.page.display.selectEmail",
-                    defaultMessage: "Select an email...",
-                  })}
-                  selectedKey={
-                    event.assignedRoles
-                      .filter(
-                        (assignedRole) =>
-                          assignedRole.scenarioRoleId === scenarioRole.id,
-                      )
-                      .map((assignedRole) => assignedRole.assignedEmail)
-                      .at(0) || null
-                  }
-                  variant="underlined"
-                  onSelectionChange={(key) => {
-                    handleRoleAssignment(scenarioRole.roleId as number, key);
-                  }}
-                >
-                  {(item) => (
-                    <AutocompleteItem key={item.value}>
-                      {item.label}
-                    </AutocompleteItem>
-                  )}
-                </Autocomplete>
-              </div>
-            );
-          })
-        ) : (
-          <div className="w-full flex justify-center p-3">
-            <p className="text-large">
-              <FormattedMessage
-                defaultMessage="Select scenario to assign roles"
-                id="events.page.display.selectScenarioToAssignRoles"
-              />
-            </p>
-          </div>
-        )}
-      </div>
+      {event.scenarioId ? (
+        <EventAssignRolesForm
+          event={event}
+          isBeingEdited={isNewEvent || isBeingEdited}
+          setEvent={setEvent}
+        />
+      ) : (
+        <div className="w-full flex justify-center p-3">
+          <p className="text-large">
+            <FormattedMessage
+              defaultMessage="Select scenario to assign roles"
+              id="events.page.display.selectScenarioToAssignRoles"
+            />
+          </p>
+        </div>
+      )}
     </div>
   );
 
