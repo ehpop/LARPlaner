@@ -7,12 +7,12 @@ import {
 } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
-import { uuidv4 } from "@firebase/util";
 
 import { emptyRole, exampleRole as exampleRole } from "@/data/mock-data";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
-import { IRole, ITag } from "@/types";
+import { IRole } from "@/types";
+import RoleTagsForm from "@/components/roles/role-tags-form";
 
 export default function RoleForm({ roleId }: { roleId?: string }) {
   const intl = useIntl();
@@ -24,15 +24,11 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
   const [role, setRole] = useState(initialRole);
   const [imageUrl, setImageUrl] = useState(initialRole.imageUrl);
   const [tags, setTags] = useState(initialRole.tags);
-
-  const mapAllTags = () => {
-    return role.tags.map((tag) => ({ tagId: tag.key, touched: false }));
-  };
+  const [showTags, setShowTags] = useState(true);
 
   const [touched, setTouched] = useState({
     name: false,
     description: false,
-    tags: mapAllTags(),
   });
 
   const handleTouched = (key: keyof typeof touched) => {
@@ -64,50 +60,6 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
     isOpen: isOpenCancel,
     onOpenChange: onOpenChangeCancel,
   } = useDisclosure();
-
-  const handleTagChanged = (tagIndex: number, newTag: ITag) => {
-    const updatedTags = [...(tags || [])];
-
-    updatedTags[tagIndex] = newTag;
-    setTags(updatedTags);
-    setTouched({
-      ...touched,
-      tags: touched.tags.map((tag) =>
-        tag.tagId === newTag.key ? { ...tag, touched: true } : tag,
-      ),
-    });
-  };
-
-  const handleTagRemoved = (tagIndex: number, tagKey: string) => {
-    setTags(tags.filter((_, index) => index !== tagIndex));
-    setTouched({
-      ...touched,
-      tags: touched.tags.filter((tag) => tag.tagId !== tagKey),
-    });
-  };
-
-  const handleAddTag = () => {
-    if (tags[tags?.length - 1]?.name === "") {
-      return;
-    }
-    const newTag = { key: uuidv4(), name: "" };
-
-    setTags([...(tags || []), newTag]);
-    setTouched({
-      ...touched,
-      tags: touched.tags.concat({ tagId: newTag.key, touched: false }),
-    });
-  };
-
-  const isInvalidTag = (tag: ITag) => {
-    const touchedTag = touched.tags.find((t) => t.tagId === tag.key);
-
-    if (touchedTag && !touchedTag.touched) {
-      return false;
-    }
-
-    return tag.name === "" || tag.name === undefined || tag.name === null;
-  };
 
   const handleSave = () => {
     setRole({ ...role, tags: tags?.filter((tag) => tag.name !== "") });
@@ -189,81 +141,27 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
 
   const tagsElement = (
     <div className="w-full min-h-full border-1 p-3 space-y-3">
-      <p className="text-xl font-bold">
-        <FormattedMessage
-          defaultMessage="Character's tags:"
-          id="role.id.page.display.tags"
+      <div className="w-full flex flex-row justify-between">
+        <p className="text-xl font-bold">
+          <FormattedMessage
+            defaultMessage="Character's tags:"
+            id="role.id.page.display.tags"
+          />
+        </p>
+        <Button
+          size="sm"
+          variant="bordered"
+          onPress={() => setShowTags(!showTags)}
+        >
+          {showTags ? "-" : "+"}
+        </Button>
+      </div>
+      {showTags && (
+        <RoleTagsForm
+          isBeingEdited={isBeingEdited}
+          role={role}
+          setRole={setRole}
         />
-      </p>
-      {tags.length === 0 ? (
-        <div className="w-full h-1/5 text-xl flex justify-center items-center">
-          <p>
-            <FormattedMessage
-              defaultMessage="No tags"
-              id="role.display.noTags"
-            />
-          </p>
-        </div>
-      ) : (
-        tags.map((tag, index) => (
-          <div
-            key={tag.key}
-            className="w-full flex flex-row space-x-3 items-baseline"
-          >
-            <Input
-              isRequired
-              className="w-full"
-              defaultValue={tag.name}
-              errorMessage={intl.formatMessage({
-                defaultMessage: "Tag name cannot be empty",
-                id: "role.display.tag.name.error",
-              })}
-              isDisabled={!(isBeingEdited || isNewRole)}
-              isInvalid={isInvalidTag(tag)}
-              label={intl.formatMessage({
-                defaultMessage: "Tag's Name",
-                id: "role.display.tag.name",
-              })}
-              placeholder={intl.formatMessage({
-                defaultMessage: "Insert tag name...",
-                id: "role.display.tag.name.placeholder",
-              })}
-              size="sm"
-              variant="underlined"
-              onChange={(e) => {
-                handleTagChanged(index, {
-                  key: tag.key,
-                  name: e.target.value,
-                });
-              }}
-            />
-            {(isBeingEdited || isNewRole) && (
-              <Button
-                className="w-1/4"
-                color="danger"
-                size="sm"
-                onClick={(_event) => {
-                  handleTagRemoved(index, tag.key);
-                }}
-              >
-                <FormattedMessage
-                  defaultMessage="Remove"
-                  id="role.display.remove"
-                />
-              </Button>
-            )}
-          </div>
-        ))
-      )}
-      {(isBeingEdited || isNewRole) && (
-        <div className="w-full flex justify-center">
-          <Button color="success" size="md" onPress={handleAddTag}>
-            <FormattedMessage
-              defaultMessage="Add tag"
-              id="role.display.addTag"
-            />
-          </Button>
-        </div>
       )}
     </div>
   );
