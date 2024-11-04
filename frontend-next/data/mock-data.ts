@@ -1,4 +1,5 @@
 import { getLocalTimeZone, now } from "@internationalized/date";
+import { uuidv4 } from "@firebase/util";
 
 import {
   IEvent,
@@ -64,7 +65,7 @@ export const emptyRole: IRole = {
 };
 
 export const exampleScenarioRole: IScenarioRole = {
-  id: 1,
+  id: uuidv4(),
   scenarioId: 1,
   roleId: 1,
   scenarioDescription: "A strong and brave warrior.",
@@ -80,21 +81,33 @@ export const emptyScenarioRole: IScenarioRole = {
 };
 
 export const possibleScenarioRoles: IScenarioRoleList = [
-  { ...exampleScenarioRole, id: 1, scenarioId: 1, roleId: 1 },
-  { ...exampleScenarioRole, id: 2, scenarioId: 1, roleId: 2 },
-  { ...exampleScenarioRole, id: 3, scenarioId: 1, roleId: 3 },
-  { ...exampleScenarioRole, id: 4, scenarioId: 1, roleId: 4 },
-  { ...exampleScenarioRole, id: 5, scenarioId: 1, roleId: 5 },
-  { ...exampleScenarioRole, id: 6, scenarioId: 1, roleId: 6 },
+  {
+    id: uuidv4(),
+    scenarioId: 1,
+    roleId: 1,
+    scenarioDescription: "Potężny czarodziej, który włada magią.",
+    gmNotes: "Notatki dla mistrza gry.",
+  },
+  {
+    id: uuidv4(),
+    scenarioId: 1,
+    roleId: 2,
+    scenarioDescription: "Silny i odważny wojownik.",
+    gmNotes: "Notatki dla mistrza gry.",
+  },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 3 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 4 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 5 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 6 },
   {
     ...exampleScenarioRole,
-    id: 7,
+    id: uuidv4(),
     scenarioId: 1,
     roleId: 7,
   },
-  { ...exampleScenarioRole, id: 8, scenarioId: 1, roleId: 8 },
-  { ...exampleScenarioRole, id: 9, scenarioId: 1, roleId: 9 },
-  { ...exampleScenarioRole, id: 10, scenarioId: 1, roleId: 10 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 8 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 9 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 10 },
 ];
 
 export const possibleRoles: IRoleList = [
@@ -146,22 +159,7 @@ export const exampleScenario: IScenario = {
   name: "Przykładowy Scenariusz",
   description:
     "Opis przykładowego scenariusza, który zawiera szczegóły dotyczące fabuły, tła, oraz celu.",
-  roles: [
-    {
-      id: 1,
-      scenarioId: 1,
-      roleId: 1,
-      scenarioDescription: "Potężny czarodziej, który włada magią.",
-      gmNotes: "Notatki dla mistrza gry.",
-    },
-    {
-      id: 2,
-      scenarioId: 1,
-      roleId: 2,
-      scenarioDescription: "Silny i odważny wojownik.",
-      gmNotes: "Notatki dla mistrza gry.",
-    },
-  ] as IScenarioRoleList,
+  roles: possibleScenarioRoles.slice(0, 2),
   items: [
     {
       name: "Magic Sword",
@@ -204,11 +202,11 @@ export const exampleEvent: IEvent = {
   scenarioId: 1,
   assignedRoles: [
     {
-      scenarioRoleId: 1,
+      scenarioRoleId: possibleScenarioRoles[0].id,
       assignedEmail: userEmails[0].value,
     },
     {
-      scenarioRoleId: 2,
+      scenarioRoleId: possibleScenarioRoles[1].id,
       assignedEmail: userEmails[1].value,
     },
   ],

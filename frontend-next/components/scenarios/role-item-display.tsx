@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Button, Select, SelectItem, Textarea } from "@nextui-org/react";
 
 import { IRoleList, IScenarioRole } from "@/types";
-import { emptyScenarioRole } from "@/data/mock-data";
 
 export const RoleItem = ({
   index,
@@ -17,19 +16,12 @@ export const RoleItem = ({
   handleRoleChange: (index: number, role: IScenarioRole) => void;
   handleRoleRemove: (index: number) => void;
   availableRoles: IRoleList;
-  initialRole?: IScenarioRole;
+  initialRole: IScenarioRole;
   isBeingEdited?: boolean;
 }) => {
   const intl = useIntl();
   const [showRole, setShowRole] = useState(true);
-  const [role, setRole] = useState<IScenarioRole>(
-    initialRole || {
-      ...emptyScenarioRole,
-      id: 1,
-      scenarioId: 1,
-      roleId: 1,
-    },
-  );
+  const [role, setRole] = useState<IScenarioRole>(initialRole);
   const [touched, setTouched] = useState({
     description: false,
     gmNotes: false,
@@ -106,7 +98,7 @@ export const RoleItem = ({
     <Select
       isRequired
       className="w-1/2"
-      defaultSelectedKeys={role.id ? [String(role.id)] : []}
+      defaultSelectedKeys={role.roleId ? [String(role.roleId)] : []}
       errorMessage={intl.formatMessage({
         id: "role.select.error",
         defaultMessage: "Role is required",

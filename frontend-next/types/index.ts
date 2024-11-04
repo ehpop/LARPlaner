@@ -38,7 +38,7 @@ export type IEvent = {
 export type IEventList = IEvent[];
 
 export type IScenarioRole = {
-  id: number | null;
+  id: string | null;
   roleId: number | null;
   scenarioId: number | null;
   scenarioDescription: string;

@@ -113,11 +113,11 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
         </Button>
       </div>
       <div className={showRolesSection ? "" : "hidden"}>
-        {/*TODO: Pass setScenario() to form so it is able to change scenario*/}
         <ScenarioRolesForm
           availableRoles={possibleRoles}
           isBeingEdited={isBeingEdited}
-          rolesPresentInScenario={scenario.roles}
+          scenario={scenario}
+          setScenario={setScenario}
         />
       </div>
     </div>
