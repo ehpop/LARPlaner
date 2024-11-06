@@ -2,22 +2,17 @@ import {
   Button,
   Image,
   Input,
-  Select,
-  SelectItem,
   Textarea,
   useDisclosure,
 } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
-import { uuidv4 } from "@firebase/util";
 
-import {
-  emptyRole,
-  exampleRole as exampleRole,
-  possibleScenarios,
-} from "@/data/mock-data";
+import { emptyRole, exampleRole as exampleRole } from "@/data/mock-data";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
+import { IRole } from "@/types";
+import RoleTagsForm from "@/components/roles/role-tags-form";
 
 export default function RoleForm({ roleId }: { roleId?: string }) {
   const intl = useIntl();
@@ -26,14 +21,34 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
   const initialRole = isNewRole ? emptyRole : exampleRole;
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
-  const [selectedScenariosIds, setSelectedScenariosIds] = useState(
-    possibleScenarios[0].id ? [possibleScenarios[0].id] : [],
-  );
   const [role, setRole] = useState(initialRole);
-  const [imageUrl, setImageUrl] = useState(role?.imageUrl);
-  const [tags, setTags] = useState(
-    role?.tags.map((tag) => ({ id: uuidv4(), value: tag })),
-  );
+  const [imageUrl, setImageUrl] = useState(initialRole.imageUrl);
+  const [showTags, setShowTags] = useState(true);
+
+  const [touched, setTouched] = useState({
+    name: false,
+    description: false,
+  });
+
+  const handleTouched = (key: keyof typeof touched) => {
+    if (touched[key]) {
+      return;
+    }
+    setTouched({ ...touched, [key]: true });
+  };
+
+  const isInvalidProperty = (name: keyof typeof touched) => {
+    if (!touched[name]) {
+      return false;
+    }
+
+    return (
+      role[name as keyof IRole] === undefined ||
+      role[name as keyof IRole] === "" ||
+      role[name as keyof IRole] === null
+    );
+  };
+
   const {
     onOpen: onOpenDelete,
     isOpen: isOpenDelete,
@@ -45,78 +60,64 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
     onOpenChange: onOpenChangeCancel,
   } = useDisclosure();
 
-  const handleTagChanged = (tagIndex: number, newTagValue: string) => {
-    const updatedTags = [...(tags || [])];
-
-    updatedTags[tagIndex] = { ...updatedTags[tagIndex], value: newTagValue };
-    setTags(updatedTags);
+  const handleSave = () => {
+    alert("Saving role: " + JSON.stringify(role));
   };
-
-  const handleTagRemoved = (tagIndex: number) => {
-    setTags(tags.filter((_tag, index) => index !== tagIndex));
-  };
-
-  const selectScenario = (
-    <Select
-      defaultSelectedKeys={selectedScenariosIds}
-      description={intl.formatMessage({
-        id: "role.page.display.scenario.description",
-        defaultMessage:
-          "Select one or more scenarios that will include this role",
-      })}
-      isDisabled={!(isBeingEdited || isNewRole)}
-      label={intl.formatMessage({
-        id: "role.page.display.scenario",
-        defaultMessage: "Scenarios",
-      })}
-      placeholder={intl.formatMessage({
-        id: "role.page.display.selectScenario",
-        defaultMessage: "Select a scenario...",
-      })}
-      selectionMode="multiple"
-      size="lg"
-      variant="underlined"
-      onChange={(event) => {
-        setSelectedScenariosIds(event.target.value.split(",").map(Number));
-      }}
-    >
-      {possibleScenarios.map((scenario) => (
-        // @ts-ignore
-        <SelectItem key={scenario.id} value={scenario.name}>
-          {scenario.name}
-        </SelectItem>
-      ))}
-    </Select>
-  );
 
   const roleDescription = (
     <Textarea
+      isRequired
+      defaultValue={role.description}
       description={intl.formatMessage({
         id: "events.id.page.description.description",
         defaultMessage: "Base description of the character",
       })}
+      errorMessage={intl.formatMessage({
+        id: "role.display.description.error",
+        defaultMessage: "Description cannot be empty",
+      })}
       isDisabled={!(isBeingEdited || isNewRole)}
+      isInvalid={isInvalidProperty("description")}
       label={intl.formatMessage({
         id: "events.id.page.description.label",
         defaultMessage: "Description",
       })}
+      placeholder={intl.formatMessage({
+        id: "role.display.description.placeholder",
+        defaultMessage: "Insert role description...",
+      })}
       size="lg"
-      value={role.description}
       variant="underlined"
-      onChange={(e) => setRole({ ...role, description: e.target.value })}
+      onChange={(e) => {
+        setRole({ ...role, description: e.target.value });
+        handleTouched("description");
+      }}
     />
   );
   const roleName = (
     <Input
+      isRequired
+      defaultValue={role.name}
+      errorMessage={intl.formatMessage({
+        id: "role.display.name.error",
+        defaultMessage: "Role name cannot be empty",
+      })}
       isDisabled={!(isBeingEdited || isNewRole)}
+      isInvalid={isInvalidProperty("name")}
       label={intl.formatMessage({
         id: "role.display.name",
         defaultMessage: "Name",
       })}
+      placeholder={intl.formatMessage({
+        id: "role.display.name.placeholder",
+        defaultMessage: "Insert role name...",
+      })}
       size="lg"
-      value={role.name}
       variant="underlined"
-      onChange={(e) => setRole({ ...role, name: e.target.value })}
+      onChange={(e) => {
+        setRole({ ...role, name: e.target.value });
+        handleTouched("name");
+      }}
     />
   );
 
@@ -135,82 +136,30 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       </p>
     </div>
   );
+
   const tagsElement = (
     <div className="w-full min-h-full border-1 p-3 space-y-3">
-      <p className="text-xl font-bold">
-        <FormattedMessage
-          defaultMessage="Character's tags:"
-          id="role.id.page.display.tags"
+      <div className="w-full flex flex-row justify-between">
+        <p className="text-xl font-bold">
+          <FormattedMessage
+            defaultMessage="Character's tags:"
+            id="role.id.page.display.tags"
+          />
+        </p>
+        <Button
+          size="sm"
+          variant="bordered"
+          onPress={() => setShowTags(!showTags)}
+        >
+          {showTags ? "-" : "+"}
+        </Button>
+      </div>
+      {showTags && (
+        <RoleTagsForm
+          isBeingEdited={isBeingEdited}
+          role={role}
+          setRole={setRole}
         />
-      </p>
-      {tags.length === 0 ? (
-        <div className="w-full h-1/5 text-xl flex justify-center items-center">
-          <p>
-            <FormattedMessage
-              defaultMessage="No tags"
-              id="role.display.noTags"
-            />
-          </p>
-        </div>
-      ) : (
-        tags.map((tag, index) => (
-          <div
-            key={tag.id}
-            className="w-full flex flex-row space-x-3 items-baseline"
-          >
-            <Input
-              className="w-full"
-              defaultValue={tag.value}
-              isDisabled={!(isBeingEdited || isNewRole)}
-              label={intl.formatMessage({
-                defaultMessage: "Tag's Name",
-                id: "role.display.tag.name",
-              })}
-              placeholder={intl.formatMessage({
-                defaultMessage: "Insert tag name...",
-                id: "role.display.tag.name.placeholder",
-              })}
-              size="sm"
-              variant="underlined"
-              onChange={(e) => {
-                handleTagChanged(index, e.target.value);
-              }}
-            />
-            {(isBeingEdited || isNewRole) && (
-              <Button
-                className="w-1/4"
-                color="danger"
-                size="sm"
-                onClick={(_event) => {
-                  handleTagRemoved(index);
-                }}
-              >
-                <FormattedMessage
-                  defaultMessage="Remove"
-                  id="role.display.remove"
-                />
-              </Button>
-            )}
-          </div>
-        ))
-      )}
-      {(isBeingEdited || isNewRole) && (
-        <div className="w-full flex justify-center">
-          <Button
-            color="success"
-            size="md"
-            onPress={() => {
-              if (tags.findIndex((tag) => tag.value === "") === -1) {
-                setTags([...tags, { id: uuidv4(), value: "" }]);
-              }
-            }}
-          >
-            <FormattedMessage
-              defaultMessage="Add tag"
-              id="role.display.addTag"
-            />
-          </Button>
-        </div>
       )}
     </div>
   );
@@ -219,27 +168,39 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
     <div className="w-full flex sm:flex-row sm:space-x-3 sm:space-y-0 flex-col-reverse space-x-0 space-y-3  sm:items-center">
       <Textarea
         className="w-full sm:w-1/2"
+        defaultValue={imageUrl}
         description={intl.formatMessage({
           id: "role.display.image.description",
           defaultMessage: "URL of the character's image",
         })}
+        errorMessage={intl.formatMessage({
+          id: "role.display.image.error",
+          defaultMessage: "Invalid URL",
+        })}
         isDisabled={!(isBeingEdited || isNewRole)}
+        isInvalid={
+          imageUrl !== "" && imageUrl.match("^(http|https)://") === null
+        }
         label={intl.formatMessage({
           id: "role.display.image",
           defaultMessage: "Role image",
         })}
         size="lg"
-        value={imageUrl}
         variant="underlined"
-        onChange={(e) => setImageUrl(e.target.value)}
+        onChange={(e) => {
+          setRole({ ...role, imageUrl: e.target.value });
+          setImageUrl(e.target.value);
+        }}
       />
-      <div className="w-full sm:w-1/2 ">
-        <Image
-          alt="Character's image"
-          className="max-w-full"
-          fallbackSrc="/images/role-fallback.jpg"
-          src={imageUrl}
-        />
+      <div className="w-full sm:w-1/2">
+        {imageUrl.match("^(http|https)://") !== null && (
+          <Image
+            alt="Character's image"
+            className="max-w-full"
+            fallbackSrc="/images/role-fallback.jpg"
+            src={imageUrl}
+          />
+        )}
       </div>
     </div>
   );
@@ -252,7 +213,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       prompt={intl.formatMessage({
         id: "roles.id.page.delete",
         defaultMessage:
-          "Are you sure you want to delete this role? This action will not be reversible.",
+          "Are you sure you want to delete this role? Role will be deleted from all scenarios. This action will not be reversible.",
       })}
       title={intl.formatMessage({
         id: "roles.id.page.deleteTitle",
@@ -293,6 +254,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
         }}
         onEditClicked={() => setIsBeingEdited(true)}
         onSaveClicked={() => {
+          handleSave();
           setIsBeingEdited(false);
         }}
       />
@@ -303,7 +265,13 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
 
   const saveButton = (
     <div className="w-full flex justify-end space-x-3">
-      <Button color="success" size="lg">
+      <Button
+        color="success"
+        size="lg"
+        onPress={() => {
+          handleSave();
+        }}
+      >
         <FormattedMessage defaultMessage="Save" id="role.display.save" />
       </Button>
     </div>
@@ -313,18 +281,11 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
     <div className="sm:w-4/5 w-full space-y-10 border-1 p-3">
       {titleElement}
       <div className="space-y-3">
-        <div className="w-full flex sm:flex-row sm:space-x-3 sm:space-y-0 flex-col space-x-0 space-y-3 align-bottom">
-          {roleName}
-          {selectScenario}
-        </div>
+        {roleName}
         {imageInput}
         {roleDescription}
-      </div>
-
-      <div className="w-full flex flex-col space-y-3 space-x-0 sm:flex-row sm:space-x-3 sm:space-y-0">
         {tagsElement}
       </div>
-
       {isNewRole ? saveButton : actionButtons}
     </div>
   );

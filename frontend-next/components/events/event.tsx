@@ -13,7 +13,7 @@ export const Event = ({ event, link }: EventProps) => {
     <Card key={event.id} shadow="sm">
       <CardBody className="overflow-visible p-0">
         <Image
-          alt={event.title}
+          alt={event.name}
           className="object-cover h-[240px] w-[440px]"
           radius="lg"
           shadow="sm"
@@ -22,7 +22,7 @@ export const Event = ({ event, link }: EventProps) => {
         />
       </CardBody>
       <CardFooter className="text-small justify-between">
-        <b>{event.title}</b>
+        <b>{event.name}</b>
         <p className="text-default-500">{event.date.toDate().toDateString()}</p>
       </CardFooter>
     </Card>

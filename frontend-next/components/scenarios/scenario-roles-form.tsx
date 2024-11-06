@@ -1,56 +1,78 @@
 import { Button } from "@nextui-org/react";
-import React, { useState } from "react";
+import React from "react";
 import { FormattedMessage } from "react-intl";
+import { uuidv4 } from "@firebase/util";
 
 import { RoleItem } from "@/components/scenarios/role-item-display";
-import { IRoleList, IScenarioRole, IScenarioRoleList } from "@/types";
-import { exampleScenarioRole } from "@/data/mock-data";
+import { IRoleList, IScenario, IScenarioRole } from "@/types";
+import { emptyScenarioRole } from "@/data/mock-data";
 
 export const ScenarioRolesForm = ({
   availableRoles,
-  rolesPresentInScenario,
   isBeingEdited,
+  scenario,
+  setScenario,
 }: {
   availableRoles: IRoleList;
-  rolesPresentInScenario?: IScenarioRoleList;
   isBeingEdited?: boolean;
+  scenario: IScenario;
+  setScenario: (scenario: IScenario) => void;
 }) => {
-  const [roleList, setRoleList] = useState<IScenarioRoleList>(
-    rolesPresentInScenario && rolesPresentInScenario.length > 0
-      ? rolesPresentInScenario
-      : [{ ...exampleScenarioRole, id: 1 }],
-  );
-
   const addRole = () => {
-    setRoleList([...roleList, exampleScenarioRole]);
+    const newScenarioRoles = [
+      ...scenario.roles,
+      {
+        ...emptyScenarioRole,
+        id: uuidv4(),
+        scenarioId: scenario.id,
+      },
+    ];
+
+    setScenario({ ...scenario, roles: newScenarioRoles });
   };
 
-  const handleRoleChange = (index: number, value: IScenarioRole) => {
-    roleList[index] = value;
-    setRoleList(roleList);
+  const handleRoleChange = (index: number, newScenarioRole: IScenarioRole) => {
+    const newScenarioRoles = [...scenario.roles];
+
+    newScenarioRoles[index] = newScenarioRole;
+    setScenario({ ...scenario, roles: newScenarioRoles });
   };
 
   const handleRoleRemove = (index: number) => {
-    const updatedRoles = [...roleList];
+    const newScenarioRoles = [...scenario.roles];
 
-    updatedRoles.splice(index, 1);
-    setRoleList(updatedRoles);
+    newScenarioRoles.splice(index, 1);
+    setScenario({
+      ...scenario,
+      roles: newScenarioRoles,
+    });
   };
 
   return (
     <div className="w-full flex flex-col space-y-3">
       <div className="w-full flex flex-col space-y-3">
-        {roleList.map((role, index) => (
-          <RoleItem
-            key={`${role.name}-${index}`}
-            availableRoles={availableRoles}
-            handleRoleChange={handleRoleChange}
-            handleRoleRemove={handleRoleRemove}
-            index={index}
-            initialRole={role}
-            isBeingEdited={isBeingEdited || false}
-          />
-        ))}
+        {scenario.roles.length === 0 ? (
+          <div className="w-full flex justify-center">
+            <p>
+              <FormattedMessage
+                defaultMessage={"No roles in scenario"}
+                id={"scenarios.id.page.noRolesInScenario"}
+              />
+            </p>
+          </div>
+        ) : (
+          scenario.roles.map((role, index) => (
+            <RoleItem
+              key={role.id}
+              availableRoles={availableRoles}
+              handleRoleChange={handleRoleChange}
+              handleRoleRemove={handleRoleRemove}
+              index={index}
+              initialRole={role}
+              isBeingEdited={isBeingEdited || false}
+            />
+          ))
+        )}
       </div>
       {isBeingEdited && (
         <div className="w-full flex justify-center">

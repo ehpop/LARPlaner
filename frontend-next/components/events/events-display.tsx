@@ -55,7 +55,7 @@ export const EventsDisplay = ({
   useEffect(() => {
     const newFilteredList = searchValue
       ? list.filter((item) =>
-          item.title.toLowerCase().includes(searchValue.toLowerCase()),
+          item.name.toLowerCase().includes(searchValue.toLowerCase()),
         )
       : list;
 

@@ -10,7 +10,7 @@ export type IRole = {
   name: string;
   description: string;
   imageUrl: string;
-  tags: string[];
+  tags: ITag[];
 };
 export type IRoleList = IRole[];
 
@@ -25,40 +25,33 @@ export type IScenarioList = IScenario[];
 
 export type IEvent = {
   id: number | null;
-  title: string;
+  name: string;
   img: string;
   date: ZonedDateTime;
-  location: {
-    name: string;
-    address: string;
-    latitude: number;
-    longitude: number;
-  };
   description: string;
   scenarioId: number | null;
   assignedRoles: {
-    scenarioRoleId: IScenarioRole["id"];
+    scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
   }[];
 };
 export type IEventList = IEvent[];
 
 export type IScenarioRole = {
-  id: number | null;
+  id: string | null;
   roleId: number | null;
   scenarioId: number | null;
-  name: string;
-  description: string;
+  scenarioDescription: string;
   gmNotes: string;
 };
 export type IScenarioRoleList = IScenarioRole[];
 
 export type IScenarioItem = {
-  id: number | null;
+  id: string | null;
   scenarioId: number | null;
   name: string;
   description: string;
-  imageUrl: string;
+  imageUrl?: string;
   requiredTags: ITag[];
 };
 export type IScenarioItemList = IScenarioItem[];

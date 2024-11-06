@@ -14,12 +14,21 @@ import {
 import React, { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import QRCode from "react-qr-code";
+import { uuidv4 } from "@firebase/util";
 
 import AutocompleteWithChips from "@/components/autocomplete-with-chips";
 import { emptyScenarioItem, possibleTags } from "@/data/mock-data";
-import { IScenarioItem, IScenarioItemList } from "@/types";
+import { IScenario, IScenarioItem, IScenarioItemList } from "@/types";
 
-const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
+const QRModal = ({
+  isOpen,
+  onOpenChange,
+  itemName,
+}: {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  itemName: string;
+}) => {
   const intl = useIntl();
 
   return (
@@ -52,11 +61,11 @@ const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
-              {selectedItem}
+              {itemName}
             </ModalHeader>
             <ModalBody className="dark:bg-white">
               <div className="w-full flex justify-center">
-                <QRCode value={selectedItem} />
+                <QRCode value={itemName} />
               </div>
             </ModalBody>
             <ModalFooter>
@@ -76,12 +85,14 @@ const QRModal = ({ isOpen, onOpenChange, selectedItem }: any) => {
 
 const ItemForm = ({
   item,
-  removeItem,
+  handleItemRemove,
+  handleItemChange,
   index,
   isBeingEdited,
 }: {
   item: IScenarioItem;
-  removeItem: (index: number) => void;
+  handleItemRemove: (index: number) => void;
+  handleItemChange: (index: number, newScenarioItem: IScenarioItem) => void;
   index: number;
   isBeingEdited: boolean;
 }) => {
@@ -89,9 +100,15 @@ const ItemForm = ({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const [showItem, setShowItem] = useState(true);
-  //TODO REPLACE with JSON editing
-  const [itemsName, setItemsName] = React.useState(item.name);
   const [selectedItem, setSelectedItem] = React.useState("");
+  const [touched, setTouched] = useState({
+    name: false,
+    description: false,
+  });
+
+  const handleTouched = (key: keyof typeof touched) => {
+    setTouched({ ...touched, [key]: true });
+  };
 
   const onOpenModal = (item: string) => {
     setSelectedItem(item);
@@ -100,9 +117,15 @@ const ItemForm = ({
 
   const itemNameElement = (
     <Input
+      isRequired
       className="w-1/2"
       defaultValue={item.name}
+      errorMessage={intl.formatMessage({
+        id: "scenarios.new.page.itemName.error",
+        defaultMessage: "Name is required",
+      })}
       isDisabled={!isBeingEdited}
+      isInvalid={touched.name && item.name === ""}
       label={intl.formatMessage({
         id: "scenarios.new.page.itemName",
         defaultMessage: "Name",
@@ -114,22 +137,23 @@ const ItemForm = ({
       size="sm"
       type="text"
       variant="underlined"
-      onChange={(e) => setItemsName(e.target.value)}
+      onChange={(e) => {
+        handleItemChange(index, { ...item, name: e.target.value });
+        handleTouched("name");
+      }}
     />
   );
+
   const itemActionButtons = (
     <div className="flex flex-row lg:space-x-2 space-x-1">
       <Button
         color="primary"
-        isDisabled={itemsName === ""}
+        isDisabled={item.name === ""}
         size="sm"
         variant="bordered"
-        onPress={() => onOpenModal(itemsName)}
+        onPress={() => onOpenModal(item.name)}
       >
-        {intl.formatMessage({
-          id: "item.qr",
-          defaultMessage: "QR Code",
-        })}
+        <FormattedMessage defaultMessage="QR Code" id="item.qr" />
       </Button>
       <Button
         size="sm"
@@ -144,7 +168,7 @@ const ItemForm = ({
           isDisabled={!isBeingEdited}
           size="sm"
           variant="bordered"
-          onPress={() => removeItem(index)}
+          onPress={() => handleItemRemove(index)}
         >
           <FormattedMessage
             defaultMessage={"Remove"}
@@ -154,11 +178,18 @@ const ItemForm = ({
       )}
     </div>
   );
+
   const itemDescription = (
     <Textarea
+      isRequired
       className="w-full"
       defaultValue={item.description}
+      errorMessage={intl.formatMessage({
+        id: "scenarios.new.page.description.error",
+        defaultMessage: "Description is required",
+      })}
       isDisabled={!isBeingEdited}
+      isInvalid={touched.description && item.description === ""}
       label={intl.formatMessage({
         id: "scenarios.new.page.itemDescription",
         defaultMessage: "Description",
@@ -170,6 +201,10 @@ const ItemForm = ({
       size="sm"
       type="text"
       variant="underlined"
+      onChange={(e) => {
+        handleItemChange(index, { ...item, description: e.target.value });
+        handleTouched("description");
+      }}
     />
   );
   const itemRequiredTags = (
@@ -181,13 +216,16 @@ const ItemForm = ({
         />
       </p>
       <AutocompleteWithChips
-        array={possibleTags.map((tag) => tag.name)}
-        initialSelectedItems={item.requiredTags.map((tag) => tag.name)}
+        allItems={possibleTags}
         isDisabled={!isBeingEdited}
         selectLabel={intl.formatMessage({
           defaultMessage: "Select required tags",
           id: "scenarios.new.page.selectRequiredTags",
         })}
+        selectedItems={item.requiredTags}
+        setSelectedItems={(tags) => {
+          handleItemChange(index, { ...item, requiredTags: tags });
+        }}
       />
     </div>
   );
@@ -206,7 +244,7 @@ const ItemForm = ({
       </div>
       <QRModal
         isOpen={isOpen}
-        selectedItem={selectedItem}
+        itemName={selectedItem}
         onOpenChange={onOpenChange}
       />
     </div>
@@ -214,43 +252,69 @@ const ItemForm = ({
 };
 
 const ScenarioItemsForm = ({
-  initialItems,
   isBeingEdited,
+  scenario,
+  setScenario,
 }: {
   initialItems?: IScenarioItemList;
   isBeingEdited?: boolean;
+  scenario: IScenario;
+  setScenario: (scenario: IScenario) => void;
 }) => {
-  const [items, setItems] = useState<IScenarioItemList>(
-    initialItems && initialItems.length > 0
-      ? initialItems
-      : [{ ...emptyScenarioItem, id: 1 }],
-  );
-
   const addItem = () => {
-    setItems([...items, { ...emptyScenarioItem, id: items.length + 1 }]);
+    setScenario({
+      ...scenario,
+      items: [
+        ...scenario.items,
+        {
+          ...emptyScenarioItem,
+          id: uuidv4(),
+          scenarioId: scenario.id,
+        },
+      ],
+    });
   };
 
-  const removeItem = (index: number) => {
-    const updatedItems = [...items];
+  const handleItemRemove = (index: number) => {
+    const updatedItems = [...scenario.items];
 
     updatedItems.splice(index, 1);
-    setItems(updatedItems);
+    setScenario({ ...scenario, items: updatedItems });
+  };
+
+  const handleItemChange = (index: number, newScenarioItem: IScenarioItem) => {
+    const updatedItems = [...scenario.items];
+
+    updatedItems[index] = newScenarioItem;
+    setScenario({ ...scenario, items: updatedItems });
   };
 
   return (
     <div className="w-full space-y-10 lg:space-y-3 overflow-y-auto">
-      {items.map((item, index) => (
-        <ItemForm
-          key={`${item}-${index}`}
-          index={index}
-          isBeingEdited={isBeingEdited || false}
-          item={item}
-          removeItem={removeItem}
-        />
-      ))}
+      {scenario.items.length === 0 ? (
+        <div className="w-full flex justify-center">
+          <p>
+            <FormattedMessage
+              defaultMessage={"No items in scenario"}
+              id={"scenarios.id.page.noItemsInScenario"}
+            />
+          </p>
+        </div>
+      ) : (
+        scenario.items.map((item, index) => (
+          <ItemForm
+            key={item.id}
+            handleItemChange={handleItemChange}
+            handleItemRemove={handleItemRemove}
+            index={index}
+            isBeingEdited={isBeingEdited || false}
+            item={item}
+          />
+        ))
+      )}
       {isBeingEdited && (
         <div className="w-full flex justify-center">
-          <Button color="success" variant="solid" onPress={addItem}>
+          <Button color="success" variant="solid" onPress={() => addItem()}>
             <FormattedMessage
               defaultMessage={"Add item"}
               id={"scenarios.id.page.addItemButton"}

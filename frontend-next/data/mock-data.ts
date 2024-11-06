@@ -1,4 +1,5 @@
 import { getLocalTimeZone, now } from "@internationalized/date";
+import { uuidv4 } from "@firebase/util";
 
 import {
   IEvent,
@@ -49,7 +50,10 @@ export const exampleRole: IRole = {
   description: "A strong and brave warrior.",
   imageUrl:
     "https://media.mythopedia.com/6cugv2Onrb7n1IDYjJBTmD/e309806f7646daef4b8abb7b0fc19dcc/wizard-name-generator.jpg?w=1280&h=720&fit=crop&crop=top2",
-  tags: ["Brave", "Impulsive"],
+  tags: [
+    { key: "brave", name: "Brave" },
+    { key: "strong", name: "Strong" },
+  ] as ITag[],
 };
 
 export const emptyRole: IRole = {
@@ -61,11 +65,10 @@ export const emptyRole: IRole = {
 };
 
 export const exampleScenarioRole: IScenarioRole = {
-  id: 1,
+  id: uuidv4(),
   scenarioId: 1,
   roleId: 1,
-  name: "Warrior",
-  description: "A strong and brave warrior.",
+  scenarioDescription: "A strong and brave warrior.",
   gmNotes: "Notes for the game master.",
 };
 
@@ -73,28 +76,59 @@ export const emptyScenarioRole: IScenarioRole = {
   id: null,
   scenarioId: null,
   roleId: null,
-  name: "",
-  description: "",
+  scenarioDescription: "",
   gmNotes: "",
 };
 
 export const possibleScenarioRoles: IScenarioRoleList = [
-  { ...exampleScenarioRole, id: 1, scenarioId: 1, roleId: 1, name: "Warrior" },
-  { ...exampleScenarioRole, id: 2, scenarioId: 1, roleId: 2, name: "Mage" },
-  { ...exampleScenarioRole, id: 3, scenarioId: 1, roleId: 3, name: "Rogue" },
-  { ...exampleScenarioRole, id: 4, scenarioId: 1, roleId: 4, name: "Cleric" },
-  { ...exampleScenarioRole, id: 5, scenarioId: 1, roleId: 5, name: "Bard" },
-  { ...exampleScenarioRole, id: 6, scenarioId: 1, roleId: 6, name: "Druid" },
+  {
+    id: uuidv4(),
+    scenarioId: 1,
+    roleId: 1,
+    scenarioDescription: "Potężny czarodziej, który włada magią.",
+    gmNotes: "Notatki dla mistrza gry.",
+  },
+  {
+    id: uuidv4(),
+    scenarioId: 1,
+    roleId: 2,
+    scenarioDescription: "Silny i odważny wojownik.",
+    gmNotes: "Notatki dla mistrza gry.",
+  },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 3 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 4 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 5 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 6 },
   {
     ...exampleScenarioRole,
-    id: 7,
+    id: uuidv4(),
     scenarioId: 1,
     roleId: 7,
-    name: "Barbarian",
   },
-  { ...exampleScenarioRole, id: 8, scenarioId: 1, roleId: 8, name: "Monk" },
-  { ...exampleScenarioRole, id: 9, scenarioId: 1, roleId: 9, name: "Paladin" },
-  { ...exampleScenarioRole, id: 10, scenarioId: 1, roleId: 10, name: "Ranger" },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 8 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 9 },
+  { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 10 },
+];
+
+export const possibleScenarioItems: IScenarioItemList = [
+  {
+    id: uuidv4(),
+    scenarioId: 1,
+    name: "Magic Sword",
+    description: "A powerful sword imbued with magical properties.",
+    requiredTags: [
+      { key: "agile", name: "Agile" },
+      { key: "wise", name: "Wise" },
+      { key: "brave", name: "Brave" },
+    ] as ITag[],
+  },
+  {
+    id: uuidv4(),
+    scenarioId: 1,
+    name: "Healing Potion",
+    description: "A potion that heals the user's wounds.",
+    requiredTags: [{ key: "strong", name: "Strong" }] as ITag[],
+  },
 ];
 
 export const possibleRoles: IRoleList = [
@@ -111,7 +145,7 @@ export const possibleRoles: IRoleList = [
 ];
 
 export const exampleScenarioItem: IScenarioItem = {
-  id: 1,
+  id: uuidv4(),
   scenarioId: 1,
   name: "Magic Sword",
   description: "A powerful sword imbued with magical properties.",
@@ -146,58 +180,15 @@ export const exampleScenario: IScenario = {
   name: "Przykładowy Scenariusz",
   description:
     "Opis przykładowego scenariusza, który zawiera szczegóły dotyczące fabuły, tła, oraz celu.",
-  roles: [
-    {
-      id: 1,
-      scenarioId: 1,
-      roleId: 1,
-      name: "Mag",
-      description: "Potężny czarodziej, który włada magią.",
-      gmNotes: "Notatki dla mistrza gry.",
-    },
-    {
-      id: 2,
-      scenarioId: 1,
-      roleId: 2,
-      name: "Wojownik",
-      description: "Silny i odważny wojownik.",
-      gmNotes: "Notatki dla mistrza gry.",
-    },
-  ] as IScenarioRoleList,
-  items: [
-    {
-      name: "Magic Sword",
-      description: "A powerful sword imbued with magical properties.",
-      requiredTags: [
-        { key: "agile", name: "Agile" },
-        { key: "wise", name: "Wise" },
-        { key: "brave", name: "Brave" },
-      ] as ITag[],
-    },
-    {
-      name: "Healing Potion",
-      description: "A potion that heals the user's wounds.",
-      requiredTags: [{ key: "strong", name: "Strong" }] as ITag[],
-    },
-  ] as IScenarioItemList,
+  roles: possibleScenarioRoles.slice(0, 2),
+  items: possibleScenarioItems,
 };
-
-export const possibleScenarioItems: IScenarioItemList = [
-  { ...exampleScenarioItem, id: 1, name: "Magic Sword" },
-  { ...exampleScenarioItem, id: 2, name: "Healing Potion" },
-];
 
 export const emptyEvent: IEvent = {
   id: null,
-  title: "",
+  name: "",
   img: "",
-  date: now(getLocalTimeZone()),
-  location: {
-    name: "",
-    address: "",
-    latitude: 0,
-    longitude: 0,
-  },
+  date: now(getLocalTimeZone()).add({ days: 1 }),
   description: "",
   scenarioId: null,
   assignedRoles: [],
@@ -205,59 +196,54 @@ export const emptyEvent: IEvent = {
 
 export const exampleEvent: IEvent = {
   id: 1,
-  title: `Wydarzenie #1`,
-  date: now(getLocalTimeZone()),
+  name: `Wydarzenie #1`,
+  date: now(getLocalTimeZone()).add({ days: 1 }),
   img: "/images/event-1.jpg",
-  location: {
-    name: "Gmach Główny Politechniki Warszawskiej",
-    address: "plac Politechniki 1, 00-661 Warszawa",
-    latitude: 52.220738829777886,
-    longitude: 21.009989954884936,
-  },
   description: "Przykładowy opis wydarzenia.",
   scenarioId: 1,
   assignedRoles: [
     {
-      scenarioRoleId: 1,
+      scenarioRoleId: possibleScenarioRoles[0].roleId,
       assignedEmail: userEmails[0].value,
     },
     {
-      scenarioRoleId: 2,
+      scenarioRoleId: possibleScenarioRoles[1].roleId,
       assignedEmail: userEmails[1].value,
     },
   ],
 };
 
-export const getEvent = (id: number): IEvent => {
-  return {
-    ...exampleEvent,
-    id: id,
-    title: `Wydarzenie #${id}`,
-    img: `/images/event-${id}.jpg`,
-  };
-};
-
-export const getScenario = (id: number): IScenario => {
-  return {
-    ...exampleScenario,
-    id: id,
-    name: `Scenario ${id}`,
-  };
-};
-
-export const getRole = (id: number): IRole => {
-  return {
-    ...exampleRole,
-    id: id,
-    name: `Role ${id}`,
-  };
-};
-
-export const eventsList: IEventList = Array.from({ length: 20 }, (_, i) =>
-  getEvent(i + 1),
-);
+export const eventsList: IEventList = Array.from({ length: 20 }, (_, i) => ({
+  ...exampleEvent,
+  id: i + 1,
+  name: `Wydarzenie #${i + 1}`,
+  img: `/images/event-${i + 1}.jpg`,
+}));
 
 export const possibleScenarios: IScenarioList = Array.from(
   { length: 5 },
-  (_, i) => getScenario(i + 1),
+  (_, i) => ({
+    ...exampleScenario,
+    id: i + 1,
+    name: `Scenario #${i + 1}`,
+    description: `Description of scenario #${i + 1}`,
+    roles: possibleScenarioRoles
+      .slice((i - 1) * 2, (i - 1) * 2 + 2)
+      .map((role) => ({
+        ...role,
+        scenarioId: i + 1,
+      })),
+  }),
 );
+
+export const getEvent = (id: number): IEvent => {
+  return eventsList[id % eventsList.length];
+};
+
+export const getScenario = (id: number): IScenario => {
+  return possibleScenarios[id % possibleScenarios.length];
+};
+
+export const getRole = (id: number): IRole => {
+  return possibleRoles[id % possibleRoles.length];
+};
