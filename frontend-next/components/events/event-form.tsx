@@ -388,7 +388,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
       {showAssignRoles && (
         <EventAssignRolesForm
           event={event}
-          isBeingEdited={isBeingEdited}
+          isBeingEdited={isNewEvent || isBeingEdited}
           setEvent={setEvent}
         />
       )}

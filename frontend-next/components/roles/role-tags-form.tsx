@@ -166,7 +166,7 @@ const RoleTagsForm = ({
     );
 
   return (
-    <div>
+    <div className="flex flex-col space-y-3">
       {tagListElement}
       {isBeingEdited && (
         <div className="w-full flex justify-center">
