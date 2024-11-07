@@ -156,7 +156,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
       </div>
       {showTags && (
         <RoleTagsForm
-          isBeingEdited={isBeingEdited}
+          isBeingEdited={isNewRole || isBeingEdited}
           role={role}
           setRole={setRole}
         />
