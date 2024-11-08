@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/button";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { SearchIcon } from "@/components/icons";
-import { IRoleList } from "@/types";
+import { IRoleList } from "@/types/roles.types";
 
 const ROLES_PER_PAGE = 6;
 

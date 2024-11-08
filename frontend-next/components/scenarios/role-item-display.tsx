@@ -2,7 +2,8 @@ import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 import { Button, Select, SelectItem, Textarea } from "@nextui-org/react";
 
-import { IRoleList, IScenarioRole } from "@/types";
+import { IScenarioRole } from "@/types/scenario.types";
+import { IRoleList } from "@/types/roles.types";
 
 export const RoleItem = ({
   index,

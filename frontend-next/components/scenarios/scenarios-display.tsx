@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/button";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { SearchIcon } from "@/components/icons";
-import { IScenarioList } from "@/types";
+import { IScenarioList } from "@/types/scenario.types";
 
 const SCENARIOS_PER_PAGE = 6;
 

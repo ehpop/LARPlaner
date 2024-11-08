@@ -3,7 +3,7 @@
 import { FormattedMessage } from "react-intl";
 
 import ScenariosDisplay from "@/components/scenarios/scenarios-display";
-import { possibleScenarios } from "@/data/mock-data";
+import { possibleScenarios } from "@/services/mock/mock-data";
 
 function ScenariosPage() {
   return (

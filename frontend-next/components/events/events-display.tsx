@@ -7,7 +7,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Event } from "./event";
 
 import { SearchIcon } from "@/components/icons";
-import { IEventList } from "@/types";
+import { IEventList } from "@/types/event.types";
 
 const EVENTS_PER_PAGE = 3;
 

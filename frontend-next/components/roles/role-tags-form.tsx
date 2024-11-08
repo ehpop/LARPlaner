@@ -4,7 +4,7 @@ import { Button } from "@nextui-org/button";
 import { useState } from "react";
 import { uuidv4 } from "@firebase/util";
 
-import { IRole, ITag } from "@/types";
+import { IRole, ITag } from "@/types/roles.types";
 
 const RoleTagEntry = ({
   tag,

@@ -19,11 +19,15 @@ import {
 } from "@internationalized/date";
 import { Link } from "@nextui-org/link";
 
-import { emptyEvent, getEvent, possibleScenarios } from "@/data/mock-data";
+import {
+  emptyEvent,
+  getEvent,
+  possibleScenarios,
+} from "@/services/mock/mock-data";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
-import { IEvent } from "@/types";
 import EventAssignRolesForm from "@/components/events/event-assign-roles-form";
+import { IEvent } from "@/types/event.types";
 
 export default function EventForm({ eventId }: { eventId?: number }) {
   const intl = useIntl();

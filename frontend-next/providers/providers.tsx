@@ -10,6 +10,7 @@ import { ThemeProviderProps } from "next-themes/dist/types";
 import { LocaleContext } from "@/context/locale-context";
 import LocaleProvider from "@/providers/locale-provider";
 import FirebaseProvider from "@/providers/firebase-provider";
+import ReactQueryProvider from "@/providers/react-query-provider";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -24,7 +25,9 @@ export function Providers({ children, themeProps }: ProvidersProps) {
     <NextUIProvider navigate={router.push}>
       <NextThemesProvider {...themeProps}>
         <LocaleProvider locale={locale}>
-          <FirebaseProvider>{children}</FirebaseProvider>
+          <FirebaseProvider>
+            <ReactQueryProvider>{children}</ReactQueryProvider>
+          </FirebaseProvider>
         </LocaleProvider>
       </NextThemesProvider>
     </NextUIProvider>

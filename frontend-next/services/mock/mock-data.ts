@@ -1,20 +1,16 @@
 import { getLocalTimeZone, now } from "@internationalized/date";
 import { uuidv4 } from "@firebase/util";
 
+import { IEvent, IEventList, ISkill } from "@/types/event.types";
+import { IRole, IRoleList, ITag } from "@/types/roles.types";
 import {
-  IEvent,
-  IEventList,
-  IRole,
-  IRoleList,
   IScenario,
   IScenarioItem,
   IScenarioItemList,
   IScenarioList,
   IScenarioRole,
   IScenarioRoleList,
-  ISkill,
-  ITag,
-} from "@/types";
+} from "@/types/scenario.types";
 
 export const possibleSkills: ISkill[] = [
   { key: "strength", name: "Strength" },

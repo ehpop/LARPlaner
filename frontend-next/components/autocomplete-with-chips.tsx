@@ -3,7 +3,7 @@
 import { Autocomplete, AutocompleteItem, Chip } from "@nextui-org/react";
 import { Check, X } from "lucide-react";
 
-import { ITag } from "@/types";
+import { ITag } from "@/types/roles.types";
 
 interface MultiselectSearchProps {
   allItems: ITag[];

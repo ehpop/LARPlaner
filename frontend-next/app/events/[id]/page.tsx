@@ -3,7 +3,7 @@
 import Script from "next/script";
 
 import Event from "@/components/events/event";
-import { getEvent } from "@/data/mock-data";
+import { getEvent } from "@/services/mock/mock-data";
 import { useAuth } from "@/providers/firebase-provider";
 
 const UserEventPage = ({ params }: any) => {

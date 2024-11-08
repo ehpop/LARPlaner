@@ -4,8 +4,9 @@ import { FormattedMessage } from "react-intl";
 import { uuidv4 } from "@firebase/util";
 
 import { RoleItem } from "@/components/scenarios/role-item-display";
-import { IRoleList, IScenario, IScenarioRole } from "@/types";
-import { emptyScenarioRole } from "@/data/mock-data";
+import { emptyScenarioRole } from "@/services/mock/mock-data";
+import { IRoleList } from "@/types/roles.types";
+import { IScenario, IScenarioRole } from "@/types/scenario.types";
 
 export const ScenarioRolesForm = ({
   availableRoles,

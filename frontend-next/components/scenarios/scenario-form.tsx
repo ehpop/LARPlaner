@@ -7,7 +7,7 @@ import {
   emptyScenario,
   exampleScenario,
   possibleRoles,
-} from "@/data/mock-data";
+} from "@/services/mock/mock-data";
 import ScenarioItemsForm from "@/components/scenarios/scenario-items-form";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";

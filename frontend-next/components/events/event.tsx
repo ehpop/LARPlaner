@@ -1,7 +1,7 @@
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import { Link } from "@nextui-org/link";
 
-import { IEvent } from "@/types";
+import { IEvent } from "@/types/event.types";
 
 interface EventProps {
   event: IEvent;

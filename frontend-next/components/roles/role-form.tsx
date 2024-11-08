@@ -8,11 +8,14 @@ import {
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 
-import { emptyRole, exampleRole as exampleRole } from "@/data/mock-data";
+import {
+  emptyRole,
+  exampleRole as exampleRole,
+} from "@/services/mock/mock-data";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
-import { IRole } from "@/types";
 import RoleTagsForm from "@/components/roles/role-tags-form";
+import { IRole } from "@/types/roles.types";
 
 export default function RoleForm({ roleId }: { roleId?: string }) {
   const intl = useIntl();

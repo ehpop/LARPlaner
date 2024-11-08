@@ -2,8 +2,9 @@ import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { Key, useState } from "react";
 
-import { IEvent, IScenarioRole } from "@/types";
-import { getRole, getScenario, userEmails } from "@/data/mock-data";
+import { getRole, getScenario, userEmails } from "@/services/mock/mock-data";
+import { IScenarioRole } from "@/types/scenario.types";
+import { IEvent } from "@/types/event.types";
 
 function RoleAssignmentEntry({
   event,

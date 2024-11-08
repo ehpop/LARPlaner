@@ -3,7 +3,7 @@
 import { useIntl } from "react-intl";
 
 import { EventsDisplay } from "@/components/events/events-display";
-import { eventsList as list } from "@/data/mock-data";
+import { eventsList as list } from "@/services/mock/mock-data";
 
 function EventsPage() {
   const intl = useIntl();

@@ -17,8 +17,12 @@ import QRCode from "react-qr-code";
 import { uuidv4 } from "@firebase/util";
 
 import AutocompleteWithChips from "@/components/autocomplete-with-chips";
-import { emptyScenarioItem, possibleTags } from "@/data/mock-data";
-import { IScenario, IScenarioItem, IScenarioItemList } from "@/types";
+import { emptyScenarioItem, possibleTags } from "@/services/mock/mock-data";
+import {
+  IScenario,
+  IScenarioItem,
+  IScenarioItemList,
+} from "@/types/scenario.types";
 
 const QRModal = ({
   isOpen,
