@@ -4,10 +4,13 @@ import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { ReactNode } from "react";
 
+import "react-toastify/dist/ReactToastify.css";
+
 import { Providers } from "@/providers/providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
+import ToastContainerWrapper from "@/components/toast-container-wrapper";
 
 export const metadata: Metadata = {
   title: {
@@ -43,6 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
               {children}
             </main>
+            <ToastContainerWrapper />
             <footer className="w-full flex items-center justify-center py-3">
               <Link
                 isExternal
