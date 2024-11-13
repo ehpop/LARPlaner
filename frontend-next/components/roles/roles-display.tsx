@@ -59,10 +59,10 @@ export const RolesDisplay = ({
       <div className="gap-4 grid sm:grid-cols-2 grid-cols-1">
         {pages[currentPage - 1]?.map((role) => (
           <Link
-            key={role.name}
+            key={role.id}
             isBlock
             className="w-full border-1 p-3 space-y-3 text-center"
-            href={`/admin/roles/${role.name.replace(/\s/g, "-").toLowerCase()}`}
+            href={`/admin/roles/${role.id}`}
           >
             <p className="text-xl">{role.name}</p>
           </Link>

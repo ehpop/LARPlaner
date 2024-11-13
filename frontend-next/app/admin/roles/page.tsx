@@ -15,7 +15,7 @@ export default function RolesPage() {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await RolesService.getAllRoles();
+        const response = await RolesService.getAll();
 
         if (response.success) {
           setRolesData(response.data);

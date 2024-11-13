@@ -7,26 +7,27 @@ import {
 } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
-import {
-  emptyRole,
-  exampleRole as exampleRole,
-} from "@/services/mock/mock-data";
+import { emptyRole } from "@/services/mock/mock-data";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import RoleTagsForm from "@/components/roles/role-tags-form";
 import { IRole } from "@/types/roles.types";
+import { usePostRole } from "@/hooks/useRoles";
 
-export default function RoleForm({ roleId }: { roleId?: string }) {
+export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const intl = useIntl();
+  const router = useRouter();
 
-  const isNewRole = !roleId;
-  const initialRole = isNewRole ? emptyRole : exampleRole;
+  const isNewRole = !initialRole;
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
-  const [role, setRole] = useState(initialRole);
-  const [imageUrl, setImageUrl] = useState(initialRole.imageUrl);
+  const [role, setRole] = useState(initialRole || emptyRole);
+  const [imageUrl, setImageUrl] = useState(role.imageUrl);
   const [showTags, setShowTags] = useState(true);
+  const { mutateAsync } = usePostRole();
 
   const [touched, setTouched] = useState({
     name: false,
@@ -64,7 +65,14 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
   } = useDisclosure();
 
   const handleSave = () => {
-    alert("Saving role: " + JSON.stringify(role));
+    mutateAsync(role)
+      .then((result) => {
+        if (result.success) {
+          toast("Role saved successfully");
+          router.push("/admin/roles/" + result.data.id);
+        }
+      })
+      .catch((error) => toast(error));
   };
 
   const roleDescription = (
@@ -133,7 +141,7 @@ export default function RoleForm({ roleId }: { roleId?: string }) {
           <FormattedMessage
             defaultMessage='Role "{roleName}"'
             id="role.form.roleName"
-            values={{ roleName: roleId }}
+            values={{ roleName: role.name }}
           />
         )}
       </p>
