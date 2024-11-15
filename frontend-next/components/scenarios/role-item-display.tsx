@@ -10,19 +10,18 @@ export const RoleItem = ({
   handleRoleChange,
   handleRoleRemove,
   availableRoles,
-  initialRole,
+  role,
   isBeingEdited,
 }: {
   index: number;
   handleRoleChange: (index: number, role: IScenarioRole) => void;
   handleRoleRemove: (index: number) => void;
   availableRoles: IRoleList;
-  initialRole: IScenarioRole;
+  role: IScenarioRole;
   isBeingEdited?: boolean;
 }) => {
   const intl = useIntl();
   const [showRole, setShowRole] = useState(true);
-  const [role, setRole] = useState<IScenarioRole>(initialRole);
   const [touched, setTouched] = useState({
     description: false,
     gmNotes: false,
@@ -36,7 +35,6 @@ export const RoleItem = ({
   const roleDescription = (
     <Textarea
       isRequired
-      defaultValue={role.scenarioDescription}
       description={intl.formatMessage({
         id: "role.display.description.description",
         defaultMessage:
@@ -53,13 +51,13 @@ export const RoleItem = ({
         defaultMessage: "Description in the scenario",
       })}
       size="lg"
+      value={role.scenarioDescription}
       variant="underlined"
       onChange={(e) => {
         handleRoleChange(index, {
           ...role,
           scenarioDescription: e.target.value,
         });
-        setRole({ ...role, scenarioDescription: e.target.value });
         handleTouched("description");
       }}
     />
@@ -67,7 +65,6 @@ export const RoleItem = ({
   const roleGMNotes = (
     <Textarea
       isRequired
-      defaultValue={role.gmNotes}
       description={intl.formatMessage({
         id: "role.display.gm.notes.description",
         defaultMessage: "Roles notes visible only to the GM",
@@ -83,13 +80,13 @@ export const RoleItem = ({
         defaultMessage: "GM Notes",
       })}
       size="lg"
+      value={role.gmNotes}
       variant="underlined"
       onChange={(e) => {
         handleRoleChange(index, {
           ...role,
           gmNotes: e.target.value,
         });
-        setRole({ ...role, gmNotes: e.target.value });
         handleTouched("gmNotes");
       }}
     />
@@ -114,10 +111,6 @@ export const RoleItem = ({
       variant="underlined"
       onChange={(e) => {
         handleRoleChange(index, {
-          ...role,
-          roleId: parseInt(e.target.value, 10),
-        });
-        setRole({
           ...role,
           roleId: parseInt(e.target.value, 10),
         });

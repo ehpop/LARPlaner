@@ -122,11 +122,11 @@ export const ScenariosDisplay = ({
       </div>
       {filteredList.length > 0 ? ScenariosElement : NoScenariosElement}
       {canAddNewScenario && (
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-end">
           <Link href={"/admin/scenarios/new"}>
             <Button color="success" variant="solid">
               <FormattedMessage
-                defaultMessage="New"
+                defaultMessage="Add new scenario"
                 id="scenarios.display.addNewScenario"
               />
             </Button>

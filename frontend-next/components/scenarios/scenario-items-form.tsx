@@ -123,7 +123,6 @@ const ItemForm = ({
     <Input
       isRequired
       className="w-1/2"
-      defaultValue={item.name}
       errorMessage={intl.formatMessage({
         id: "scenarios.new.page.itemName.error",
         defaultMessage: "Name is required",
@@ -140,6 +139,7 @@ const ItemForm = ({
       })}
       size="sm"
       type="text"
+      value={item.name}
       variant="underlined"
       onChange={(e) => {
         handleItemChange(index, { ...item, name: e.target.value });
@@ -187,7 +187,6 @@ const ItemForm = ({
     <Textarea
       isRequired
       className="w-full"
-      defaultValue={item.description}
       errorMessage={intl.formatMessage({
         id: "scenarios.new.page.description.error",
         defaultMessage: "Description is required",
@@ -204,6 +203,7 @@ const ItemForm = ({
       })}
       size="sm"
       type="text"
+      value={item.description}
       variant="underlined"
       onChange={(e) => {
         handleItemChange(index, { ...item, description: e.target.value });

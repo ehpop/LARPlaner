@@ -69,8 +69,8 @@ export const ScenarioRolesForm = ({
               handleRoleChange={handleRoleChange}
               handleRoleRemove={handleRoleRemove}
               index={index}
-              initialRole={role}
               isBeingEdited={isBeingEdited || false}
+              role={role}
             />
           ))
         )}

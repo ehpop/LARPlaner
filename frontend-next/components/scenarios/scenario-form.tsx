@@ -1,24 +1,32 @@
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 import { Button, Input, Textarea, useDisclosure } from "@nextui-org/react";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 import { ScenarioRolesForm } from "@/components/scenarios/scenario-roles-form";
-import {
-  emptyScenario,
-  exampleScenario,
-  possibleRoles,
-} from "@/services/mock/mock-data";
+import { emptyScenario, possibleRoles } from "@/services/mock/mock-data";
 import ScenarioItemsForm from "@/components/scenarios/scenario-items-form";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
+import { IScenario } from "@/types/scenario.types";
+import scenariosService from "@/services/scenarios.service";
+import LoadingOverlay from "@/components/general/loading-overlay";
 
-export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
+export default function ScenarioForm({
+  initialScenario,
+}: {
+  initialScenario?: IScenario;
+}) {
   const intl = useIntl();
-  const isNewScenario = !scenarioId;
+  const router = useRouter();
+  const isNewScenario = !initialScenario;
   const [scenario, setScenario] = useState(
-    isNewScenario ? emptyScenario : exampleScenario,
+    isNewScenario ? emptyScenario : { ...initialScenario },
   );
 
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isBeingEdited, setIsBeingEdited] = useState(isNewScenario);
   const [showItemsSection, setShowItemsSection] = useState(true);
   const [showRolesSection, setShowRolesSection] = useState(true);
@@ -43,14 +51,90 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
   } = useDisclosure();
 
   const handleSave = () => {
-    alert("Saving scenario: " + JSON.stringify(scenario));
+    setIsSaving(true);
+
+    scenariosService
+      .save(scenario)
+      .then((result) => {
+        if (result.success) {
+          toast("Scenario saved successfully", {
+            type: "success",
+          });
+          router.push("/admin/scenarios");
+        } else {
+          toast(result.data, {
+            type: "error",
+          });
+        }
+      })
+      .catch((error) => {
+        toast(error, { type: "error" });
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  };
+
+  const handleSaveEditedScenario = () => {
+    if (!scenario.id) {
+      return;
+    }
+
+    setIsSaving(true);
+    scenariosService
+      .update(scenario.id, scenario)
+      .then((result) => {
+        if (result.success) {
+          toast("Scenario saved successfully", {
+            type: "success",
+          });
+          setIsBeingEdited(false);
+        } else {
+          toast(result.data, {
+            type: "error",
+          });
+        }
+      })
+      .catch((error) => {
+        toast(error, { type: "error" });
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  };
+
+  const handleConfirmDelete = () => {
+    if (!scenario.id) {
+      return;
+    }
+
+    setIsDeleting(true);
+    scenariosService
+      .delete(scenario.id)
+      .then((result) => {
+        if (result.success) {
+          toast("Scenario deleted successfully", {
+            type: "success",
+          });
+          router.push("/admin/scenarios");
+        } else {
+          toast(result.data, {
+            type: "error",
+          });
+        }
+      })
+      .catch((error) => {
+        toast(error, { type: "error" });
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
   };
 
   const nameElement = (
     <Input
       isRequired
       className="w-full"
-      defaultValue={scenario.name}
       errorMessage={intl.formatMessage({
         id: "scenarios.new.page.scenarioNameError",
         defaultMessage: "Scenario name is required",
@@ -66,6 +150,7 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
         defaultMessage: "Insert scenario name",
       })}
       size="lg"
+      value={scenario.name}
       variant="underlined"
       onChange={(e) => {
         setScenario({ ...scenario, name: e.target.value });
@@ -77,7 +162,6 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
     <Textarea
       isRequired
       className="w-full"
-      defaultValue={scenario.description}
       errorMessage={intl.formatMessage({
         id: "scenarios.new.page.scenarioDescriptionError",
         defaultMessage: "Scenario description is required",
@@ -93,6 +177,7 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
         defaultMessage: "Insert scenario description",
       })}
       size="lg"
+      value={scenario.description}
       variant="underlined"
       onChange={(e) => {
         setScenario({ ...scenario, description: e.target.value });
@@ -176,7 +261,7 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
   const confirmDelete = (
     <ConfirmActionModal
       handleOnConfirm={() => {
-        alert("Event will be deleted");
+        handleConfirmDelete();
       }}
       isOpen={isOpenDelete}
       prompt={intl.formatMessage({
@@ -195,6 +280,7 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
   const confirmCancel = (
     <ConfirmActionModal
       handleOnConfirm={() => {
+        setScenario(initialScenario || emptyScenario);
         setIsBeingEdited(false);
       }}
       isOpen={isOpenCancel}
@@ -225,8 +311,7 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
           setIsBeingEdited(true);
         }}
         onSaveClicked={() => {
-          handleSave();
-          setIsBeingEdited(false);
+          handleSaveEditedScenario();
         }}
       />
       {confirmCancel}
@@ -253,16 +338,27 @@ export default function ScenarioForm({ scenarioId }: { scenarioId?: string }) {
     </div>
   );
 
-  return (
-    <div className="sm:w-4/5 w-full space-y-10 border-1 p-3">
-      {titleElement}
-      {nameElement}
-      {descriptionElement}
-      <div className="w-full flex flex-col space-y-3 space-x-0 lg:flex-row lg:space-x-3 lg:space-y-0">
-        {rolesElement}
-        {itemsElement}
+  const form = (
+    <div className="w-full flex justify-center">
+      <div className="sm:w-4/5 w-full space-y-10 border-1 p-3">
+        {titleElement}
+        {nameElement}
+        {descriptionElement}
+        <div className="w-full flex flex-col space-y-3 space-x-0 lg:flex-row lg:space-x-3 lg:space-y-0">
+          {rolesElement}
+          {itemsElement}
+        </div>
+        {isNewScenario ? saveButton : buttonsElement}
       </div>
-      {isNewScenario ? saveButton : buttonsElement}
     </div>
+  );
+
+  return (
+    <LoadingOverlay
+      isLoading={isSaving || isDeleting}
+      label={isSaving ? "Saving scenario..." : "Deleting scenario..."}
+    >
+      {form}
+    </LoadingOverlay>
   );
 }
