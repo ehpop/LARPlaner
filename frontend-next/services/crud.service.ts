@@ -47,7 +47,7 @@ class CrudService<T> {
       }));
   }
 
-  async put(id: number, entity: T): Promise<Response<T>> {
+  async update(id: number, entity: T): Promise<Response<T>> {
     return api
       .put(`${this.baseUrl}/${id}`, JSON.stringify(entity))
       .then((result) => ({
