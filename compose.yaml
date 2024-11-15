@@ -5,9 +5,9 @@ services:
     ports:
       - "80:80"
       - "443:443"
-#    depends_on:
-#      frontend:
-#        condition: service_healthy
+  #    depends_on:
+  #      frontend:
+  #        condition: service_healthy
 
   frontend:
     image: frontend-next
@@ -15,9 +15,9 @@ services:
       context: ./frontend-next
       dockerfile: Dockerfile
     volumes:
-        - .:/app
-        - /app/node_modules
-        - /app/.next
+      - .:/app
+      - /app/node_modules
+      - /app/.next
     ports:
       - "9000:9000"
     env_file:
