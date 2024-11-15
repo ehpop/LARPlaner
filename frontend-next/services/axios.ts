@@ -9,6 +9,10 @@ export const api = axios.create({
   },
 });
 
-if (process.env.NODE_ENV !== "production") {
+if (
+  process.env.NODE_ENV !== "production" ||
+  process.env.NEXT_PUBLIC_USE_MOCK_API === "true"
+) {
+  console.log("Using mock API with base URL: " + api.defaults.baseURL);
   setupMock(api);
 }
