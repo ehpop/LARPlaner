@@ -33,7 +33,7 @@ export default function RolePage({ params }: any) {
       }
     };
 
-    fetchRole();
+    fetchRole().then(() => {});
   }, []);
 
   if (error) {
@@ -45,7 +45,7 @@ export default function RolePage({ params }: any) {
   }
 
   return (
-    <div className="w-full h-screen flex justify-center">
+    <div className="w-full min-h-screen flex justify-center">
       <LoadingOverlay isLoading={loading} label={"Loading role..."}>
         {roleData && <RoleForm initialRole={roleData} />}
       </LoadingOverlay>
