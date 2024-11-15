@@ -113,32 +113,32 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   };
 
   const handleConfirmDelete = () => {
-    if (role.id != null) {
-      setIsDeleting(true);
-
-      rolesService
-        .delete(role.id)
-        .then((result) => {
-          if (result.success) {
-            toast("Role deleted successfully", { type: "success" });
-            router.push("/admin/roles");
-          } else {
-            toast(result.data, {
-              type: "error",
-            });
-          }
-        })
-        .catch((error) => toast(error))
-        .finally(() => {
-          setIsDeleting(false);
-        });
+    if (role.id === null) {
+      return;
     }
+
+    setIsDeleting(true);
+    rolesService
+      .delete(role.id)
+      .then((result) => {
+        if (result.success) {
+          toast("Role deleted successfully", { type: "success" });
+          router.push("/admin/roles");
+        } else {
+          toast(result.data, {
+            type: "error",
+          });
+        }
+      })
+      .catch((error) => toast(error))
+      .finally(() => {
+        setIsDeleting(false);
+      });
   };
 
   const roleDescription = (
     <Textarea
       isRequired
-      defaultValue={role.description}
       description={intl.formatMessage({
         id: "events.id.page.description.description",
         defaultMessage: "Base description of the character",
@@ -158,6 +158,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
         defaultMessage: "Insert role description...",
       })}
       size="lg"
+      value={role.description}
       variant="underlined"
       onChange={(e) => {
         setRole({ ...role, description: e.target.value });
@@ -168,7 +169,6 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const roleName = (
     <Input
       isRequired
-      defaultValue={role.name}
       errorMessage={intl.formatMessage({
         id: "role.display.name.error",
         defaultMessage: "Role name cannot be empty",
@@ -184,6 +184,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
         defaultMessage: "Insert role name...",
       })}
       size="lg"
+      value={role.name}
       variant="underlined"
       onChange={(e) => {
         setRole({ ...role, name: e.target.value });
@@ -239,7 +240,6 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
     <div className="w-full flex sm:flex-row sm:space-x-3 sm:space-y-0 flex-col-reverse space-x-0 space-y-3  sm:items-center">
       <Textarea
         className="w-full sm:w-1/2"
-        defaultValue={imageUrl}
         description={intl.formatMessage({
           id: "role.display.image.description",
           defaultMessage: "URL of the character's image",
@@ -257,6 +257,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
           defaultMessage: "Role image",
         })}
         size="lg"
+        value={imageUrl}
         variant="underlined"
         onChange={(e) => {
           setRole({ ...role, imageUrl: e.target.value });

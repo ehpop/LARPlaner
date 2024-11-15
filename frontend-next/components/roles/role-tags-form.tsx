@@ -31,7 +31,6 @@ const RoleTagEntry = ({
       <Input
         isRequired
         className="w-full"
-        defaultValue={tag.name}
         errorMessage={intl.formatMessage({
           defaultMessage: "Tag name cannot be empty",
           id: "role.display.tag.name.error",
@@ -47,6 +46,7 @@ const RoleTagEntry = ({
           id: "role.display.tag.name.placeholder",
         })}
         size="sm"
+        value={tag.name}
         variant="underlined"
         onChange={(e) => {
           handleTagChanged(index, {
