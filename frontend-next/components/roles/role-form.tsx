@@ -15,7 +15,8 @@ import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import RoleTagsForm from "@/components/roles/role-tags-form";
 import { IRole } from "@/types/roles.types";
-import { usePostRole } from "@/hooks/useRoles";
+import rolesService from "@/services/roles.service";
+import LoadingOverlay from "@/components/general/loading-overlay";
 
 export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const intl = useIntl();
@@ -27,7 +28,8 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const [role, setRole] = useState(initialRole || emptyRole);
   const [imageUrl, setImageUrl] = useState(role.imageUrl);
   const [showTags, setShowTags] = useState(true);
-  const { mutateAsync } = usePostRole();
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [touched, setTouched] = useState({
     name: false,
@@ -65,14 +67,72 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   } = useDisclosure();
 
   const handleSave = () => {
-    mutateAsync(role)
+    setIsSaving(true);
+
+    rolesService
+      .save(role)
       .then((result) => {
         if (result.success) {
-          toast("Role saved successfully");
-          router.push("/admin/roles/" + result.data.id);
+          toast("Role saved successfully", { type: "success" });
+          router.push("/admin/roles");
+        } else {
+          toast(result.data, {
+            type: "error",
+          });
         }
       })
-      .catch((error) => toast(error));
+      .catch((error) => toast(error))
+      .finally(() => {
+        setIsSaving(false);
+      });
+  };
+
+  const handleSaveEditedRole = () => {
+    if (!role.id) {
+      return toast("Role ID is missing", { type: "error" });
+    }
+
+    setIsSaving(true);
+
+    rolesService
+      .update(role.id, role)
+      .then((result) => {
+        if (result.success) {
+          toast("Role updated successfully", { type: "success" });
+          setIsBeingEdited(false);
+        } else {
+          toast(result.data, {
+            type: "error",
+          });
+        }
+      })
+      .catch((error) => toast(error))
+      .finally(() => {
+        setIsSaving(false);
+      });
+  };
+
+  const handleConfirmDelete = () => {
+    if (role.id != null) {
+      setIsDeleting(true);
+
+      rolesService
+        .delete(role.id)
+        .then((result) => {
+          if (result.success) {
+            toast("Role deleted successfully", { type: "success" });
+            router.push("/admin/roles");
+          } else {
+            toast(result.data, {
+              type: "error",
+            });
+          }
+        })
+        .catch((error) => toast(error))
+        .finally(() => {
+          setIsDeleting(false);
+        });
+    }
   };
 
   const roleDescription = (
@@ -217,9 +277,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   );
   const confirmDelete = (
     <ConfirmActionModal
-      handleOnConfirm={() => {
-        alert("Role will be deleted");
-      }}
+      handleOnConfirm={handleConfirmDelete}
       isOpen={isOpenDelete}
       prompt={intl.formatMessage({
         id: "roles.id.page.delete",
@@ -238,6 +296,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
     <ConfirmActionModal
       handleOnConfirm={() => {
         setIsBeingEdited(false);
+        setRole(initialRole || emptyRole);
       }}
       isOpen={isOpenCancel}
       prompt={intl.formatMessage({
@@ -265,8 +324,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
         }}
         onEditClicked={() => setIsBeingEdited(true)}
         onSaveClicked={() => {
-          handleSave();
-          setIsBeingEdited(false);
+          handleSaveEditedRole();
         }}
       />
       {confirmCancel}
@@ -288,16 +346,29 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
     </div>
   );
 
-  return (
-    <div className="sm:w-4/5 w-full space-y-10 border-1 p-3">
-      {titleElement}
-      <div className="space-y-3">
-        {roleName}
-        {imageInput}
-        {roleDescription}
-        {tagsElement}
+  const form = (
+    <div className="w-full flex justify-center">
+      <div
+        className={`sm:w-4/5 w-full space-y-10 border-1 p-3 ${isDeleting || isSaving ? "opacity-50 blur-sm" : ""}`}
+      >
+        {titleElement}
+        <div className="space-y-3">
+          {roleName}
+          {imageInput}
+          {roleDescription}
+          {tagsElement}
+        </div>
+        {isNewRole ? saveButton : actionButtons}
       </div>
-      {isNewRole ? saveButton : actionButtons}
     </div>
+  );
+
+  return (
+    <LoadingOverlay
+      isLoading={isSaving || isDeleting}
+      label={isSaving ? "Saving..." : "Deleting..."}
+    >
+      {form}
+    </LoadingOverlay>
   );
 }

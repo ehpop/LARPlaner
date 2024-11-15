@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Spinner } from "@nextui-org/react";
 import { toast } from "react-toastify";
 
 import { IRole } from "@/types/roles.types";
 import RolesService from "@/services/roles.service";
 import RoleForm from "@/components/roles/role-form";
+import LoadingOverlay from "@/components/general/loading-overlay";
 
 export default function RolePage({ params }: any) {
   const [roleData, setRoleData] = useState<IRole>();
@@ -36,14 +36,6 @@ export default function RolePage({ params }: any) {
     fetchRole();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="w-full flex justify-center">
-        <Spinner label={"Loading..."} size="lg" />
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="w-full flex justify-center">
@@ -52,5 +44,11 @@ export default function RolePage({ params }: any) {
     );
   }
 
-  return <div>{roleData && <RoleForm initialRole={roleData} />}</div>;
+  return (
+    <div className="w-full h-screen flex justify-center">
+      <LoadingOverlay isLoading={loading} label={"Loading role..."}>
+        {roleData && <RoleForm initialRole={roleData} />}
+      </LoadingOverlay>
+    </div>
+  );
 }

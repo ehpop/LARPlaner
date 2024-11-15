@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Spinner } from "@nextui-org/react";
 
 import RolesService from "@/services/roles.service";
 import { IRoleList } from "@/types/roles.types";
 import RolesDisplay from "@/components/roles/roles-display";
+import LoadingOverlay from "@/components/general/loading-overlay";
 
 export default function RolesPage() {
   const [rolesData, setRolesData] = useState<IRoleList | null>(null);
@@ -29,43 +29,29 @@ export default function RolesPage() {
       }
     };
 
-    fetchRoles();
+    fetchRoles().then(() => {});
   }, []);
 
-  const rolesElement = () => {
-    if (loading) {
-      return (
-        <div className="w-full flex justify-center">
-          <Spinner label={"Loading..."} size="lg" />
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="w-full flex justify-center">
-          <p>{error}</p>
-        </div>
-      );
-    }
-
+  if (error) {
     return (
-      rolesData && (
-        <RolesDisplay
-          canAddNewRole={true}
-          rolesList={rolesData}
-          title={"Rola"}
-        />
-      )
+      <div className="w-full flex justify-center">
+        <p>{error}</p>
+      </div>
     );
-  };
+  }
 
   return (
     <div className="w-full space-y-3">
       <div className="w-full flex justify-center">
         <p className="text-3xl">Roles Page</p>
       </div>
-      {rolesElement()}
+      <LoadingOverlay isLoading={loading} label={"Loading roles..."}>
+        <RolesDisplay
+          canAddNewRole={true}
+          rolesList={rolesData || []}
+          title={"Roles"}
+        />
+      </LoadingOverlay>
     </div>
   );
 }

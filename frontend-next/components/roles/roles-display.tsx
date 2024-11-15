@@ -18,10 +18,10 @@ export const RolesDisplay = ({
   title: string;
   canAddNewRole?: boolean;
 }) => {
-  const [searchValue, setSearchValue] = useState("");
   const getAmountOfPages = (list: IRoleList) => {
     return Math.ceil(list.length / ROLES_PER_PAGE);
   };
+
   const getPages = (list: IRoleList) => {
     let pages: IRoleList[] = [];
     let amountOfPages = getAmountOfPages(list);
@@ -34,9 +34,12 @@ export const RolesDisplay = ({
 
     return pages;
   };
+
   const [pages, setPages] = useState(getPages(rolesList));
   const [filteredList, setFilteredList] = useState(rolesList);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
+  const intl = useIntl();
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
@@ -85,8 +88,6 @@ export const RolesDisplay = ({
     </div>
   );
 
-  const intl = useIntl();
-
   return (
     <div className="w-full border-small px-5 py-5 space-y-3 rounded-small border-default-200 dark:border-default-100">
       <div className="w-full flex justify-between">
@@ -112,7 +113,7 @@ export const RolesDisplay = ({
       </div>
       {filteredList.length > 0 ? RolesElement : NoRolesElement}
       {canAddNewRole && (
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-end">
           <Link href={"/admin/roles/new"}>
             <Button color="success" variant="solid">
               <FormattedMessage
