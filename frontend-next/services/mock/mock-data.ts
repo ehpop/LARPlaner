@@ -1,4 +1,4 @@
-import { getLocalTimeZone, now } from "@internationalized/date";
+import { getLocalTimeZone, now, ZonedDateTime } from "@internationalized/date";
 import { uuidv4 } from "@firebase/util";
 
 import { IEvent, IEventList, ISkill } from "@/types/event.types";
@@ -214,6 +214,7 @@ export const eventsList: IEventList = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
   name: `Wydarzenie #${i + 1}`,
   img: `/images/event-${i + 1}.jpg`,
+  date: now(getLocalTimeZone()).add({ days: i + 1 }) as ZonedDateTime,
 }));
 
 export const possibleScenarios: IScenarioList = Array.from(

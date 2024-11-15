@@ -18,26 +18,29 @@ import {
   ZonedDateTime,
 } from "@internationalized/date";
 import { Link } from "@nextui-org/link";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
-import {
-  emptyEvent,
-  getEvent,
-  possibleScenarios,
-} from "@/services/mock/mock-data";
+import { emptyEvent, possibleScenarios } from "@/services/mock/mock-data";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import EventAssignRolesForm from "@/components/events/event-assign-roles-form";
 import { IEvent } from "@/types/event.types";
+import eventsService from "@/services/events.service";
+import LoadingOverlay from "@/components/general/loading-overlay";
 
-export default function EventForm({ eventId }: { eventId?: number }) {
+export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const intl = useIntl();
+  const router = useRouter();
 
-  const isNewEvent = !eventId;
+  const isNewEvent = !initialEvent;
   const [event, setEvent] = useState(
-    !isNewEvent ? getEvent(eventId) : emptyEvent,
+    isNewEvent ? emptyEvent : { ...initialEvent },
   );
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [showAssignRoles, setShowAssignRoles] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [touched, setTouched] = useState({
     name: false,
@@ -66,7 +69,95 @@ export default function EventForm({ eventId }: { eventId?: number }) {
   };
 
   const handleSave = () => {
-    alert("Saving event: " + JSON.stringify(event));
+    setIsSaving(true);
+
+    eventsService
+      .save(event)
+      .then((response) => {
+        if (response.success) {
+          toast("Event saved", {
+            type: "success",
+          });
+          router.push("/admin/events");
+        } else {
+          toast(response.data, {
+            type: "error",
+          });
+        }
+      })
+      .catch((error) => {
+        toast(error, {
+          type: "error",
+        });
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  };
+
+  const handleSaveEditedRole = () => {
+    if (!event.id) {
+      return;
+    }
+
+    setIsSaving(true);
+    eventsService
+      .update(event.id, event)
+      .then((response) => {
+        if (response.success) {
+          toast("Event updated", {
+            type: "success",
+          });
+          setIsBeingEdited(false);
+        } else {
+          toast(response.data, {
+            type: "error",
+          });
+        }
+      })
+      .catch((error) => {
+        toast(error, {
+          type: "error",
+        });
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  };
+
+  const handleConfirmCancel = () => {
+    setIsBeingEdited(false);
+    setEvent(initialEvent || emptyEvent);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!event.id) {
+      return;
+    }
+
+    setIsDeleting(true);
+    eventsService
+      .delete(event.id)
+      .then((response) => {
+        if (response.success) {
+          toast("Event deleted successfully", {
+            type: "success",
+          });
+          router.push("/admin/events");
+        } else {
+          toast(response.data, {
+            type: "error",
+          });
+        }
+      })
+      .catch((error) => {
+        toast(error, {
+          type: "error",
+        });
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
   };
 
   const {
@@ -82,9 +173,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
 
   const confirmDelete = (
     <ConfirmActionModal
-      handleOnConfirm={() => {
-        alert("Event will be deleted");
-      }}
+      handleOnConfirm={() => handleConfirmDelete()}
       isOpen={isOpenDelete}
       prompt={intl.formatMessage({
         id: "events.id.page.delete",
@@ -101,9 +190,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
 
   const confirmCancel = (
     <ConfirmActionModal
-      handleOnConfirm={() => {
-        setIsBeingEdited(false);
-      }}
+      handleOnConfirm={() => handleConfirmCancel()}
       isOpen={isOpenCancel}
       prompt={intl.formatMessage({
         id: "events.id.page.cancelEdit",
@@ -122,7 +209,6 @@ export default function EventForm({ eventId }: { eventId?: number }) {
     <Input
       isRequired
       className="w-full"
-      defaultValue={event?.name}
       errorMessage={intl.formatMessage({
         id: "events.page.display.nameError",
         defaultMessage: "Name cannot be empty",
@@ -134,6 +220,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
         defaultMessage: "Name",
       })}
       size="lg"
+      value={event?.name}
       variant="underlined"
       onChange={(e) => {
         handleTouched("name");
@@ -169,7 +256,6 @@ export default function EventForm({ eventId }: { eventId?: number }) {
     <div className="w-full flex justify-between space-x-3">
       <DatePicker
         className="w-1/2"
-        defaultValue={event?.date}
         errorMessage={intl.formatMessage({
           id: "events.page.display.dateError",
           defaultMessage: "Date cannot be empty and must be in the future",
@@ -183,6 +269,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
         })}
         minValue={today(getLocalTimeZone())}
         size="lg"
+        value={event?.date}
         variant="underlined"
         onChange={(date) => {
           handleTouched("date");
@@ -201,7 +288,6 @@ export default function EventForm({ eventId }: { eventId?: number }) {
       />
       <Input
         className="w-1/2"
-        defaultValue={event?.date.hour + ":" + event?.date.minute}
         errorMessage={intl.formatMessage({
           id: "events.page.display.timeError",
           defaultMessage: "Time cannot be empty and must be in the future",
@@ -214,6 +300,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
         })}
         size="lg"
         type="time"
+        value={event?.date.hour + ":" + event?.date.minute}
         variant="underlined"
         onChange={(e) => {
           handleTouched("date");
@@ -239,7 +326,6 @@ export default function EventForm({ eventId }: { eventId?: number }) {
     <Textarea
       isRequired
       className="w-full"
-      defaultValue={event?.description}
       errorMessage={intl.formatMessage({
         id: "events.page.display.descriptionError",
         defaultMessage: "Description cannot be empty",
@@ -251,6 +337,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
         defaultMessage: "Description",
       })}
       size="lg"
+      value={event?.description}
       variant="underlined"
       onChange={(e) => {
         handleTouched("description");
@@ -267,9 +354,6 @@ export default function EventForm({ eventId }: { eventId?: number }) {
     <div className="w-full flex flex-row items-baseline space-x-3">
       <Select
         isRequired
-        defaultSelectedKeys={
-          event?.scenarioId ? [String(event.scenarioId)] : []
-        }
         errorMessage={intl.formatMessage({
           id: "events.page.display.scenarioError",
           defaultMessage: "Scenario cannot be empty",
@@ -284,6 +368,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
           id: "events.page.display.selectScenario",
           defaultMessage: "Select a scenario...",
         })}
+        selectedKeys={event?.scenarioId ? [String(event.scenarioId)] : []}
         size="lg"
         variant="underlined"
         onChange={(e) => {
@@ -345,10 +430,7 @@ export default function EventForm({ eventId }: { eventId?: number }) {
         onEditClicked={() => {
           setIsBeingEdited(true);
         }}
-        onSaveClicked={() => {
-          handleSave();
-          setIsBeingEdited(false);
-        }}
+        onSaveClicked={() => handleSaveEditedRole()}
       />
       {confirmCancel}
       {confirmDelete}
@@ -418,15 +500,26 @@ export default function EventForm({ eventId }: { eventId?: number }) {
     </div>
   );
 
-  return (
-    <div className="sm:w-4/5 w-full space-y-10 border-1 p-3">
-      {titleElement}
-      {nameElement}
-      {dateTimeElement}
-      {descriptionElement}
-      {scenarioElement}
-      {assignRolesElement}
-      {isNewEvent ? saveButton : actionButtons}
+  const form = (
+    <div className="w-full flex justify-center">
+      <div className="sm:w-4/5 w-full space-y-10 border-1 p-3">
+        {titleElement}
+        {nameElement}
+        {dateTimeElement}
+        {descriptionElement}
+        {scenarioElement}
+        {assignRolesElement}
+        {isNewEvent ? saveButton : actionButtons}
+      </div>
     </div>
+  );
+
+  return (
+    <LoadingOverlay
+      isLoading={isSaving || isDeleting}
+      label={isSaving ? "Saving event..." : "Deleting event..."}
+    >
+      {form}
+    </LoadingOverlay>
   );
 }
