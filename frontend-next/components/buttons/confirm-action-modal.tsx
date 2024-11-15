@@ -21,7 +21,7 @@ const ConfirmActionModal = ({
   onOpenChange: () => void;
 }) => {
   return (
-    <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange}>
+    <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
       <ModalContent>
         {(onClose) => (
           <>
