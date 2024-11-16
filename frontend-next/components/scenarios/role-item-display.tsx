@@ -23,8 +23,9 @@ export const RoleItem = ({
   const intl = useIntl();
   const [showRole, setShowRole] = useState(true);
   const [touched, setTouched] = useState({
-    description: false,
-    gmNotes: false,
+    descriptionForGM: false,
+    descriptionForOwner: false,
+    descriptionForOthers: false,
     selectedRole: false,
   });
 
@@ -32,62 +33,93 @@ export const RoleItem = ({
     setTouched({ ...touched, [key]: true });
   };
 
-  const roleDescription = (
+  const roleDescriptionForGM = (
     <Textarea
       isRequired
       description={intl.formatMessage({
-        id: "role.display.description.description",
-        defaultMessage:
-          "Description of the character visible to the user. Description is specific to this scenario.",
+        id: "role.display.description.descriptionForGM",
+        defaultMessage: "Description of the character visible to the GM only.",
       })}
       errorMessage={intl.formatMessage({
         id: "role.display.description.error",
-        defaultMessage: "Description is required",
+        defaultMessage: "Description for GM is required",
       })}
       isDisabled={!isBeingEdited}
-      isInvalid={touched.description && !role.scenarioDescription}
+      isInvalid={touched.descriptionForGM && !role.descriptionForGM}
       label={intl.formatMessage({
         id: "role.display.description.label",
-        defaultMessage: "Description in the scenario",
+        defaultMessage: "Description for GM",
       })}
       size="lg"
-      value={role.scenarioDescription}
+      value={role.descriptionForGM}
       variant="underlined"
       onChange={(e) => {
         handleRoleChange(index, {
           ...role,
-          scenarioDescription: e.target.value,
+          descriptionForGM: e.target.value,
         });
-        handleTouched("description");
+        handleTouched("descriptionForGM");
       }}
     />
   );
-  const roleGMNotes = (
+
+  const roleDescriptionForOwner = (
     <Textarea
       isRequired
       description={intl.formatMessage({
-        id: "role.display.gm.notes.description",
-        defaultMessage: "Roles notes visible only to the GM",
+        id: "role.display.description.descriptionForOwner",
+        defaultMessage:
+          "Description of the character visible to the owner only.",
       })}
       errorMessage={intl.formatMessage({
-        id: "role.display.gm.notes.error",
-        defaultMessage: "GM notes are required",
+        id: "role.display.description.error",
+        defaultMessage: "Description for owner is required",
       })}
       isDisabled={!isBeingEdited}
-      isInvalid={touched.gmNotes && !role.gmNotes}
+      isInvalid={touched.descriptionForOwner && !role.descriptionForOwner}
       label={intl.formatMessage({
-        id: "role.display.gm.notes.label",
-        defaultMessage: "GM Notes",
+        id: "role.display.description.label",
+        defaultMessage: "Description for owner",
       })}
       size="lg"
-      value={role.gmNotes}
+      value={role.descriptionForOwner}
       variant="underlined"
       onChange={(e) => {
         handleRoleChange(index, {
           ...role,
-          gmNotes: e.target.value,
+          descriptionForOwner: e.target.value,
         });
-        handleTouched("gmNotes");
+        handleTouched("descriptionForOwner");
+      }}
+    />
+  );
+
+  const roleDescriptionForOthers = (
+    <Textarea
+      isRequired
+      description={intl.formatMessage({
+        id: "role.display.description.descriptionForOthers",
+        defaultMessage: "Description of the character visible to others.",
+      })}
+      errorMessage={intl.formatMessage({
+        id: "role.display.description.error",
+        defaultMessage: "Description for others is required",
+      })}
+      isDisabled={!isBeingEdited}
+      isInvalid={touched.descriptionForOthers && !role.descriptionForOthers}
+      label={intl.formatMessage({
+        id: "role.display.description.label",
+        defaultMessage: "Description for others",
+      })}
+      size="lg"
+      value={role.descriptionForOthers}
+      variant="underlined"
+      onChange={(e) => {
+        handleRoleChange(index, {
+          ...role,
+          descriptionForOthers: e.target.value,
+        });
+        handleTouched("descriptionForOthers");
       }}
     />
   );
@@ -157,8 +189,9 @@ export const RoleItem = ({
         {controlButtons}
       </div>
       <div className={showRole ? "" : "hidden"}>
-        {roleDescription}
-        {roleGMNotes}
+        {roleDescriptionForGM}
+        {roleDescriptionForOwner}
+        {roleDescriptionForOthers}
       </div>
     </div>
   );

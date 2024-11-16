@@ -44,8 +44,6 @@ export const exampleRole: IRole = {
   id: 1,
   name: "Warrior",
   description: "A strong and brave warrior.",
-  imageUrl:
-    "https://media.mythopedia.com/6cugv2Onrb7n1IDYjJBTmD/e309806f7646daef4b8abb7b0fc19dcc/wizard-name-generator.jpg?w=1280&h=720&fit=crop&crop=top2",
   tags: [
     { key: "brave", name: "Brave" },
     { key: "strong", name: "Strong" },
@@ -56,7 +54,6 @@ export const emptyRole: IRole = {
   id: null,
   name: "",
   description: "",
-  imageUrl: "",
   tags: [],
 };
 
@@ -64,16 +61,18 @@ export const exampleScenarioRole: IScenarioRole = {
   id: uuidv4(),
   scenarioId: 1,
   roleId: 1,
-  scenarioDescription: "A strong and brave warrior.",
-  gmNotes: "Notes for the game master.",
+  descriptionForGM: "Notatki dla mistrza gry.",
+  descriptionForOwner: "Notatki dla właściciela postaci.",
+  descriptionForOthers: "Notatki dla innych graczy.",
 };
 
 export const emptyScenarioRole: IScenarioRole = {
   id: null,
   scenarioId: null,
   roleId: null,
-  scenarioDescription: "",
-  gmNotes: "",
+  descriptionForGM: "",
+  descriptionForOwner: "",
+  descriptionForOthers: "",
 };
 
 export const possibleScenarioRoles: IScenarioRoleList = [
@@ -81,15 +80,17 @@ export const possibleScenarioRoles: IScenarioRoleList = [
     id: uuidv4(),
     scenarioId: 1,
     roleId: 1,
-    scenarioDescription: "Potężny czarodziej, który włada magią.",
-    gmNotes: "Notatki dla mistrza gry.",
+    descriptionForGM: "Notatki dla mistrza gry.",
+    descriptionForOwner: "Notatki dla właściciela postaci.",
+    descriptionForOthers: "Notatki dla innych graczy.",
   },
   {
     id: uuidv4(),
     scenarioId: 1,
     roleId: 2,
-    scenarioDescription: "Silny i odważny wojownik.",
-    gmNotes: "Notatki dla mistrza gry.",
+    descriptionForGM: "Notatki dla mistrza gry.",
+    descriptionForOwner: "Notatki dla właściciela postaci.",
+    descriptionForOthers: "Notatki dla innych graczy.",
   },
   { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 3 },
   { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 4 },

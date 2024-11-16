@@ -13,8 +13,9 @@ export type IScenarioRole = {
   id: string | null;
   roleId: number | null;
   scenarioId: number | null;
-  scenarioDescription: string;
-  gmNotes: string;
+  descriptionForGM: string;
+  descriptionForOwner: string;
+  descriptionForOthers: string;
 };
 export type IScenarioRoleList = IScenarioRole[];
 

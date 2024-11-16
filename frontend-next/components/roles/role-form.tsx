@@ -1,10 +1,4 @@
-import {
-  Button,
-  Image,
-  Input,
-  Textarea,
-  useDisclosure,
-} from "@nextui-org/react";
+import { Button, Input, Textarea, useDisclosure } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -26,7 +20,6 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [role, setRole] = useState(initialRole || emptyRole);
-  const [imageUrl, setImageUrl] = useState(role.imageUrl);
   const [showTags, setShowTags] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -236,46 +229,6 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
     </div>
   );
 
-  const imageInput = (
-    <div className="w-full flex sm:flex-row sm:space-x-3 sm:space-y-0 flex-col-reverse space-x-0 space-y-3  sm:items-center">
-      <Textarea
-        className="w-full sm:w-1/2"
-        description={intl.formatMessage({
-          id: "role.display.image.description",
-          defaultMessage: "URL of the character's image",
-        })}
-        errorMessage={intl.formatMessage({
-          id: "role.display.image.error",
-          defaultMessage: "Invalid URL",
-        })}
-        isDisabled={!(isBeingEdited || isNewRole)}
-        isInvalid={
-          imageUrl !== "" && imageUrl.match("^(http|https)://") === null
-        }
-        label={intl.formatMessage({
-          id: "role.display.image",
-          defaultMessage: "Role image",
-        })}
-        size="lg"
-        value={imageUrl}
-        variant="underlined"
-        onChange={(e) => {
-          setRole({ ...role, imageUrl: e.target.value });
-          setImageUrl(e.target.value);
-        }}
-      />
-      <div className="w-full sm:w-1/2">
-        {imageUrl.match("^(http|https)://") !== null && (
-          <Image
-            alt="Character's image"
-            className="max-w-full"
-            fallbackSrc="/images/role-fallback.jpg"
-            src={imageUrl}
-          />
-        )}
-      </div>
-    </div>
-  );
   const confirmDelete = (
     <ConfirmActionModal
       handleOnConfirm={handleConfirmDelete}
@@ -355,7 +308,6 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
         {titleElement}
         <div className="space-y-3">
           {roleName}
-          {imageInput}
           {roleDescription}
           {tagsElement}
         </div>
