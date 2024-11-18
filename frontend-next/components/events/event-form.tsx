@@ -12,7 +12,6 @@ import {
 import React, { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
-  fromDate,
   getLocalTimeZone,
   today,
   ZonedDateTime,
@@ -28,6 +27,7 @@ import EventAssignRolesForm from "@/components/events/event-assign-roles-form";
 import { IEvent } from "@/types/event.types";
 import eventsService from "@/services/events.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
+import { isValidEventDate, setTimeOnDate } from "@/utils/date-time";
 
 export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const intl = useIntl();
@@ -238,18 +238,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
       return false;
     }
 
-    if (
-      date === undefined ||
-      date.hour === undefined ||
-      date.minute === undefined ||
-      date.day === undefined ||
-      date.month === undefined ||
-      date.year === undefined
-    ) {
-      return true;
-    }
-
-    return date.compare(fromDate(new Date(), date.timeZone)) < 0;
+    return date && !isValidEventDate(date);
   };
 
   const dateTimeElement = (
@@ -304,18 +293,11 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
         variant="underlined"
         onChange={(e) => {
           handleTouched("date");
-          const time = e.target.value;
-          const [hour, minute] = !time.match(/^[0-9]{2}:[0-9]{2}$/)
-            ? [0, 0]
-            : time.split(":");
-          const newDate = event.date.set({
-            hour: Number(hour),
-            minute: Number(minute),
-          });
+          const dateWithNewTime = setTimeOnDate(event.date, e.target.value);
 
           setEvent({
             ...event,
-            date: newDate,
+            date: dateWithNewTime,
           });
         }}
       />
