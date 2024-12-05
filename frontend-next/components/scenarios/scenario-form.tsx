@@ -232,7 +232,7 @@ export default function ScenarioForm({
       <div className={showItemsSection ? "" : "hidden"}>
         <ScenarioItemsForm
           initialItems={scenario.items}
-          isBeingEdited={isBeingEdited}
+          isBeingEdited={isBeingEdited || isNewScenario}
           scenario={scenario}
           setScenario={setScenario}
         />
@@ -344,7 +344,7 @@ export default function ScenarioForm({
         {titleElement}
         {nameElement}
         {descriptionElement}
-        <div className="w-full flex flex-col space-y-3 space-x-0 lg:flex-row lg:space-x-3 lg:space-y-0">
+        <div className="w-full flex flex-col space-y-3">
           {rolesElement}
           {itemsElement}
         </div>

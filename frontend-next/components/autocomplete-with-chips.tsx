@@ -3,7 +3,7 @@
 import { Autocomplete, AutocompleteItem, Chip } from "@nextui-org/react";
 import { Check, X } from "lucide-react";
 
-import { ITag } from "@/types/roles.types";
+import { ITag } from "@/types/tags.types";
 
 interface MultiselectSearchProps {
   allItems: ITag[];
@@ -21,18 +21,18 @@ const MultiselectSearch = ({
   setSelectedItems,
 }: MultiselectSearchProps) => {
   const handleSelect = (item: ITag) => {
-    if (!selectedItems.map((i) => i.key).includes(item.key)) {
+    if (!selectedItems.map((i) => i.id).includes(item.id)) {
       setSelectedItems([...selectedItems, item]);
     } else {
       setSelectedItems(
-        selectedItems.filter((selection) => selection.key !== item.key),
+        selectedItems.filter((selection) => selection.id !== item.id),
       );
     }
   };
 
   const handleDeleteSelection = (item: ITag) => {
     setSelectedItems(
-      selectedItems.filter((selection) => selection.key !== item.key),
+      selectedItems.filter((selection) => selection.id !== item.id),
     );
   };
 
@@ -45,25 +45,25 @@ const MultiselectSearch = ({
         selectedKey={""}
         variant="underlined"
       >
-        {allItems.map((item, index) => (
+        {allItems.map((item) => (
           <AutocompleteItem
-            key={index}
+            key={item.id}
             endContent={
               selectedItems.includes(item) && (
                 <Check className="mr-2 text-green-500" size={16} />
               )
             }
-            value={item.name}
+            value={item.value}
             onClick={() => handleSelect(item)}
           >
-            {item.name}
+            {item.value}
           </AutocompleteItem>
         ))}
       </Autocomplete>
       <div className="flex mt-2 w-full flex-wrap">
         {selectedItems.map((item) => (
           <Chip
-            key={item.name}
+            key={item.value}
             className="mr-2 mt-2"
             color={"primary"}
             endContent={
@@ -75,7 +75,7 @@ const MultiselectSearch = ({
             }
             isDisabled={isDisabled}
           >
-            {item.name}
+            {item.value}
           </Chip>
         ))}
       </div>

@@ -1,109 +1,39 @@
 "use client";
 
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Textarea,
-  useDisclosure,
-} from "@nextui-org/react";
+import { Button, Input, Textarea, useDisclosure } from "@nextui-org/react";
 import React, { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import QRCode from "react-qr-code";
 import { uuidv4 } from "@firebase/util";
 
-import AutocompleteWithChips from "@/components/autocomplete-with-chips";
-import { emptyScenarioItem, possibleTags } from "@/services/mock/mock-data";
+import { emptyScenarioItem } from "@/services/mock/mock-data";
 import {
   IScenario,
+  IScenarioAction,
   IScenarioItem,
   IScenarioItemList,
 } from "@/types/scenario.types";
-
-const QRModal = ({
-  isOpen,
-  onOpenChange,
-  itemName,
-}: {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-  itemName: string;
-}) => {
-  const intl = useIntl();
-
-  return (
-    <Modal
-      backdrop="opaque"
-      isOpen={isOpen}
-      motionProps={{
-        variants: {
-          enter: {
-            y: 0,
-            opacity: 1,
-            transition: {
-              duration: 0.3,
-              ease: "easeOut",
-            },
-          },
-          exit: {
-            y: -20,
-            opacity: 0,
-            transition: {
-              duration: 0.2,
-              ease: "easeIn",
-            },
-          },
-        },
-      }}
-      onOpenChange={onOpenChange}
-    >
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1">
-              {itemName}
-            </ModalHeader>
-            <ModalBody className="dark:bg-white">
-              <div className="w-full flex justify-center">
-                <QRCode value={itemName} />
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="bordered" onPress={onClose}>
-                {intl.formatMessage({
-                  id: "common.close",
-                  defaultMessage: "Close",
-                })}
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
-  );
-};
+import { QrModal } from "@/components/general/qr-modal";
+import { ItemActionsForm } from "@/components/scenarios/item-actions-form";
+import { ITag } from "@/types/tags.types";
 
 const ItemForm = ({
   item,
   handleItemRemove,
   handleItemChange,
-  index,
+  itemIndex,
   isBeingEdited,
 }: {
   item: IScenarioItem;
   handleItemRemove: (index: number) => void;
   handleItemChange: (index: number, newScenarioItem: IScenarioItem) => void;
-  index: number;
+  itemIndex: number;
   isBeingEdited: boolean;
 }) => {
   const intl = useIntl();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const [showItem, setShowItem] = useState(true);
+  const [showItemActions, setShowItemActions] = useState(true);
   const [selectedItem, setSelectedItem] = React.useState("");
   const [touched, setTouched] = useState({
     name: false,
@@ -142,7 +72,7 @@ const ItemForm = ({
       value={item.name}
       variant="underlined"
       onChange={(e) => {
-        handleItemChange(index, { ...item, name: e.target.value });
+        handleItemChange(itemIndex, { ...item, name: e.target.value });
         handleTouched("name");
       }}
     />
@@ -150,6 +80,20 @@ const ItemForm = ({
 
   const itemActionButtons = (
     <div className="flex flex-row lg:space-x-2 space-x-1">
+      {isBeingEdited && (
+        <Button
+          color="danger"
+          isDisabled={!isBeingEdited}
+          size="sm"
+          variant="bordered"
+          onPress={() => handleItemRemove(itemIndex)}
+        >
+          <FormattedMessage
+            defaultMessage={"Remove"}
+            id={"scenarios.new.page.removeItemButton"}
+          />
+        </Button>
+      )}
       <Button
         color="primary"
         isDisabled={item.name === ""}
@@ -166,20 +110,6 @@ const ItemForm = ({
       >
         {showItem ? "-" : "+"}
       </Button>
-      {isBeingEdited && (
-        <Button
-          color="danger"
-          isDisabled={!isBeingEdited}
-          size="sm"
-          variant="bordered"
-          onPress={() => handleItemRemove(index)}
-        >
-          <FormattedMessage
-            defaultMessage={"Remove"}
-            id={"scenarios.new.page.removeItemButton"}
-          />
-        </Button>
-      )}
     </div>
   );
 
@@ -206,31 +136,69 @@ const ItemForm = ({
       value={item.description}
       variant="underlined"
       onChange={(e) => {
-        handleItemChange(index, { ...item, description: e.target.value });
+        handleItemChange(itemIndex, { ...item, description: e.target.value });
         handleTouched("description");
       }}
     />
   );
-  const itemRequiredTags = (
-    <div className="w-full flex flex-col border-1 p-3 space-y-3">
-      <p>
-        <FormattedMessage
-          defaultMessage={"Required tags:"}
-          id={"scenarios.new.page.requiredTags"}
+
+  const handleActionChange = (index: number, newAction: IScenarioAction) => {
+    const updatedActions = [...item.actions];
+
+    updatedActions[index] = newAction;
+    handleItemChange(itemIndex, { ...item, actions: updatedActions });
+  };
+
+  const handleActionRemove = (index: number) => {
+    const updatedActions = [...item.actions];
+
+    updatedActions.splice(index, 1);
+    handleItemChange(itemIndex, { ...item, actions: updatedActions });
+  };
+  const handleAddAction = () => {
+    handleItemChange(itemIndex, {
+      ...item,
+      actions: [
+        ...item.actions,
+        {
+          id: uuidv4(),
+          name: "",
+          description: "",
+          tagsToRemoveOnSuccess: [] as ITag[],
+          tagsToApplyOnSuccess: [] as ITag[],
+          tagsToApplyOnFailure: [] as ITag[],
+          requiredTagsToDisplay: [] as ITag[],
+          requiredTagsToSucceed: [] as ITag[],
+        } as IScenarioAction,
+      ],
+    });
+  };
+  const itemActionsForm = (
+    <div className="w-full border-1 p-3 space-y-3">
+      <div className="w-full flex flex-row justify-between">
+        <p className="text-xl">
+          <FormattedMessage
+            defaultMessage={"Actions in item:"}
+            id={"scenarios.items.form.actionsInItem"}
+          />
+        </p>
+        <Button
+          size="sm"
+          variant="bordered"
+          onPress={() => setShowItemActions(!showItemActions)}
+        >
+          {showItemActions ? "-" : "+"}
+        </Button>
+      </div>
+      <div className={showItemActions ? "" : "hidden"}>
+        <ItemActionsForm
+          actions={item.actions}
+          handleActionChange={handleActionChange}
+          handleActionRemove={handleActionRemove}
+          handleAddAction={handleAddAction}
+          isRoleBeingEdited={isBeingEdited}
         />
-      </p>
-      <AutocompleteWithChips
-        allItems={possibleTags}
-        isDisabled={!isBeingEdited}
-        selectLabel={intl.formatMessage({
-          defaultMessage: "Select required tags",
-          id: "scenarios.new.page.selectRequiredTags",
-        })}
-        selectedItems={item.requiredTags}
-        setSelectedItems={(tags) => {
-          handleItemChange(index, { ...item, requiredTags: tags });
-        }}
-      />
+      </div>
     </div>
   );
 
@@ -241,12 +209,12 @@ const ItemForm = ({
           {itemNameElement}
           {itemActionButtons}
         </div>
-        <div className={showItem ? "space-y-3" : "hidden"}>
+        <div className={showItem ? "" : "hidden"}>
           {itemDescription}
-          {itemRequiredTags}
+          {itemActionsForm}
         </div>
       </div>
-      <QRModal
+      <QrModal
         isOpen={isOpen}
         itemName={selectedItem}
         onOpenChange={onOpenChange}
@@ -310,9 +278,9 @@ const ScenarioItemsForm = ({
             key={item.id}
             handleItemChange={handleItemChange}
             handleItemRemove={handleItemRemove}
-            index={index}
             isBeingEdited={isBeingEdited || false}
             item={item}
+            itemIndex={index}
           />
         ))
       )}

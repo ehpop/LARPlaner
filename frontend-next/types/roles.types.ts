@@ -1,3 +1,5 @@
+import { ITag } from "@/types/tags.types";
+
 export type IRole = {
   id: number | null;
   name: string;
@@ -5,8 +7,3 @@ export type IRole = {
   tags: ITag[];
 };
 export type IRoleList = IRole[];
-
-export type ITag = {
-  key: string;
-  name: string;
-};

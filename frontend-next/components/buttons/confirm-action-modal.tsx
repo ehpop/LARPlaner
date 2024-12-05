@@ -6,6 +6,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@nextui-org/react";
+import { FormattedMessage } from "react-intl";
 
 const ConfirmActionModal = ({
   title,
@@ -18,7 +19,7 @@ const ConfirmActionModal = ({
   prompt: string;
   handleOnConfirm: () => void;
   isOpen: boolean;
-  onOpenChange: () => void;
+  onOpenChange: (isOpen: boolean) => void;
 }) => {
   return (
     <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
@@ -31,7 +32,10 @@ const ConfirmActionModal = ({
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="flat" onPress={onClose}>
-                Cancel
+                <FormattedMessage
+                  defaultMessage={"Cancel"}
+                  id={"general.cancel"}
+                />
               </Button>
               <Button
                 color="primary"
@@ -40,7 +44,10 @@ const ConfirmActionModal = ({
                   handleOnConfirm();
                 }}
               >
-                Ok
+                <FormattedMessage
+                  defaultMessage={"Confirm"}
+                  id={"general.confirm"}
+                />
               </Button>
             </ModalFooter>
           </>

@@ -4,7 +4,8 @@ import { Button } from "@nextui-org/button";
 import { useState } from "react";
 import { uuidv4 } from "@firebase/util";
 
-import { IRole, ITag } from "@/types/roles.types";
+import { IRole } from "@/types/roles.types";
+import { ITag } from "@/types/tags.types";
 
 const RoleTagEntry = ({
   tag,
@@ -24,10 +25,7 @@ const RoleTagEntry = ({
   const intl = useIntl();
 
   return (
-    <div
-      key={tag.key}
-      className="w-full flex flex-row space-x-3 items-baseline"
-    >
+    <div key={tag.id} className="w-full flex flex-row space-x-3 items-baseline">
       <Input
         isRequired
         className="w-full"
@@ -46,12 +44,12 @@ const RoleTagEntry = ({
           id: "role.display.tag.name.placeholder",
         })}
         size="sm"
-        value={tag.name}
+        value={tag.value}
         variant="underlined"
         onChange={(e) => {
           handleTagChanged(index, {
-            key: tag.key,
-            name: e.target.value,
+            id: tag.id,
+            value: e.target.value,
           });
         }}
       />
@@ -81,7 +79,7 @@ const RoleTagsForm = ({
   isBeingEdited: boolean;
 }) => {
   const mapAllTags = () => {
-    return role.tags.map((tag) => ({ tagId: tag.key, touched: false }));
+    return role.tags.map((tag) => ({ tagId: tag.id, touched: false }));
   };
 
   const [touched, setTouched] = useState({
@@ -99,7 +97,7 @@ const RoleTagsForm = ({
     setTouched({
       ...touched,
       tags: touched.tags.map((tag) =>
-        tag.tagId === newTag.key ? { ...tag, touched: true } : tag,
+        tag.tagId === newTag.id ? { ...tag, touched: true } : tag,
       ),
     });
   };
@@ -116,11 +114,11 @@ const RoleTagsForm = ({
   };
 
   const handleAddTag = () => {
-    if (role.tags[role.tags?.length - 1]?.name === "") {
+    if (role.tags[role.tags?.length - 1]?.value === "") {
       return;
     }
-    const newTag = { key: uuidv4(), name: "" };
-    const updatedTags = [...role.tags, newTag];
+    const newTag = { id: uuidv4(), value: "" };
+    const updatedTags: ITag[] = [...role.tags, newTag];
 
     setRole({
       ...role,
@@ -128,18 +126,18 @@ const RoleTagsForm = ({
     });
     setTouched({
       ...touched,
-      tags: touched.tags.concat({ tagId: newTag.key, touched: false }),
+      tags: touched.tags.concat({ tagId: newTag.id, touched: false }),
     });
   };
 
   const isInvalidTag = (tag: ITag) => {
-    const touchedTag = touched.tags.find((t) => t.tagId === tag.key);
+    const touchedTag = touched.tags.find((t) => t.tagId === tag.id);
 
     if (touchedTag && !touchedTag.touched) {
       return false;
     }
 
-    return tag.name === "" || tag.name === undefined || tag.name === null;
+    return tag.value === "" || tag.value === undefined || tag.value === null;
   };
 
   const tagListElement =

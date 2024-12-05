@@ -2,15 +2,17 @@ import { getLocalTimeZone, now, ZonedDateTime } from "@internationalized/date";
 import { uuidv4 } from "@firebase/util";
 
 import { IEvent, IEventList, ISkill } from "@/types/event.types";
-import { IRole, IRoleList, ITag } from "@/types/roles.types";
+import { IRole, IRoleList } from "@/types/roles.types";
 import {
   IScenario,
+  IScenarioAction,
   IScenarioItem,
   IScenarioItemList,
   IScenarioList,
   IScenarioRole,
   IScenarioRoleList,
 } from "@/types/scenario.types";
+import { ITag } from "@/types/tags.types";
 
 export const possibleSkills: ISkill[] = [
   { key: "strength", name: "Strength" },
@@ -23,14 +25,7 @@ export const possibleSkills: ISkill[] = [
   { key: "constitution", name: "Constitution" },
 ];
 
-export const possibleTags: ITag[] = [
-  { key: "brave", name: "Brave" },
-  { key: "impulsive", name: "Impulsive" },
-  { key: "clever", name: "Clever" },
-  { key: "wise", name: "Wise" },
-  { key: "strong", name: "Strong" },
-  { key: "agile", name: "Agile" },
-];
+export const possibleTags: ITag[] = [];
 
 export const userEmails = [
   { label: "example.email@email.co", value: "example.email@email.co" },
@@ -44,10 +39,7 @@ export const exampleRole: IRole = {
   id: 1,
   name: "Warrior",
   description: "A strong and brave warrior.",
-  tags: [
-    { key: "brave", name: "Brave" },
-    { key: "strong", name: "Strong" },
-  ] as ITag[],
+  tags: [] as ITag[],
 };
 
 export const emptyRole: IRole = {
@@ -113,18 +105,85 @@ export const possibleScenarioItems: IScenarioItemList = [
     scenarioId: 1,
     name: "Magic Sword",
     description: "A powerful sword imbued with magical properties.",
-    requiredTags: [
-      { key: "agile", name: "Agile" },
-      { key: "wise", name: "Wise" },
-      { key: "brave", name: "Brave" },
-    ] as ITag[],
+    actions: [
+      {
+        id: uuidv4(),
+        name: "Akcja #1",
+        description: "Opis akcji #1",
+        tagsToRemoveOnSuccess: [
+          {
+            id: uuidv4(),
+            value: "tag do usunięcia",
+          },
+        ] as ITag[],
+        tagsToApplyOnSuccess: [
+          {
+            id: uuidv4(),
+            value: "tag do dodania",
+          },
+        ] as ITag[],
+        tagsToApplyOnFailure: [
+          {
+            id: uuidv4(),
+            value: "tag do dodania",
+          },
+        ] as ITag[],
+        requiredTagsToDisplay: [
+          {
+            id: uuidv4(),
+            value: "tag wymagany do wyświetlenia",
+          },
+        ] as ITag[],
+        requiredTagsToSucceed: [
+          {
+            id: uuidv4(),
+            value: "tag wymagany do sukcesu",
+          },
+        ] as ITag[],
+      } as IScenarioAction,
+      {
+        id: uuidv4(),
+        name: "Akcja #2",
+        description: "Opis akcji #2",
+        tagsToRemoveOnSuccess: [
+          {
+            id: uuidv4(),
+            value: "tag do usunięcia",
+          },
+        ] as ITag[],
+        tagsToApplyOnSuccess: [
+          {
+            id: uuidv4(),
+            value: "tag do dodania",
+          },
+        ] as ITag[],
+        tagsToApplyOnFailure: [
+          {
+            id: uuidv4(),
+            value: "tag do dodania",
+          },
+        ] as ITag[],
+        requiredTagsToDisplay: [
+          {
+            id: uuidv4(),
+            value: "tag wymagany do wyświetlenia",
+          },
+        ] as ITag[],
+        requiredTagsToSucceed: [
+          {
+            id: uuidv4(),
+            value: "tag wymagany do sukcesu",
+          },
+        ] as ITag[],
+      } as IScenarioAction,
+    ] as IScenarioAction[],
   },
   {
     id: uuidv4(),
     scenarioId: 1,
     name: "Healing Potion",
     description: "A potion that heals the user's wounds.",
-    requiredTags: [{ key: "strong", name: "Strong" }] as ITag[],
+    actions: [] as IScenarioAction[],
   },
 ];
 
@@ -146,13 +205,7 @@ export const exampleScenarioItem: IScenarioItem = {
   scenarioId: 1,
   name: "Magic Sword",
   description: "A powerful sword imbued with magical properties.",
-  imageUrl:
-    "https://media.mythopedia.com/6cugv2Onrb7n1IDYjJBTmD/e309806f7646daef4b8abb7b0fc19dcc/wizard-name-generator.jpg?w=1280&h=720&fit=crop&crop=top2",
-  requiredTags: [
-    { key: "agile", name: "Agile" },
-    { key: "wise", name: "Wise" },
-    { key: "brave", name: "Brave" },
-  ] as ITag[],
+  actions: [] as IScenarioAction[],
 };
 
 export const emptyScenarioItem: IScenarioItem = {
@@ -160,8 +213,7 @@ export const emptyScenarioItem: IScenarioItem = {
   scenarioId: null,
   name: "",
   description: "",
-  imageUrl: "",
-  requiredTags: [] as ITag[],
+  actions: [] as IScenarioAction[],
 };
 
 export const emptyScenario: IScenario = {

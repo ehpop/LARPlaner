@@ -1,4 +1,4 @@
-import { ITag } from "@/types/roles.types";
+import { ITag } from "@/types/tags.types";
 
 export type IScenario = {
   id: number | null;
@@ -24,7 +24,22 @@ export type IScenarioItem = {
   scenarioId: number | null;
   name: string;
   description: string;
-  imageUrl?: string;
-  requiredTags: ITag[];
+  actions: IScenarioAction[];
 };
 export type IScenarioItemList = IScenarioItem[];
+
+export type IScenarioAction = {
+  id: string | null;
+  itemId: string | null;
+  name: string;
+  description: string;
+  messageOnSuccess: string;
+  messageOnFailure: string;
+  requiredTagsToDisplay: ITag[];
+  requiredTagsToSucceed: ITag[];
+  tagsToApplyOnSuccess: ITag[];
+  tagsToApplyOnFailure: ITag[];
+  tagsToRemoveOnSuccess: ITag[];
+  tagsToRemoveOnFailure: ITag[];
+  cooldownTimeInSeconds: number;
+};
