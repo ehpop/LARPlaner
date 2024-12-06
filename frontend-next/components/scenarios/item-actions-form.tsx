@@ -12,7 +12,7 @@ import {
 } from "@nextui-org/react";
 
 import { IScenarioAction } from "@/types/scenario.types";
-import InputWithChips from "@/components/input-with-chips";
+import InputTagsWithTable from "@/components/input-tags-with-table";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 
 export function ItemActionsForm({
@@ -282,7 +282,7 @@ const ActionForm = ({
           id={"scenarios.new.page.requiredTagsToDisplayAction"}
         />
       </p>
-      <InputWithChips
+      <InputTagsWithTable
         addedTags={requiredTagsToDisplay}
         description={intl.formatMessage({
           defaultMessage: "Tag that will be required to display action",
@@ -310,7 +310,7 @@ const ActionForm = ({
           id={"scenarios.new.page.requiredTagsToSucceedAction"}
         />
       </p>
-      <InputWithChips
+      <InputTagsWithTable
         addedTags={requiredTagsToSucceed}
         description={intl.formatMessage({
           defaultMessage: "Tag that will be required to succeed action",
@@ -338,7 +338,7 @@ const ActionForm = ({
           id={"scenarios.new.page.tagsToApplyOnSuccess"}
         />
       </p>
-      <InputWithChips
+      <InputTagsWithTable
         addedTags={tagsToApplyOnSuccess}
         description={intl.formatMessage({
           defaultMessage:
@@ -367,7 +367,7 @@ const ActionForm = ({
           id={"scenarios.new.page.tagsToApplyOnFailure"}
         />
       </p>
-      <InputWithChips
+      <InputTagsWithTable
         addedTags={tagsToApplyOnFailure}
         description={intl.formatMessage({
           defaultMessage: "Tag that will be applied on role when action fails",
@@ -395,7 +395,7 @@ const ActionForm = ({
           id={"scenarios.new.page.tagsToRemoveOnSuccess"}
         />
       </p>
-      <InputWithChips
+      <InputTagsWithTable
         addedTags={tagsToRemoveOnSuccess}
         description={intl.formatMessage({
           defaultMessage:
@@ -424,7 +424,7 @@ const ActionForm = ({
           id={"scenarios.new.page.tagsToRemoveOnFailure"}
         />
       </p>
-      <InputWithChips
+      <InputTagsWithTable
         addedTags={tagsToRemoveOnFailure}
         description={intl.formatMessage({
           defaultMessage: "Tag that will be removed on role when action fails",
