@@ -547,12 +547,12 @@ const ActionForm = ({
                   id={"scenarios.new.page.messages"}
                 />
               </p>
-              <div className="">
+              <div>
                 {successMessageElement}
                 {failureMessageElement}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid sm:grid-cols-2 grid-cols-1 gap-2">
               {actionRequiredTagsForDisplay}
               {actionRequiredTagsToSucceed}
               {actionTagsToApplyOnSuccess}
