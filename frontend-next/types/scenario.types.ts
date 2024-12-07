@@ -6,6 +6,8 @@ export type IScenario = {
   description: string;
   roles: IScenarioRoleList;
   items: IScenarioItemList;
+  actions: IScenarioAction[];
+  tags: ITag[];
 };
 export type IScenarioList = IScenario[];
 
@@ -24,13 +26,12 @@ export type IScenarioItem = {
   scenarioId: number | null;
   name: string;
   description: string;
-  actions: IScenarioAction[];
+  actions: IScenarioItemAction[];
 };
 export type IScenarioItemList = IScenarioItem[];
 
-export type IScenarioAction = {
+export type IAction = {
   id: string | null;
-  itemId: string | null;
   name: string;
   description: string;
   messageOnSuccess: string;
@@ -41,5 +42,13 @@ export type IScenarioAction = {
   tagsToApplyOnFailure: ITag[];
   tagsToRemoveOnSuccess: ITag[];
   tagsToRemoveOnFailure: ITag[];
-  cooldownTimeInSeconds: number;
+};
+
+export type IScenarioAction = IAction & {
+  scenarioId: number | null;
+  expiresAfterMinutes: number | null;
+};
+
+export type IScenarioItemAction = IAction & {
+  itemId: string | null;
 };

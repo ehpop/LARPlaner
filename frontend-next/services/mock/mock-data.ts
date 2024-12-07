@@ -7,6 +7,7 @@ import {
   IScenario,
   IScenarioAction,
   IScenarioItem,
+  IScenarioItemAction,
   IScenarioItemList,
   IScenarioList,
   IScenarioRole,
@@ -140,7 +141,7 @@ export const possibleScenarioItems: IScenarioItemList = [
             value: "tag wymagany do sukcesu",
           },
         ] as ITag[],
-      } as IScenarioAction,
+      } as IScenarioItemAction,
       {
         id: uuidv4(),
         name: "Akcja #2",
@@ -175,15 +176,15 @@ export const possibleScenarioItems: IScenarioItemList = [
             value: "tag wymagany do sukcesu",
           },
         ] as ITag[],
-      } as IScenarioAction,
-    ] as IScenarioAction[],
+      } as IScenarioItemAction,
+    ] as IScenarioItemAction[],
   },
   {
     id: uuidv4(),
     scenarioId: 1,
     name: "Healing Potion",
     description: "A potion that heals the user's wounds.",
-    actions: [] as IScenarioAction[],
+    actions: [] as IScenarioItemAction[],
   },
 ];
 
@@ -205,7 +206,7 @@ export const exampleScenarioItem: IScenarioItem = {
   scenarioId: 1,
   name: "Magic Sword",
   description: "A powerful sword imbued with magical properties.",
-  actions: [] as IScenarioAction[],
+  actions: [] as IScenarioItemAction[],
 };
 
 export const emptyScenarioItem: IScenarioItem = {
@@ -213,7 +214,7 @@ export const emptyScenarioItem: IScenarioItem = {
   scenarioId: null,
   name: "",
   description: "",
-  actions: [] as IScenarioAction[],
+  actions: [] as IScenarioItemAction[],
 };
 
 export const emptyScenario: IScenario = {
@@ -222,6 +223,8 @@ export const emptyScenario: IScenario = {
   description: "",
   roles: [] as IScenarioRoleList,
   items: [] as IScenarioItemList,
+  actions: [] as IScenarioAction[],
+  tags: [] as ITag[],
 };
 
 export const exampleScenario: IScenario = {
@@ -231,6 +234,8 @@ export const exampleScenario: IScenario = {
     "Opis przykładowego scenariusza, który zawiera szczegóły dotyczące fabuły, tła, oraz celu.",
   roles: possibleScenarioRoles.slice(0, 2),
   items: possibleScenarioItems,
+  actions: [] as IScenarioAction[],
+  tags: [] as ITag[],
 };
 
 export const emptyEvent: IEvent = {

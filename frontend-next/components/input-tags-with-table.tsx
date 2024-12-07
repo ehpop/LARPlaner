@@ -57,7 +57,7 @@ interface InputWithTableProps {
 }
 
 const InputTagsWithTable = ({
-  isDisabled = false,
+  isDisabled,
   inputLabel,
   addedTags,
   setAddedTags,

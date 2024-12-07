@@ -8,8 +8,8 @@ import { uuidv4 } from "@firebase/util";
 import { emptyScenarioItem } from "@/services/mock/mock-data";
 import {
   IScenario,
-  IScenarioAction,
   IScenarioItem,
+  IScenarioItemAction,
   IScenarioItemList,
 } from "@/types/scenario.types";
 import { QrModal } from "@/components/general/qr-modal";
@@ -142,7 +142,10 @@ const ItemForm = ({
     />
   );
 
-  const handleActionChange = (index: number, newAction: IScenarioAction) => {
+  const handleActionChange = (
+    index: number,
+    newAction: IScenarioItemAction,
+  ) => {
     const updatedActions = [...item.actions];
 
     updatedActions[index] = newAction;
@@ -169,7 +172,7 @@ const ItemForm = ({
           tagsToApplyOnFailure: [] as ITag[],
           requiredTagsToDisplay: [] as ITag[],
           requiredTagsToSucceed: [] as ITag[],
-        } as IScenarioAction,
+        } as IScenarioItemAction,
       ],
     });
   };

@@ -11,11 +11,11 @@ import {
   Textarea,
 } from "@nextui-org/react";
 
-import { IScenarioAction } from "@/types/scenario.types";
+import { IAction } from "@/types/scenario.types";
 import InputTagsWithTable from "@/components/input-tags-with-table";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 
-export function ItemActionsForm({
+export function ItemActionsForm<T extends IAction>({
   handleAddAction,
   handleActionChange,
   handleActionRemove,
@@ -23,19 +23,17 @@ export function ItemActionsForm({
   isRoleBeingEdited,
 }: {
   handleAddAction: () => void;
-  handleActionChange: (index: number, newAction: IScenarioAction) => void;
+  handleActionChange: (index: number, newAction: T) => void;
   handleActionRemove: (index: number) => void;
-  actions: IScenarioAction[];
+  actions: T[];
   isRoleBeingEdited: boolean;
 }) {
   const intl = useIntl();
   const [showActionForm, setShowActionForm] = useState(false);
-  const [selectedAction, setSelectedAction] = useState<IScenarioAction | null>(
-    null,
-  );
+  const [selectedAction, setSelectedAction] = useState<IAction | null>(null);
 
   const onActionDetailsPressed = (actionId: string) => {
-    setSelectedAction(actions.filter((action) => action.id === actionId)[0]);
+    setSelectedAction(actions.find((action) => action.id === actionId) || null);
     setShowActionForm(true);
   };
 
@@ -44,7 +42,7 @@ export function ItemActionsForm({
     index,
     onActionDetailsPressed,
   }: {
-    action: IScenarioAction;
+    action: IAction;
     index: number;
     isBeingEdited: boolean;
     onActionDetailsPressed: (actionId: string) => void;
@@ -149,7 +147,7 @@ export function ItemActionsForm({
                 index={actions.findIndex(
                   (action) => action.id === selectedAction?.id,
                 )}
-                initialAction={selectedAction as IScenarioAction}
+                initialAction={selectedAction as T}
                 isActionBeingEdited={isRoleBeingEdited}
                 onClose={onClose}
               />
@@ -197,16 +195,16 @@ export function ItemActionsForm({
   );
 }
 
-const ActionForm = ({
+const ActionForm = <T extends IAction>({
   initialAction,
   index,
   handleActionChange,
   isActionBeingEdited,
   onClose,
 }: {
-  initialAction: IScenarioAction;
+  initialAction: T;
   index: number;
-  handleActionChange: (index: number, newAction: IScenarioAction) => void;
+  handleActionChange: (index: number, newAction: T) => void;
   isActionBeingEdited: boolean;
   onClose: () => void;
 }) => {

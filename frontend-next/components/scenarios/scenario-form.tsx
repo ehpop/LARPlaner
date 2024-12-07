@@ -3,15 +3,18 @@ import React, { useState } from "react";
 import { Button, Input, Textarea, useDisclosure } from "@nextui-org/react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { uuidv4 } from "@firebase/util";
 
 import { ScenarioRolesForm } from "@/components/scenarios/scenario-roles-form";
 import { emptyScenario, possibleRoles } from "@/services/mock/mock-data";
 import ScenarioItemsForm from "@/components/scenarios/scenario-items-form";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
-import { IScenario } from "@/types/scenario.types";
+import { IScenario, IScenarioAction } from "@/types/scenario.types";
 import scenariosService from "@/services/scenarios.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
+import { ItemActionsForm } from "@/components/scenarios/item-actions-form";
+import InputTagsWithTable from "@/components/input-tags-with-table";
 
 export default function ScenarioForm({
   initialScenario,
@@ -30,10 +33,57 @@ export default function ScenarioForm({
   const [isBeingEdited, setIsBeingEdited] = useState(isNewScenario);
   const [showItemsSection, setShowItemsSection] = useState(true);
   const [showRolesSection, setShowRolesSection] = useState(true);
+  const [showActionsSection, setShowActionsSection] = useState(true);
+  const [showTagsSection, setShowTagsSection] = useState(true);
   const [touched, setTouched] = useState({
     name: false,
     description: false,
   });
+
+  const handleAddAction = () => {
+    const newAction: IScenarioAction = {
+      id: uuidv4(),
+      scenarioId: scenario.id,
+      name: "",
+      description: "",
+      messageOnSuccess: "",
+      messageOnFailure: "",
+      requiredTagsToDisplay: [],
+      requiredTagsToSucceed: [],
+      tagsToApplyOnSuccess: [],
+      tagsToApplyOnFailure: [],
+      tagsToRemoveOnSuccess: [],
+      tagsToRemoveOnFailure: [],
+      expiresAfterMinutes: null,
+    };
+
+    setScenario({
+      ...scenario,
+      actions: [...scenario.actions, newAction],
+    });
+  };
+
+  const handleActionChange = (index: number, newAction: IScenarioAction) => {
+    const newActions = [...scenario.actions];
+
+    newActions[index] = newAction;
+
+    setScenario({
+      ...scenario,
+      actions: newActions,
+    });
+  };
+
+  const handleActionRemove = (index: number) => {
+    const newActions = [...scenario.actions];
+
+    newActions.splice(index, 1);
+
+    setScenario({
+      ...scenario,
+      actions: newActions,
+    });
+  };
 
   const handleTouched = (key: keyof typeof touched) => {
     setTouched({ ...touched, [key]: true });
@@ -338,16 +388,90 @@ export default function ScenarioForm({
     </div>
   );
 
+  const actionsElement = (
+    <div className="w-full border-1 p-3 space-y-3">
+      <div className="w-full flex flex-row justify-between">
+        <p className="text-xl">
+          <FormattedMessage
+            defaultMessage={"Actions in scenario:"}
+            id={"scenarios.new.page.actionsInScenario"}
+          />
+        </p>
+        <Button
+          size="sm"
+          variant="bordered"
+          onPress={() => setShowActionsSection(!showActionsSection)}
+        >
+          {showActionsSection ? "-" : "+"}
+        </Button>
+      </div>
+      <div className={showActionsSection ? "" : "hidden"}>
+        <ItemActionsForm
+          actions={scenario.actions}
+          handleActionChange={handleActionChange}
+          handleActionRemove={handleActionRemove}
+          handleAddAction={handleAddAction}
+          isRoleBeingEdited={isBeingEdited}
+        />
+      </div>
+    </div>
+  );
+
+  const tagsElement = (
+    <div className="w-full border-1 p-3 space-y-3">
+      <div className="w-full flex flex-row justify-between">
+        <p className="text-xl">
+          <FormattedMessage
+            defaultMessage={"Tags in scenario:"}
+            id={"scenarios.new.page.tagsInScenario"}
+          />
+        </p>
+        <Button
+          size="sm"
+          variant="bordered"
+          onPress={() => setShowTagsSection(!showTagsSection)}
+        >
+          {showTagsSection ? "-" : "+"}
+        </Button>
+      </div>
+      <div className={showTagsSection ? "" : "hidden"}>
+        <InputTagsWithTable
+          addedTags={scenario.tags}
+          description={intl.formatMessage({
+            defaultMessage:
+              "Tags are used to categorize scenarios. They can be used to filter scenarios in the list.",
+            id: "scenarios.new.page.tagsDescription",
+          })}
+          inputLabel={intl.formatMessage({
+            defaultMessage: "Tag name",
+            id: "scenarios.new.page.tags",
+          })}
+          isDisabled={!(isBeingEdited || isNewScenario)}
+          placeholder={intl.formatMessage({
+            defaultMessage: "Insert tag name",
+            id: "scenarios.new.page.insertTagName",
+          })}
+          setAddedTags={(tags) => {
+            setScenario({
+              ...scenario,
+              tags: tags,
+            });
+          }}
+        />
+      </div>
+    </div>
+  );
+
   const form = (
     <div className="w-full flex justify-center">
-      <div className="sm:w-4/5 w-full space-y-10 border-1 p-3">
+      <div className="w-full space-y-10 border-1 p-3">
         {titleElement}
         {nameElement}
         {descriptionElement}
-        <div className="w-full flex flex-col space-y-3">
-          {rolesElement}
-          {itemsElement}
-        </div>
+        {rolesElement}
+        {itemsElement}
+        {actionsElement}
+        {tagsElement}
         {isNewScenario ? saveButton : buttonsElement}
       </div>
     </div>
