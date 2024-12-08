@@ -27,6 +27,7 @@ export default function ScenarioForm({
   const [scenario, setScenario] = useState(
     isNewScenario ? emptyScenario : { ...initialScenario },
   );
+  const [scenarioBeforeChanges, setScenarioBeforeChanges] = useState(scenario);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -138,6 +139,8 @@ export default function ScenarioForm({
           toast("Scenario saved successfully", {
             type: "success",
           });
+          setScenario(result.data);
+          setScenarioBeforeChanges(result.data);
           setIsBeingEdited(false);
         } else {
           toast(result.data, {
@@ -292,13 +295,7 @@ export default function ScenarioForm({
   const saveButton = (
     <div className="w-full flex justify-end">
       <div className="flex justify-between space-x-3">
-        <Button
-          color="success"
-          size="lg"
-          onPress={() => {
-            handleSave();
-          }}
-        >
+        <Button color="success" size="lg" onPress={handleSave}>
           <FormattedMessage
             defaultMessage={"Save"}
             id={"scenarios.new.page.save"}
@@ -330,7 +327,11 @@ export default function ScenarioForm({
   const confirmCancel = (
     <ConfirmActionModal
       handleOnConfirm={() => {
-        setScenario(initialScenario || emptyScenario);
+        console.log(
+          "Setting scenario to scenarioBeforeChanges: ",
+          scenarioBeforeChanges,
+        );
+        setScenario(scenarioBeforeChanges);
         setIsBeingEdited(false);
       }}
       isOpen={isOpenCancel}
@@ -464,7 +465,7 @@ export default function ScenarioForm({
 
   const form = (
     <div className="w-full flex justify-center">
-      <div className="w-full space-y-10 border-1 p-3">
+      <div className="w-full space-y-3 border-1 p-3">
         {titleElement}
         {nameElement}
         {descriptionElement}

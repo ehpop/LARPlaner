@@ -37,6 +37,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const [event, setEvent] = useState(
     isNewEvent ? emptyEvent : { ...initialEvent },
   );
+  const [eventBeforeChanges, setEventBeforeChanges] = useState(event);
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [showAssignRoles, setShowAssignRoles] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -108,6 +109,8 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
           toast("Event updated", {
             type: "success",
           });
+          setEvent(response.data);
+          setEventBeforeChanges(response.data);
           setIsBeingEdited(false);
         } else {
           toast(response.data, {
@@ -127,7 +130,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
 
   const handleConfirmCancel = () => {
     setIsBeingEdited(false);
-    setEvent(initialEvent || emptyEvent);
+    setEvent(eventBeforeChanges);
   };
 
   const handleConfirmDelete = () => {
@@ -484,7 +487,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
 
   const form = (
     <div className="w-full flex justify-center">
-      <div className="sm:w-4/5 w-full space-y-10 border-1 p-3">
+      <div className="sm:w-4/5 w-full space-y-3 border-1 p-3">
         {titleElement}
         {nameElement}
         {dateTimeElement}

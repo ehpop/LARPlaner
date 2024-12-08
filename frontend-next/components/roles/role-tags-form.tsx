@@ -114,9 +114,6 @@ const RoleTagsForm = ({
   };
 
   const handleAddTag = () => {
-    if (role.tags[role.tags?.length - 1]?.value === "") {
-      return;
-    }
     const newTag = { id: uuidv4(), value: "" };
     const updatedTags: ITag[] = [...role.tags, newTag];
 
@@ -168,7 +165,12 @@ const RoleTagsForm = ({
       {tagListElement}
       {isBeingEdited && (
         <div className="w-full flex justify-center">
-          <Button color="success" size="md" onPress={handleAddTag}>
+          <Button
+            color="success"
+            isDisabled={role.tags[role.tags?.length - 1]?.value === ""}
+            size="md"
+            onPress={handleAddTag}
+          >
             <FormattedMessage
               defaultMessage="Add tag"
               id="role.display.addTag"

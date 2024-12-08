@@ -20,6 +20,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [role, setRole] = useState(initialRole || emptyRole);
+  const [roleBeforeEdit, setRoleBeforeEdit] = useState(role);
   const [showTags, setShowTags] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -93,6 +94,8 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
         if (result.success) {
           toast("Role updated successfully", { type: "success" });
           setIsBeingEdited(false);
+          setRole(result.data);
+          setRoleBeforeEdit(result.data);
         } else {
           toast(result.data, {
             type: "error",
@@ -250,7 +253,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
     <ConfirmActionModal
       handleOnConfirm={() => {
         setIsBeingEdited(false);
-        setRole(initialRole || emptyRole);
+        setRole(roleBeforeEdit);
       }}
       isOpen={isOpenCancel}
       prompt={intl.formatMessage({
@@ -301,18 +304,12 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   );
 
   const form = (
-    <div className="w-full flex justify-center">
-      <div
-        className={`sm:w-4/5 w-full space-y-10 border-1 p-3 ${isDeleting || isSaving ? "opacity-50 blur-sm" : ""}`}
-      >
-        {titleElement}
-        <div className="space-y-3">
-          {roleName}
-          {roleDescription}
-          {tagsElement}
-        </div>
-        {isNewRole ? saveButton : actionButtons}
-      </div>
+    <div className="w-full flex flex-col justify-center border-1 p-3 space-y-3">
+      {titleElement}
+      {roleName}
+      {roleDescription}
+      {tagsElement}
+      {isNewRole ? saveButton : actionButtons}
     </div>
   );
 
