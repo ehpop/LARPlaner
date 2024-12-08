@@ -109,9 +109,8 @@ const InputTagsWithTable = ({
             defaultMessage: "No tags added",
             id: "input-with-chips.noTagsAdded",
           })}
-          items={addedTags}
         >
-          {(tag) => (
+          {addedTags.map((tag) => (
             <TableRow key={tag.id}>
               <TableCell>{tag.value}</TableCell>
               <TableCell>
@@ -138,7 +137,7 @@ const InputTagsWithTable = ({
                 </Button>
               </TableCell>
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
     </div>
