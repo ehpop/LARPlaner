@@ -15,15 +15,17 @@ export default function Error({
 
   return (
     <div className="w-full flex flex-row justify-center">
-      <h2>
-        <FormattedMessage
-          defaultMessage="Something went wrong!"
-          id="common.error"
-        />
-      </h2>
-      <Button onPress={() => reset()}>
-        <FormattedMessage defaultMessage="Retry" id="common.retry" />
-      </Button>
+      <div className="flex flex-col space-y-1">
+        <h2>
+          <FormattedMessage
+            defaultMessage="Something went wrong!"
+            id="common.error"
+          />
+        </h2>
+        <Button onPress={() => reset()}>
+          <FormattedMessage defaultMessage="Retry" id="common.retry" />
+        </Button>
+      </div>
     </div>
   );
 }
