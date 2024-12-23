@@ -7,7 +7,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Event } from "./event";
 
 import { SearchIcon } from "@/components/icons";
-import { IEventList } from "@/types/event.types";
+import { IEvent } from "@/types/event.types";
 
 const EVENTS_PER_PAGE = 3;
 
@@ -17,21 +17,21 @@ export const EventsDisplay = ({
   canAddNewEvent = false,
   isAdmin = false,
 }: {
-  list: IEventList;
+  list: IEvent[];
   title: string;
   canAddNewEvent?: boolean;
   isAdmin?: boolean;
 }) => {
-  const getAmountOfPages = (list: IEventList) => {
+  const getAmountOfPages = (list: IEvent[]) => {
     return Math.ceil(list.length / EVENTS_PER_PAGE);
   };
 
-  const getPages = (list: IEventList) => {
-    let pages: IEventList[] = [];
+  const getPages = (list: IEvent[]) => {
+    let pages: IEvent[][] = [];
     let amountOfPages = getAmountOfPages(list);
 
     for (let i = 1; i <= amountOfPages; i++) {
-      let page: IEventList = list.slice(
+      let page: IEvent[] = list.slice(
         (i - 1) * EVENTS_PER_PAGE,
         i * EVENTS_PER_PAGE,
       );

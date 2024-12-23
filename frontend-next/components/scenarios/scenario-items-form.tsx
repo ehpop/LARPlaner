@@ -10,7 +10,6 @@ import {
   IScenario,
   IScenarioItem,
   IScenarioItemAction,
-  IScenarioItemList,
 } from "@/types/scenario.types";
 import { QrModal } from "@/components/general/qr-modal";
 import { ItemActionsForm } from "@/components/scenarios/item-actions-form";
@@ -231,7 +230,7 @@ const ScenarioItemsForm = ({
   scenario,
   setScenario,
 }: {
-  initialItems?: IScenarioItemList;
+  initialItems?: IScenarioItem[];
   isBeingEdited?: boolean;
   scenario: IScenario;
   setScenario: (scenario: IScenario) => void;

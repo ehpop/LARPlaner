@@ -2,17 +2,16 @@
 
 import { useIntl } from "react-intl";
 import { useEffect, useState } from "react";
-import { getLocalTimeZone, now } from "@internationalized/date";
 
 import { EventsDisplay } from "@/components/events/events-display";
-import { IEventList } from "@/types/event.types";
 import EventsService from "@/services/events.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
+import { IEvent } from "@/types/event.types";
 
 function EventsPage() {
   const intl = useIntl();
 
-  const [eventsData, setEventsData] = useState<IEventList>([]);
+  const [eventsData, setEventsData] = useState<IEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,12 +21,7 @@ function EventsPage() {
         const response = await EventsService.getAll();
 
         if (response.success) {
-          setEventsData(
-            response.data.map((event, index) => ({
-              ...event,
-              date: now(getLocalTimeZone()).add({ days: index + 1 }),
-            })),
-          );
+          setEventsData(response.data);
         } else {
           setError("Failed to fetch events");
         }

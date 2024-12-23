@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button, Select, SelectItem, Textarea } from "@nextui-org/react";
 
 import { IScenarioRole } from "@/types/scenario.types";
-import { IRoleList } from "@/types/roles.types";
+import { IRole } from "@/types/roles.types";
 
 export const RoleItem = ({
   index,
@@ -16,7 +16,7 @@ export const RoleItem = ({
   index: number;
   handleRoleChange: (index: number, role: IScenarioRole) => void;
   handleRoleRemove: (index: number) => void;
-  availableRoles: IRoleList;
+  availableRoles: IRole[];
   role: IScenarioRole;
   isBeingEdited?: boolean;
 }) => {

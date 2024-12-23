@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/button";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { SearchIcon } from "@/components/icons";
-import { IRoleList } from "@/types/roles.types";
+import { IRole } from "@/types/roles.types";
 
 const ROLES_PER_PAGE = 6;
 
@@ -14,16 +14,16 @@ export const RolesDisplay = ({
   title,
   canAddNewRole = false,
 }: {
-  rolesList: IRoleList;
+  rolesList: IRole[];
   title: string;
   canAddNewRole?: boolean;
 }) => {
-  const getAmountOfPages = (list: IRoleList) => {
+  const getAmountOfPages = (list: IRole[]) => {
     return Math.ceil(list.length / ROLES_PER_PAGE);
   };
 
-  const getPages = (list: IRoleList) => {
-    let pages: IRoleList[] = [];
+  const getPages = (list: IRole[]) => {
+    let pages: IRole[][] = [];
     let amountOfPages = getAmountOfPages(list);
 
     for (let i = 1; i <= amountOfPages; i++) {

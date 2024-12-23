@@ -5,8 +5,8 @@ import { uuidv4 } from "@firebase/util";
 
 import { RoleItem } from "@/components/scenarios/role-item-display";
 import { emptyScenarioRole } from "@/services/mock/mock-data";
-import { IRoleList } from "@/types/roles.types";
 import { IScenario, IScenarioRole } from "@/types/scenario.types";
+import { IRole } from "@/types/roles.types";
 
 export const ScenarioRolesForm = ({
   availableRoles,
@@ -14,7 +14,7 @@ export const ScenarioRolesForm = ({
   scenario,
   setScenario,
 }: {
-  availableRoles: IRoleList;
+  availableRoles: IRole[];
   isBeingEdited?: boolean;
   scenario: IScenario;
   setScenario: (scenario: IScenario) => void;

@@ -1,9 +1,13 @@
 import CrudService from "@/services/crud.service";
-import { IEvent } from "@/types/event.types";
+import { IEvent, IEventGetDTO, IEventPostDTO } from "@/types/event.types";
+import {
+  convertEventToPostDto,
+  convertGetDtoToEvent,
+} from "@/services/converter/events-converter";
 
-class EventsService extends CrudService<IEvent> {
+class EventsService extends CrudService<IEvent, IEventGetDTO, IEventPostDTO> {
   constructor() {
-    super("/events");
+    super("/events", convertGetDtoToEvent, convertEventToPostDto);
   }
 }
 

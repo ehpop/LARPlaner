@@ -1,30 +1,16 @@
 import { getLocalTimeZone, now, ZonedDateTime } from "@internationalized/date";
 import { uuidv4 } from "@firebase/util";
 
-import { IEvent, IEventList, ISkill } from "@/types/event.types";
-import { IRole, IRoleList } from "@/types/roles.types";
+import { IEvent } from "@/types/event.types";
+import { IRole } from "@/types/roles.types";
 import {
   IScenario,
   IScenarioAction,
   IScenarioItem,
   IScenarioItemAction,
-  IScenarioItemList,
-  IScenarioList,
   IScenarioRole,
-  IScenarioRoleList,
 } from "@/types/scenario.types";
 import { ITag } from "@/types/tags.types";
-
-export const possibleSkills: ISkill[] = [
-  { key: "strength", name: "Strength" },
-  { key: "agility", name: "Agility" },
-  { key: "intelligence", name: "Intelligence" },
-  { key: "magic", name: "Magic" },
-  { key: "wisdom", name: "Wisdom" },
-  { key: "charisma", name: "Charisma" },
-  { key: "dexterity", name: "Dexterity" },
-  { key: "constitution", name: "Constitution" },
-];
 
 export const possibleTags: ITag[] = [];
 
@@ -68,7 +54,7 @@ export const emptyScenarioRole: IScenarioRole = {
   descriptionForOthers: "",
 };
 
-export const possibleScenarioRoles: IScenarioRoleList = [
+export const possibleScenarioRoles: IScenarioRole[] = [
   {
     id: uuidv4(),
     scenarioId: 1,
@@ -100,7 +86,7 @@ export const possibleScenarioRoles: IScenarioRoleList = [
   { ...exampleScenarioRole, id: uuidv4(), scenarioId: 1, roleId: 10 },
 ];
 
-export const possibleScenarioItems: IScenarioItemList = [
+export const possibleScenarioItems: IScenarioItem[] = [
   {
     id: uuidv4(),
     scenarioId: 1,
@@ -188,7 +174,7 @@ export const possibleScenarioItems: IScenarioItemList = [
   },
 ];
 
-export const possibleRoles: IRoleList = [
+export const possibleRoles: IRole[] = [
   { ...exampleRole, id: 1, name: "Warrior" },
   { ...exampleRole, id: 2, name: "Mage" },
   { ...exampleRole, id: 3, name: "Rogue" },
@@ -221,8 +207,8 @@ export const emptyScenario: IScenario = {
   id: null,
   name: "",
   description: "",
-  roles: [] as IScenarioRoleList,
-  items: [] as IScenarioItemList,
+  roles: [] as IScenarioRole[],
+  items: [] as IScenarioItem[],
   actions: [] as IScenarioAction[],
   tags: [] as ITag[],
 };
@@ -267,7 +253,7 @@ export const exampleEvent: IEvent = {
   ],
 };
 
-export const eventsList: IEventList = Array.from({ length: 20 }, (_, i) => ({
+export const eventsList: IEvent[] = Array.from({ length: 20 }, (_, i) => ({
   ...exampleEvent,
   id: i + 1,
   name: `Wydarzenie #${i + 1}`,
@@ -275,7 +261,7 @@ export const eventsList: IEventList = Array.from({ length: 20 }, (_, i) => ({
   date: now(getLocalTimeZone()).add({ days: i + 1 }) as ZonedDateTime,
 }));
 
-export const possibleScenarios: IScenarioList = Array.from(
+export const possibleScenarios: IScenario[] = Array.from(
   { length: 5 },
   (_, i) => ({
     ...exampleScenario,

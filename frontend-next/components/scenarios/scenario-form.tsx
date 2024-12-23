@@ -327,10 +327,6 @@ export default function ScenarioForm({
   const confirmCancel = (
     <ConfirmActionModal
       handleOnConfirm={() => {
-        console.log(
-          "Setting scenario to scenarioBeforeChanges: ",
-          scenarioBeforeChanges,
-        );
         setScenario(scenarioBeforeChanges);
         setIsBeingEdited(false);
       }}

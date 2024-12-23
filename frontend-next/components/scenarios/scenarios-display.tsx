@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/button";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { SearchIcon } from "@/components/icons";
-import { IScenarioList } from "@/types/scenario.types";
+import { IScenario } from "@/types/scenario.types";
 
 const SCENARIOS_PER_PAGE = 6;
 
@@ -14,16 +14,16 @@ export const ScenariosDisplay = ({
   title,
   canAddNewScenario = false,
 }: {
-  scenariosList: IScenarioList;
+  scenariosList: IScenario[];
   title: string;
   canAddNewScenario?: boolean;
 }) => {
-  const getAmountOfPages = (list: IScenarioList) => {
+  const getAmountOfPages = (list: IScenario[]) => {
     return list.length ? Math.ceil(list.length / SCENARIOS_PER_PAGE) : 1;
   };
 
-  const getPages = (list: IScenarioList) => {
-    let pages: IScenarioList[] = [];
+  const getPages = (list: IScenario[]) => {
+    let pages: IScenario[][] = [];
     let amountOfPages = getAmountOfPages(list);
 
     for (let i = 1; i <= amountOfPages; i++) {

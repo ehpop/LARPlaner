@@ -5,13 +5,11 @@ import { useEffect, useState } from "react";
 
 import ScenariosDisplay from "@/components/scenarios/scenarios-display";
 import LoadingOverlay from "@/components/general/loading-overlay";
-import { IScenarioList } from "@/types/scenario.types";
 import ScenariosService from "@/services/scenarios.service";
+import { IScenario } from "@/types/scenario.types";
 
 function ScenariosPage() {
-  const [scenariosData, setScenariosData] = useState<IScenarioList | null>(
-    null,
-  );
+  const [scenariosData, setScenariosData] = useState<IScenario[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

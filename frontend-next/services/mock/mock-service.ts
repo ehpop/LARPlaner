@@ -6,16 +6,20 @@ import {
   possibleRoles,
   possibleScenarios,
 } from "@/services/mock/mock-data";
-import { IScenario, IScenarioList } from "@/types/scenario.types";
-import { IRole, IRoleList } from "@/types/roles.types";
-import { IEvent, IEventList } from "@/types/event.types";
+import { IScenario } from "@/types/scenario.types";
+import { IRole } from "@/types/roles.types";
+import { IEventGetDTO } from "@/types/event.types";
 
-const scenarios: IScenarioList = possibleScenarios;
-const roles: IRoleList = possibleRoles;
-const events: IEventList = eventsList;
+const scenarios: IScenario[] = possibleScenarios;
+const roles: IRole[] = possibleRoles;
+const events: IEventGetDTO[] = eventsList.map((event) => ({
+  ...event,
+  id: event.id as number,
+  date: event.date.toDate().toISOString(),
+}));
 
 export default function setupMock(api: AxiosInstance) {
-  const mock = new MockAdapter(api, { delayResponse: 2000 });
+  const mock = new MockAdapter(api, { delayResponse: 1000 });
 
   setupMockScenariosApi(mock);
   setupMockRolesApi(mock);
@@ -166,7 +170,7 @@ function setupMockEventsApi(mock: MockAdapter) {
   // Mocking the PUT /events/:id endpoint
   mock.onPut(/\/events\/\d+/).reply((config) => {
     const id = parseInt(config.url?.split("/").pop() || "0", 10);
-    const updatedEvent: IEvent = JSON.parse(config.data);
+    const updatedEvent: IEventGetDTO = JSON.parse(config.data);
     const eventIndex = events.findIndex((r) => r.id === id);
 
     if (eventIndex !== -1) {

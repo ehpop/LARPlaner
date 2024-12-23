@@ -1,15 +1,39 @@
 import { ITag } from "@/types/tags.types";
+import { IGetDTO, IPostDTO } from "@/types/dto.types";
+
+/**
+ * Role DTO for POST and UPDATE requests
+ */
+export type IScenarioPostDTO = IPostDTO & {
+  name: string;
+  description: string;
+  roles: IScenarioRole["id"][];
+  items: IScenarioItem["id"][];
+  actions: IScenarioAction["id"][];
+  tags: ITag["id"][];
+};
+
+/**
+ * Role DTO for GET requests
+ */
+export type IScenarioGetDTO = IGetDTO & {
+  name: string;
+  description: string;
+  roles: IScenarioRole[];
+  items: IScenarioItem[];
+  actions: IScenarioAction[];
+  tags: ITag[];
+};
 
 export type IScenario = {
   id: number | null;
   name: string;
   description: string;
-  roles: IScenarioRoleList;
-  items: IScenarioItemList;
+  roles: IScenarioRole[];
+  items: IScenarioItem[];
   actions: IScenarioAction[];
   tags: ITag[];
 };
-export type IScenarioList = IScenario[];
 
 export type IScenarioRole = {
   id: string | null;
@@ -19,7 +43,6 @@ export type IScenarioRole = {
   descriptionForOwner: string;
   descriptionForOthers: string;
 };
-export type IScenarioRoleList = IScenarioRole[];
 
 export type IScenarioItem = {
   id: string | null;
@@ -28,7 +51,6 @@ export type IScenarioItem = {
   description: string;
   actions: IScenarioItemAction[];
 };
-export type IScenarioItemList = IScenarioItem[];
 
 export type IAction = {
   id: string | null;

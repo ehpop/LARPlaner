@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 
 import RolesService from "@/services/roles.service";
-import { IRoleList } from "@/types/roles.types";
 import RolesDisplay from "@/components/roles/roles-display";
 import LoadingOverlay from "@/components/general/loading-overlay";
+import { IRole } from "@/types/roles.types";
 
 export default function RolesPage() {
-  const [rolesData, setRolesData] = useState<IRoleList | null>(null);
+  const [rolesData, setRolesData] = useState<IRole[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

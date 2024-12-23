@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { getLocalTimeZone, now } from "@internationalized/date";
 
 import EventForm from "@/components/events/event-form";
 import eventsService from "@/services/events.service";
@@ -20,10 +19,7 @@ export default function EventPage({ params }: any) {
         const response = await eventsService.getById(params.id);
 
         if (response.success) {
-          setEventData({
-            ...response.data,
-            date: now(getLocalTimeZone()).add({ days: 1 }),
-          });
+          setEventData(response.data);
         } else {
           setError("Failed to fetch event");
           toast(response.data, {
