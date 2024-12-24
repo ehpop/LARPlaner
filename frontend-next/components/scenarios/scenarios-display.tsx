@@ -63,12 +63,12 @@ export const ScenariosDisplay = ({
   const ScenariosElement = (
     <>
       <div className="gap-4 grid sm:grid-cols-2 grid-cols-1">
-        {pages[currentPage - 1]?.map((scenario, index) => (
+        {pages[currentPage - 1]?.map((scenario, _) => (
           <Link
             key={scenario.id}
             isBlock
             className="w-full border-1 p-3 space-y-3 text-center"
-            href={`/admin/scenarios/${index + 1}`}
+            href={`/admin/scenarios/${scenario.id}`}
           >
             <p className="text-xl">{scenario.name}</p>
           </Link>

@@ -1,7 +1,7 @@
 export type IPostDTO = {
-  id: number | null;
+  id: string | null;
 };
 
 export type IGetDTO = {
-  id: number;
+  id: string;
 };

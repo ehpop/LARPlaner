@@ -30,7 +30,7 @@ class CrudService<E, G extends IGetDTO, P extends IPostDTO> {
       }));
   }
 
-  async getById(id: number): Promise<Response<E>> {
+  async getById(id: string): Promise<Response<E>> {
     return api
       .get(`${this.baseUrl}/${id}`)
       .then(
@@ -64,7 +64,7 @@ class CrudService<E, G extends IGetDTO, P extends IPostDTO> {
       }));
   }
 
-  async update(id: number, entity: E): Promise<Response<E>> {
+  async update(id: string, entity: E): Promise<Response<E>> {
     const postDto = this.convertEntityToPostDto(entity);
 
     return api
@@ -82,7 +82,7 @@ class CrudService<E, G extends IGetDTO, P extends IPostDTO> {
       }));
   }
 
-  async delete(id: number): Promise<Response<E>> {
+  async delete(id: string): Promise<Response<E>> {
     return api
       .delete(`${this.baseUrl}/${id}`)
       .then((result) => ({

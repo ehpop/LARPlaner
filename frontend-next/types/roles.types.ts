@@ -20,7 +20,7 @@ export type IRoleGetDTO = IGetDTO & {
 };
 
 export type IRole = {
-  id: number | null;
+  id: string | null;
   name: string;
   description: string;
   tags: ITag[];

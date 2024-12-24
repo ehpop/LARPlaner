@@ -1,6 +1,6 @@
 import { ZonedDateTime } from "@internationalized/date";
 
-import { IScenarioRole } from "@/types/scenario.types";
+import { IScenario, IScenarioRole } from "@/types/scenario.types";
 import { IGetDTO, IPostDTO } from "@/types/dto.types";
 
 /**
@@ -26,7 +26,7 @@ export type IEventGetDTO = IGetDTO & {
   img: string;
   date: string;
   description: string;
-  scenarioId: number | null;
+  scenarioId: IScenario["id"];
   assignedRoles: {
     scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
@@ -34,12 +34,12 @@ export type IEventGetDTO = IGetDTO & {
 };
 
 export type IEvent = {
-  id: number | null;
+  id: string | null;
   name: string;
   img: string;
   date: ZonedDateTime;
   description: string;
-  scenarioId: number | null;
+  scenarioId: IScenario["id"] | null;
   assignedRoles: {
     scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
