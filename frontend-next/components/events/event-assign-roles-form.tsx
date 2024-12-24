@@ -2,7 +2,11 @@ import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 
-import { getRole, getScenario, userEmails } from "@/services/mock/mock-data";
+import {
+  getRoleById,
+  getScenarioById,
+  userEmails,
+} from "@/services/mock/mock-data";
 import { IScenarioRole } from "@/types/scenario.types";
 import { IEvent } from "@/types/event.types";
 import { isValidEmail } from "@/utils/validation";
@@ -19,7 +23,7 @@ function RoleAssignmentEntry({
   isBeingEdited: boolean;
 }) {
   const intl = useIntl();
-  const role = getRole(scenarioRole.roleId as number);
+  const role = getRoleById(scenarioRole.roleId); //TODO: Fetch by API
   const assignedRole = event.assignedRoles.find(
     (assignedRole) => assignedRole.scenarioRoleId === scenarioRole.roleId,
   );
@@ -29,7 +33,7 @@ function RoleAssignmentEntry({
   );
 
   const handleRoleAssignment = (
-    scenarioRoleId: number,
+    scenarioRoleId: IScenarioRole["id"],
     email: string | null,
   ) => {
     setEvent({
@@ -44,7 +48,7 @@ function RoleAssignmentEntry({
 
   const assignNewRoleOrUpdateOldOne = (
     assignedRoles: any[],
-    roleId: number,
+    roleId: IScenarioRole["id"],
     email: string,
   ) => {
     const updatedRoles = assignedRoles.filter(
@@ -56,7 +60,7 @@ function RoleAssignmentEntry({
     return updatedRoles;
   };
 
-  const isInvalidEmailForRoleId = (scenarioRoleId: number) => {
+  const isInvalidEmailForRoleId = (scenarioRoleId: IScenarioRole["id"]) => {
     const assignedRoleInEvent = event.assignedRoles.find(
       (assignedRole) => assignedRole.scenarioRoleId === scenarioRoleId,
     );
@@ -98,7 +102,7 @@ function RoleAssignmentEntry({
         })}
         inputValue={selectedEmail}
         isDisabled={!isBeingEdited}
-        isInvalid={isInvalidEmailForRoleId(scenarioRole.roleId as number)}
+        isInvalid={isInvalidEmailForRoleId(scenarioRole.roleId)}
         label={intl.formatMessage({
           id: "events.page.display.assignEmail",
           defaultMessage: "Assign email",
@@ -110,7 +114,7 @@ function RoleAssignmentEntry({
         variant="underlined"
         onInputChange={(value) => {
           setSelectedEmail(value);
-          handleRoleAssignment(scenarioRole.roleId as number, value);
+          handleRoleAssignment(scenarioRole.roleId, value);
         }}
       >
         {(item) => (
@@ -130,7 +134,7 @@ const EventAssignRolesForm = ({
   setEvent: (event: IEvent) => void;
   isBeingEdited: boolean;
 }) => {
-  const scenario = getScenario(event?.scenarioId as number);
+  const scenario = getScenarioById(event?.scenarioId); //TODO: Fetch by API
 
   const assignRolesElement =
     scenario.roles.length === 0 ? (

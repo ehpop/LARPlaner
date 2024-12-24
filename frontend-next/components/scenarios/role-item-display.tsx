@@ -144,7 +144,7 @@ export const RoleItem = ({
       onChange={(e) => {
         handleRoleChange(index, {
           ...role,
-          roleId: parseInt(e.target.value, 10),
+          roleId: e.target.value,
         });
         handleTouched("selectedRole");
       }}

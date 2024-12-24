@@ -1,5 +1,6 @@
 import { ITag } from "@/types/tags.types";
 import { IGetDTO, IPostDTO } from "@/types/dto.types";
+import { IRole } from "@/types/roles.types";
 
 /**
  * Role DTO for POST and UPDATE requests
@@ -26,7 +27,7 @@ export type IScenarioGetDTO = IGetDTO & {
 };
 
 export type IScenario = {
-  id: number | null;
+  id: string | null;
   name: string;
   description: string;
   roles: IScenarioRole[];
@@ -37,8 +38,8 @@ export type IScenario = {
 
 export type IScenarioRole = {
   id: string | null;
-  roleId: number | null;
-  scenarioId: number | null;
+  roleId: IRole["id"] | null;
+  scenarioId: IScenario["id"] | null;
   descriptionForGM: string;
   descriptionForOwner: string;
   descriptionForOthers: string;
@@ -46,7 +47,7 @@ export type IScenarioRole = {
 
 export type IScenarioItem = {
   id: string | null;
-  scenarioId: number | null;
+  scenarioId: IScenario["id"] | null;
   name: string;
   description: string;
   actions: IScenarioItemAction[];
@@ -67,7 +68,7 @@ export type IAction = {
 };
 
 export type IScenarioAction = IAction & {
-  scenarioId: number | null;
+  scenarioId: IScenario["id"] | null;
   expiresAfterMinutes: number | null;
 };
 

@@ -357,8 +357,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
         size="lg"
         variant="underlined"
         onChange={(e) => {
-          const scenarioId =
-            e.target.value !== "" ? Number(e.target.value) : null;
+          const scenarioId = e.target.value;
 
           setEvent({
             ...event,

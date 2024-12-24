@@ -1,5 +1,6 @@
 import { AxiosInstance } from "axios";
 import MockAdapter from "axios-mock-adapter";
+import { uuidv4 } from "@firebase/util";
 
 import {
   eventsList,
@@ -14,9 +15,16 @@ const scenarios: IScenario[] = possibleScenarios;
 const roles: IRole[] = possibleRoles;
 const events: IEventGetDTO[] = eventsList.map((event) => ({
   ...event,
-  id: event.id as number,
+  id: event.id as string,
   date: event.date.toDate().toISOString(),
 }));
+
+const scenariosUrl =
+  /\/scenarios\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
+const rolesUrl =
+  /\/roles\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
+const eventsUrl =
+  /\/events\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
 
 export default function setupMock(api: AxiosInstance) {
   const mock = new MockAdapter(api, { delayResponse: 1000 });
@@ -30,8 +38,8 @@ function setupMockScenariosApi(mock: MockAdapter) {
   mock.onGet("/scenarios").reply(200, scenarios);
 
   // Mocking the GET /scenarios/:id endpoint
-  mock.onGet(/\/scenarios\/\d+/).reply((config) => {
-    const id = parseInt(config.url?.split("/").pop() || "0", 10);
+  mock.onGet(scenariosUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
     const scenario = scenarios.find((s) => s.id === id);
 
     return scenario
@@ -43,15 +51,15 @@ function setupMockScenariosApi(mock: MockAdapter) {
   mock.onPost("/scenarios").reply((config) => {
     const newScenario: IScenario = JSON.parse(config.data);
 
-    newScenario.id = scenarios.length + 1;
+    newScenario.id = uuidv4();
     scenarios.push(newScenario);
 
     return [201, newScenario];
   });
 
   // Mocking the PUT /scenarios/:id endpoint
-  mock.onPut(/\/scenarios\/\d+/).reply((config) => {
-    const id = parseInt(config.url?.split("/").pop() || "0", 10);
+  mock.onPut(scenariosUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
     const updatedScenario: IScenario = JSON.parse(config.data);
     const scenarioIndex = scenarios.findIndex((s) => s.id === id);
 
@@ -68,8 +76,8 @@ function setupMockScenariosApi(mock: MockAdapter) {
   });
 
   // Mocking the DELETE /scenarios/:id endpoint
-  mock.onDelete(/\/scenarios\/\d+/).reply((config) => {
-    const id = parseInt(config.url?.split("/").pop() || "0", 10);
+  mock.onDelete(scenariosUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
     const scenarioIndex = scenarios.findIndex((s) => s.id === id);
 
     if (scenarioIndex !== -1) {
@@ -86,8 +94,8 @@ function setupMockRolesApi(mock: MockAdapter) {
   mock.onGet("/roles").reply(200, roles);
 
   // Mocking the GET /roles/:id endpoint
-  mock.onGet(/\/roles\/\d+/).reply((config) => {
-    const id = parseInt(config.url?.split("/").pop() || "0", 10);
+  mock.onGet(rolesUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
     const role = roles.find((r) => r.id === id);
 
     return role ? [200, role] : [404, { message: "Role not found" }];
@@ -97,15 +105,15 @@ function setupMockRolesApi(mock: MockAdapter) {
   mock.onPost("/roles").reply((config) => {
     const newRole: IRole = JSON.parse(config.data);
 
-    newRole.id = roles.length + 1;
+    newRole.id = uuidv4();
     roles.push(newRole);
 
     return [201, newRole];
   });
 
   // Mocking the PUT /roles/:id endpoint
-  mock.onPut(/\/roles\/\d+/).reply((config) => {
-    const id = parseInt(config.url?.split("/").pop() || "0", 10);
+  mock.onPut(rolesUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
     const updatedRole: IRole = JSON.parse(config.data);
     const roleIndex = roles.findIndex((r) => r.id === id);
 
@@ -119,8 +127,8 @@ function setupMockRolesApi(mock: MockAdapter) {
   });
 
   // Mocking the DELETE /roles/:id endpoint
-  mock.onDelete(/\/roles\/\d+/).reply((config) => {
-    const id = parseInt(config.url?.split("/").pop() || "0", 10);
+  mock.onDelete(rolesUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
     const roleIndex = roles.findIndex((r) => r.id === id);
 
     if (roleIndex !== -1) {
@@ -136,8 +144,8 @@ function setupMockRolesApi(mock: MockAdapter) {
 function setupMockEventsApi(mock: MockAdapter) {
   mock.onGet("/events").reply(200, events);
 
-  mock.onGet(/\/events\/\d+/).reply((config) => {
-    const id = parseInt(config.url?.split("/").pop() || "0", 10);
+  mock.onGet(eventsUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
     const event = events.find((e) => e.id === id);
 
     return event ? [200, event] : [404, { message: "Event not found" }];
@@ -154,8 +162,8 @@ function setupMockEventsApi(mock: MockAdapter) {
   });
 
   // Mocking the DELETE /events/:id endpoint
-  mock.onDelete(/\/events\/\d+/).reply((config) => {
-    const id = parseInt(config.url?.split("/").pop() || "0", 10);
+  mock.onDelete(eventsUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
     const eventIndex = events.findIndex((e) => e.id === id);
 
     if (eventIndex !== -1) {
@@ -168,8 +176,8 @@ function setupMockEventsApi(mock: MockAdapter) {
   });
 
   // Mocking the PUT /events/:id endpoint
-  mock.onPut(/\/events\/\d+/).reply((config) => {
-    const id = parseInt(config.url?.split("/").pop() || "0", 10);
+  mock.onPut(eventsUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
     const updatedEvent: IEventGetDTO = JSON.parse(config.data);
     const eventIndex = events.findIndex((r) => r.id === id);
 

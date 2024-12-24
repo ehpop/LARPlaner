@@ -15,11 +15,13 @@ export const EventsDisplay = ({
   list,
   title,
   canAddNewEvent = false,
+  baseLink = "events/",
   isAdmin = false,
 }: {
   list: IEvent[];
   title: string;
   canAddNewEvent?: boolean;
+  baseLink?: string;
   isAdmin?: boolean;
 }) => {
   const getAmountOfPages = (list: IEvent[]) => {
@@ -71,7 +73,7 @@ export const EventsDisplay = ({
           <Event
             key={event.id}
             event={event}
-            link={isAdmin ? "/admin/events" : "/events"}
+            link={isAdmin ? `/admin/${baseLink}/` : baseLink}
           />
         ))}
       </div>
