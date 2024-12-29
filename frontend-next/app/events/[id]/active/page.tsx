@@ -68,7 +68,7 @@ const ActiveEventDisplay = ({
         <p>{userScenarioRole.descriptionForOwner}</p>
       </div>
       <div>
-        <Link href={`/events/active/${event.id}/chat`}>
+        <Link href={`/events/${event.id}/active/chat`}>
           <p>Write to admins</p>
         </Link>
       </div>

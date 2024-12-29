@@ -1,14 +1,15 @@
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import { Link } from "@nextui-org/link";
 
-import { IEvent } from "@/types/event.types";
+import { IEvent, IEventStatus } from "@/types/event.types";
 
 interface EventProps {
   event: IEvent;
   link?: string;
+  eventStatus: IEventStatus;
 }
 
-export const Event = ({ event, link }: EventProps) => {
+export const Event = ({ event, link, eventStatus }: EventProps) => {
   const card = (
     <Card key={event.id} className="mx-3" shadow="sm">
       <CardBody className="p-0 h-[240px] w-[390px]">
@@ -30,7 +31,11 @@ export const Event = ({ event, link }: EventProps) => {
 
   return (
     <div className="flex w-full justify-center">
-      {link ? <Link href={`${link}/${event.id}`}>{card}</Link> : card}
+      {link ? (
+        <Link href={`${link}/${event.id}/${eventStatus}`}>{card}</Link>
+      ) : (
+        card
+      )}
     </div>
   );
 };

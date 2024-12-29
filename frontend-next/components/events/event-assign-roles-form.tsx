@@ -25,7 +25,7 @@ function RoleAssignmentEntry({
   const intl = useIntl();
   const role = getRoleById(scenarioRole.roleId); //TODO: Fetch by API
   const assignedRole = event.assignedRoles.find(
-    (assignedRole) => assignedRole.scenarioRoleId === scenarioRole.roleId,
+    (assignedRole) => assignedRole.scenarioRoleId === scenarioRole.id,
   );
 
   const [selectedEmail, setSelectedEmail] = useState<string>(

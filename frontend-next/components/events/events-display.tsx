@@ -7,7 +7,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Event } from "./event";
 
 import { SearchIcon } from "@/components/icons";
-import { IEvent } from "@/types/event.types";
+import { IEvent, IEventStatus } from "@/types/event.types";
 
 const EVENTS_PER_PAGE = 3;
 
@@ -15,14 +15,14 @@ export const EventsDisplay = ({
   list,
   title,
   canAddNewEvent = false,
-  baseLink = "events/",
   isAdmin = false,
+  eventStatus,
 }: {
   list: IEvent[];
   title: string;
   canAddNewEvent?: boolean;
-  baseLink?: string;
   isAdmin?: boolean;
+  eventStatus: IEventStatus;
 }) => {
   const getAmountOfPages = (list: IEvent[]) => {
     return Math.ceil(list.length / EVENTS_PER_PAGE);
@@ -73,7 +73,8 @@ export const EventsDisplay = ({
           <Event
             key={event.id}
             event={event}
-            link={isAdmin ? `/admin/${baseLink}/` : baseLink}
+            eventStatus={eventStatus}
+            link={isAdmin ? "/admin/events/" : "/events/"}
           />
         ))}
       </div>
