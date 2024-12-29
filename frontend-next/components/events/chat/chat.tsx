@@ -251,7 +251,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
           tagName="h1"
           values={{ eventId, chatId }}
         />
-        <div className="flex flex-col-reverse border-1 p-3 space-y-3 max-h-[550] overflow-y-auto rounded-small">
+        <div className="flex flex-col-reverse border-1 p-3 space-y-3 max-h-[550px] overflow-y-auto rounded-small">
           <div ref={messagesEndRef} />
           {messages.map((message: any, index) => (
             <Message key={index} message={message} />
