@@ -47,35 +47,35 @@ function EventsPage() {
     <div className="space-y-5">
       <LoadingOverlay isLoading={loading} label={"Loading active events..."}>
         <EventsDisplay
-          baseLink={`events/active`}
+          eventStatus="active"
           isAdmin={true}
           list={eventsData.slice(0, 2)}
           title={intl.formatMessage({
-            id: "events.page.display.title.now",
-            defaultMessage: "Current events",
+            id: "events.page.display.title.active",
+            defaultMessage: "Active events",
           })}
         />
       </LoadingOverlay>
       <LoadingOverlay isLoading={loading} label={"Loading upcoming events..."}>
         <EventsDisplay
-          baseLink={`events/upcoming`}
           canAddNewEvent={true}
+          eventStatus="upcoming"
           isAdmin={true}
           list={eventsData}
           title={intl.formatMessage({
-            id: "events.page.display.title.future",
-            defaultMessage: "Future events",
+            id: "events.page.display.title.upcoming",
+            defaultMessage: "Upcoming events",
           })}
         />
       </LoadingOverlay>
       <LoadingOverlay isLoading={loading} label={"Loading historic events..."}>
         <EventsDisplay
-          baseLink={`events/historic`}
+          eventStatus="historic"
           isAdmin={true}
           list={eventsData.slice(0, 10)}
           title={intl.formatMessage({
-            id: "events.page.display.title.previous",
-            defaultMessage: "Previous events",
+            id: "events.page.display.title.historic",
+            defaultMessage: "Historic events",
           })}
         />
       </LoadingOverlay>

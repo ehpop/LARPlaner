@@ -45,3 +45,5 @@ export type IEvent = {
     assignedEmail: string;
   }[];
 };
+
+export type IEventStatus = "historic" | "active" | "upcoming";

@@ -20,7 +20,7 @@ const EventsPage = () => {
   return (
     <div className="space-y-5">
       <EventsDisplay
-        baseLink={`events/active`}
+        eventStatus="active"
         list={userEvents}
         title={intl.formatMessage({
           id: "events.page.display.title.active",
@@ -28,7 +28,7 @@ const EventsPage = () => {
         })}
       />
       <EventsDisplay
-        baseLink={`events/upcoming`}
+        eventStatus="upcoming"
         list={userEvents}
         title={intl.formatMessage({
           id: "events.page.display.title.upcoming",
@@ -36,7 +36,7 @@ const EventsPage = () => {
         })}
       />
       <EventsDisplay
-        baseLink={`events/historic`}
+        eventStatus="historic"
         list={userEvents}
         title={intl.formatMessage({
           id: "events.page.display.title.historic",
