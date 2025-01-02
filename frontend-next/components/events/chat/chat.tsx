@@ -175,6 +175,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
       userName: auth.user?.displayName,
       userPhoto: auth.user?.photoURL || "",
       userEmail: auth.user?.email,
+      userUid: auth.user?.uid,
       chatId: chatId,
     };
 
@@ -187,7 +188,12 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
             lastUpdatedAt: serverTimestamp() as Timestamp,
             createdAt: serverTimestamp() as Timestamp,
             chatImage: auth.user?.photoURL || "",
-            users: [auth.user?.uid],
+            userData: {
+              displayName: auth.user?.displayName || "",
+              email: auth.user?.email || "",
+              photoURL: auth.user?.photoURL || "",
+              uid: auth.user?.uid || "",
+            },
           }
         : {
             lastMessage: newMessageDoc,
