@@ -10,7 +10,7 @@ import { usePagination } from "@/hooks/use-pagination";
 const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
   const itemsPerPage = 10;
   const router = useRouter();
-  const { currentList, currentPage, totalPages, nextPage, previousPage } =
+  const { currentList, currentPage, totalPages, setCurrentPage } =
     usePagination(rolesList, itemsPerPage);
 
   const columns = [
@@ -58,8 +58,7 @@ const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
         />
         <PaginationControl
           currentPage={currentPage}
-          nextPage={nextPage}
-          previousPage={previousPage}
+          setCurrentPage={setCurrentPage}
           totalPages={totalPages}
         />
       </div>

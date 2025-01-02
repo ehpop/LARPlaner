@@ -11,7 +11,7 @@ import PaginationControl from "@/components/table/pagination-control";
 const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
   const itemsPerPage = 10;
   const router = useRouter();
-  const { currentList, currentPage, totalPages, nextPage, previousPage } =
+  const { currentList, currentPage, totalPages, setCurrentPage } =
     usePagination(eventsList, itemsPerPage);
 
   const getHowManyRolesAssigned = (event: IEvent) => {
@@ -88,8 +88,7 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
         />
         <PaginationControl
           currentPage={currentPage}
-          nextPage={nextPage}
-          previousPage={previousPage}
+          setCurrentPage={setCurrentPage}
           totalPages={totalPages}
         />
       </div>

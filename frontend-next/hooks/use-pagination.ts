@@ -27,5 +27,6 @@ export const usePagination = <T>(list: T[], itemsPerPage: number) => {
     totalPages,
     nextPage,
     previousPage,
+    setCurrentPage,
   };
 };

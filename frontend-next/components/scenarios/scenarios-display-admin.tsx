@@ -14,7 +14,7 @@ const ScenariosDisplayAdmin = ({
 }) => {
   const itemsPerPage = 10;
   const router = useRouter();
-  const { currentList, currentPage, totalPages, nextPage, previousPage } =
+  const { currentList, currentPage, totalPages, setCurrentPage } =
     usePagination(scenariosList, itemsPerPage);
 
   const columns = [
@@ -71,8 +71,7 @@ const ScenariosDisplayAdmin = ({
         />
         <PaginationControl
           currentPage={currentPage}
-          nextPage={nextPage}
-          previousPage={previousPage}
+          setCurrentPage={setCurrentPage}
           totalPages={totalPages}
         />
       </div>
