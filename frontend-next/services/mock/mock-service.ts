@@ -155,7 +155,7 @@ function setupMockEventsApi(mock: MockAdapter) {
   mock.onPost("/events").reply((config) => {
     const newEvent = JSON.parse(config.data);
 
-    newEvent.id = events.length + 1;
+    newEvent.id = uuidv4();
     events.push(newEvent);
 
     return [201, newEvent];
