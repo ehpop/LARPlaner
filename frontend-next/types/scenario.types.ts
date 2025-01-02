@@ -8,10 +8,10 @@ import { IRole } from "@/types/roles.types";
 export type IScenarioPostDTO = IPostDTO & {
   name: string;
   description: string;
-  roles: IScenarioRole["id"][];
-  items: IScenarioItem["id"][];
-  actions: IScenarioAction["id"][];
-  tags: ITag["id"][];
+  roles: IScenarioRole[];
+  items: IScenarioItem[];
+  actions: IScenarioAction[];
+  tags: ITag[];
 };
 
 /**

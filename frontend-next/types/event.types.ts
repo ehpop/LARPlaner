@@ -11,7 +11,7 @@ export type IEventPostDTO = IPostDTO & {
   img: string;
   date: string;
   description: string;
-  scenarioId: number | null;
+  scenarioId: IScenario["id"] | null;
   assignedRoles: {
     scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
@@ -37,6 +37,7 @@ export type IEvent = {
   id: string | null;
   name: string;
   img: string;
+  status: IEventStatus;
   date: ZonedDateTime;
   description: string;
   scenarioId: IScenario["id"] | null;

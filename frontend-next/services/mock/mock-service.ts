@@ -27,7 +27,7 @@ const eventsUrl =
   /\/events\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
 
 export default function setupMock(api: AxiosInstance) {
-  const mock = new MockAdapter(api, { delayResponse: 1000 });
+  const mock = new MockAdapter(api);
 
   setupMockScenariosApi(mock);
   setupMockRolesApi(mock);

@@ -47,15 +47,15 @@ function RoleAssignmentEntry({
   };
 
   const assignNewRoleOrUpdateOldOne = (
-    assignedRoles: any[],
-    roleId: IScenarioRole["id"],
+    assignedRoles: IEvent["assignedRoles"],
+    scenarioRoleId: IScenarioRole["id"],
     email: string,
   ) => {
     const updatedRoles = assignedRoles.filter(
-      (assignedRole) => assignedRole.scenarioRoleId !== roleId,
+      (assignedRole) => assignedRole.scenarioRoleId !== scenarioRoleId,
     );
 
-    updatedRoles.push({ scenarioRoleId: roleId, assignedEmail: email });
+    updatedRoles.push({ scenarioRoleId: scenarioRoleId, assignedEmail: email });
 
     return updatedRoles;
   };
@@ -91,7 +91,7 @@ function RoleAssignmentEntry({
         variant="underlined"
       />
       <Autocomplete
-        key={role.id}
+        key={scenarioRole.id}
         allowsCustomValue
         className="max-w-xs"
         defaultItems={userEmails}
@@ -102,7 +102,7 @@ function RoleAssignmentEntry({
         })}
         inputValue={selectedEmail}
         isDisabled={!isBeingEdited}
-        isInvalid={isInvalidEmailForRoleId(scenarioRole.roleId)}
+        isInvalid={isInvalidEmailForRoleId(scenarioRole.id)}
         label={intl.formatMessage({
           id: "events.page.display.assignEmail",
           defaultMessage: "Assign email",
@@ -114,7 +114,7 @@ function RoleAssignmentEntry({
         variant="underlined"
         onInputChange={(value) => {
           setSelectedEmail(value);
-          handleRoleAssignment(scenarioRole.roleId, value);
+          handleRoleAssignment(scenarioRole.id, value);
         }}
       >
         {(item) => (
@@ -136,40 +136,39 @@ const EventAssignRolesForm = ({
 }) => {
   const scenario = getScenarioById(event?.scenarioId); //TODO: Fetch by API
 
-  const assignRolesElement =
-    scenario.roles.length === 0 ? (
-      <div className="w-full flex flex-row space-x-3 items-baseline">
-        <p>
+  if (!scenario || !event.scenarioId) {
+    return (
+      <div className="w-full flex justify-center p-3">
+        <p className="text-large">
           <FormattedMessage
-            defaultMessage="No roles"
-            id="events.page.display.noRoles"
+            defaultMessage="Select scenario to assign roles"
+            id="events.page.display.selectScenarioToAssignRoles"
           />
         </p>
       </div>
-    ) : (
-      <div className="w-full flex flex-col">
-        {scenario.roles.map((scenarioRole) => (
-          <RoleAssignmentEntry
-            key={scenarioRole.roleId}
-            event={event}
-            isBeingEdited={isBeingEdited}
-            scenarioRole={scenarioRole}
-            setEvent={setEvent}
-          />
-        ))}
-      </div>
     );
+  }
 
-  return event.scenarioId ? (
-    assignRolesElement
-  ) : (
-    <div className="w-full flex justify-center p-3">
-      <p className="text-large">
+  return scenario.roles.length === 0 ? (
+    <div className="w-full flex flex-row space-x-3 items-baseline">
+      <p>
         <FormattedMessage
-          defaultMessage="Select scenario to assign roles"
-          id="events.page.display.selectScenarioToAssignRoles"
+          defaultMessage="No roles"
+          id="events.page.display.noRoles"
         />
       </p>
+    </div>
+  ) : (
+    <div className="w-full flex flex-col">
+      {scenario.roles.map((scenarioRole) => (
+        <RoleAssignmentEntry
+          key={scenarioRole.roleId}
+          event={event}
+          isBeingEdited={isBeingEdited}
+          scenarioRole={scenarioRole}
+          setEvent={setEvent}
+        />
+      ))}
     </div>
   );
 };

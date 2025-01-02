@@ -3,10 +3,10 @@
 import { useIntl } from "react-intl";
 import { useEffect, useState } from "react";
 
-import { EventsDisplay } from "@/components/events/events-display";
 import EventsService from "@/services/events.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
 import { IEvent } from "@/types/event.types";
+import EventsAdminDisplay from "@/components/events/events-admin-display";
 
 function EventsPage() {
   const intl = useIntl();
@@ -46,36 +46,11 @@ function EventsPage() {
   return (
     <div className="space-y-5">
       <LoadingOverlay isLoading={loading} label={"Loading active events..."}>
-        <EventsDisplay
-          eventStatus="active"
-          isAdmin={true}
-          list={eventsData.slice(0, 2)}
-          title={intl.formatMessage({
-            id: "events.page.display.title.active",
-            defaultMessage: "Active events",
-          })}
-        />
-      </LoadingOverlay>
-      <LoadingOverlay isLoading={loading} label={"Loading upcoming events..."}>
-        <EventsDisplay
-          canAddNewEvent={true}
-          eventStatus="upcoming"
-          isAdmin={true}
+        <EventsAdminDisplay
           list={eventsData}
           title={intl.formatMessage({
-            id: "events.page.display.title.upcoming",
-            defaultMessage: "Upcoming events",
-          })}
-        />
-      </LoadingOverlay>
-      <LoadingOverlay isLoading={loading} label={"Loading historic events..."}>
-        <EventsDisplay
-          eventStatus="historic"
-          isAdmin={true}
-          list={eventsData.slice(0, 10)}
-          title={intl.formatMessage({
-            id: "events.page.display.title.historic",
-            defaultMessage: "Historic events",
+            id: "events.page.display.title.events",
+            defaultMessage: "Events",
           })}
         />
       </LoadingOverlay>

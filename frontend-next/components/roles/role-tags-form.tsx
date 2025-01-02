@@ -90,6 +90,7 @@ const RoleTagsForm = ({
     const updatedTags = [...role.tags];
 
     updatedTags[tagIndex] = newTag;
+
     setRole({
       ...role,
       tags: updatedTags,
@@ -114,7 +115,7 @@ const RoleTagsForm = ({
   };
 
   const handleAddTag = () => {
-    const newTag = { id: uuidv4(), value: "" };
+    const newTag: ITag = { id: uuidv4(), value: "" };
     const updatedTags: ITag[] = [...role.tags, newTag];
 
     setRole({
