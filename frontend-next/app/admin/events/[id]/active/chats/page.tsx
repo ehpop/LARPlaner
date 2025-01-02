@@ -59,36 +59,50 @@ const ActiveEventAdminChatsPage = ({ params }: any) => {
         id: "admin.events.id.active.chats.loading",
       })}
     >
-      <div className="w-full flex flex-col justify-center border-1 p-3">
-        <div className="w-full flex justify-center mb-5">
-          <p className="text-xl">
-            <FormattedMessage
-              defaultMessage="Chats for event {eventId}"
-              id="admin.events.id.active.chats.title"
-              values={{ eventId }}
-            />
-          </p>
-        </div>
-        {chats.length > 0 ? (
-          <div className="w-full flex flex-col space-y-5">
-            {chats.map((chat) => (
-              <ChatWindow
-                key={chat.id}
-                chat={chat}
-                currentUser={auth.user as User}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="w-full flex justify-center p-3">
-            {intl.formatMessage({
-              defaultMessage: "No chats found.",
-              id: "admin.events.id.active.chats.noChats",
-            })}
-          </div>
-        )}
-      </div>
+      {chats && auth.user && (
+        <ChatDisplay chats={chats} currentUser={auth.user} eventId={eventId} />
+      )}
     </LoadingOverlay>
+  );
+};
+
+const ChatDisplay = ({
+  chats,
+  currentUser,
+  eventId,
+}: {
+  chats: IChat[];
+  currentUser: User;
+  eventId: string;
+}) => {
+  const intl = useIntl();
+
+  return (
+    <div className="w-full flex flex-col justify-center border-1 p-3">
+      <div className="w-full flex justify-center mb-5">
+        <p className="text-xl">
+          <FormattedMessage
+            defaultMessage="Chats for event {eventId}"
+            id="admin.events.id.active.chats.title"
+            values={{ eventId }}
+          />
+        </p>
+      </div>
+      {chats.length > 0 ? (
+        <div className="w-full flex flex-col space-y-5">
+          {chats.map((chat) => (
+            <ChatWindow key={chat.id} chat={chat} currentUser={currentUser} />
+          ))}
+        </div>
+      ) : (
+        <div className="w-full flex justify-center p-3">
+          {intl.formatMessage({
+            defaultMessage: "No chats found.",
+            id: "admin.events.id.active.chats.noChats",
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 
