@@ -14,6 +14,7 @@ export interface IMessage {
   userName?: string;
   userPhoto?: string;
   userEmail?: string;
+  userUid?: string;
 }
 
 const Message = ({ message }: { message: IMessage }) => {
@@ -37,12 +38,12 @@ const MessageContent = ({
   isFromCurrentUser: boolean;
 }) => {
   const messageWrapperClass = isFromCurrentUser
-    ? "sm:w-1/2 w-4/5 flex-row-reverse justify-self-end pr-3"
-    : "sm:w-1/2 w-4/5 flex pl-3";
+    ? "sm:w-4/5 w-3/5 flex-row-reverse justify-self-end sm:pr-3 pr-1"
+    : "sm:w-4/5 w-3/5 flex-row sm:pl-3 pl-1";
 
   const bubbleClass = isFromCurrentUser
-    ? "p-3 rounded-3xl bg-primary-500"
-    : "p-3 rounded-3xl bg-foreground-300";
+    ? "max-w-full p-3 break-words text-wrap rounded-3xl bg-primary-500"
+    : "max-w-full p-3 break-words text-wrap rounded-3xl bg-foreground-300";
 
   return (
     <div className="w-full">
@@ -66,12 +67,12 @@ const MessageContent = ({
             <div className={bubbleClass}>
               <p className="text-sm">{message.text}</p>
             </div>
-          </div>
-          <div className="w-full flex justify-end">
-            <p className="text-xs">
-              {message.createdAt &&
-                getTimeOrDate(new Date(message.createdAt.seconds * 1000))}
-            </p>
+            <div className="flex justify-end min-w-fit">
+              <p className="text-xs">
+                {message.createdAt &&
+                  getTimeOrDate(new Date(message.createdAt.seconds * 1000))}
+              </p>
+            </div>
           </div>
         </div>
       </div>

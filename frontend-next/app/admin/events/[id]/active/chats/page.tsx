@@ -10,6 +10,7 @@ import {
   query,
   where,
 } from "@firebase/firestore";
+import { User } from "@firebase/auth";
 
 import { useAuth } from "@/providers/firebase-provider";
 import { db } from "@/config/firebase";
@@ -71,7 +72,11 @@ const ActiveEventAdminChatsPage = ({ params }: any) => {
         {chats.length > 0 ? (
           <div className="w-full flex flex-col space-y-5">
             {chats.map((chat) => (
-              <ChatWindow key={chat.id} chat={chat} />
+              <ChatWindow
+                key={chat.id}
+                chat={chat}
+                currentUser={auth.user as User}
+              />
             ))}
           </div>
         ) : (
