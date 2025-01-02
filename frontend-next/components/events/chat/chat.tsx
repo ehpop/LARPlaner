@@ -250,14 +250,14 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
         defaultMessage: "Loading chat",
       })}
     >
-      <div className="w-full flex flex-col justify-center space-y-5">
+      <div className="w-full h-[80vh] flex flex-col justify-center align-top space-y-5">
         <FormattedMessage
           defaultMessage="Chat for event {eventId}, chatId {chatId}"
           id="events.active.id.chat.title"
           tagName="h1"
           values={{ eventId, chatId }}
         />
-        <div className="flex flex-col-reverse border-1 p-3 space-y-3 max-h-[550px] overflow-y-auto rounded-small">
+        <div className="flex flex-col-reverse border-1 p-3 space-y-3 overflow-y-auto rounded-small">
           <div ref={messagesEndRef} />
           {messages.map((message: any, index) => (
             <Message key={index} message={message} />

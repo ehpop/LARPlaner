@@ -37,42 +37,43 @@ const MessageContent = ({
   message: IMessage;
   isFromCurrentUser: boolean;
 }) => {
+  const messageWrapperClassBase = "md:w-3/5 w-4/5 max-w-full";
   const messageWrapperClass = isFromCurrentUser
-    ? "sm:w-4/5 w-3/5 flex-row-reverse justify-self-end sm:pr-3 pr-1"
-    : "sm:w-4/5 w-3/5 flex-row sm:pl-3 pl-1";
+    ? `${messageWrapperClassBase} flex-row-reverse justify-self-end sm:pr-3 pr-1`
+    : `${messageWrapperClassBase} flex-row sm:pl-3 pl-1`;
 
+  const bubbleClassBase =
+    "max-w-full p-3 break-words whitespace-pre-wrap overflow-hidden rounded-3xl";
   const bubbleClass = isFromCurrentUser
-    ? "max-w-full p-3 break-words text-wrap rounded-3xl bg-primary-500"
-    : "max-w-full p-3 break-words text-wrap rounded-3xl bg-foreground-300";
+    ? `${bubbleClassBase} bg-primary-500`
+    : `${bubbleClassBase} bg-foreground-300`;
 
   return (
     <div className="w-full">
       <div className={`${messageWrapperClass} space-x-3`}>
-        <div className="flex-col space-y-1">
-          <div
-            className={`flex items-end space-x-1 ${isFromCurrentUser ? "flex-row-reverse space-x-reverse" : ""}`}
-          >
-            <div className="flex min-w-fit">
-              <Image
-                alt={"user photo"}
-                as={NextImage}
-                className="border-2"
-                fallbackSrc={"/images/user-fallback.png"}
-                height="40"
-                radius="full"
-                src={message.userPhoto || "/images/user-fallback.png"}
-                width="40"
-              />
-            </div>
-            <div className={bubbleClass}>
-              <p className="text-sm">{message.text}</p>
-            </div>
-            <div className="flex justify-end min-w-fit">
-              <p className="text-xs">
-                {message.createdAt &&
-                  getTimeOrDate(new Date(message.createdAt.seconds * 1000))}
-              </p>
-            </div>
+        <div
+          className={`flex items-end space-x-1 ${isFromCurrentUser ? "flex-row-reverse space-x-reverse" : ""}`}
+        >
+          <div className="flex min-w-fit">
+            <Image
+              alt={"user photo"}
+              as={NextImage}
+              className="border-2"
+              fallbackSrc={"/images/user-fallback.png"}
+              height="40"
+              radius="full"
+              src={message.userPhoto || "/images/user-fallback.png"}
+              width="40"
+            />
+          </div>
+          <div className={bubbleClass}>
+            <p className="text-sm">{message.text}</p>
+          </div>
+          <div className="flex justify-end min-w-fit">
+            <p className="text-xs">
+              {message.createdAt &&
+                getTimeOrDate(new Date(message.createdAt.seconds * 1000))}
+            </p>
           </div>
         </div>
       </div>
