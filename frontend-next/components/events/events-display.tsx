@@ -50,7 +50,13 @@ export const EventsDisplay = ({
     <>
       <div className={`gap-4 grid sm:grid-cols-3 grid-cols-1`}>
         {currentList.map((event) => (
-          <Event key={event.id} event={event} eventStatus={eventStatus} />
+          <a
+            key={event.id}
+            className="transition duration-500 hover:scale-105 hover:shadow-lg"
+            href={`/events/${event.id}/${event.status}`}
+          >
+            <Event event={event} eventStatus={eventStatus} />
+          </a>
         ))}
       </div>
       <div className="pt-5 flex justify-center align-center">
