@@ -1,14 +1,13 @@
-// components/LoadingOverlay.js
 import React from "react";
-import { Spinner } from "@nextui-org/react"; // Adjust this import based on your Spinner component
+import { Spinner } from "@nextui-org/react";
 
 const LoadingOverlay = ({
   isLoading,
-  label,
+  label = "Loading...",
   children,
 }: {
   isLoading: boolean;
-  label: string;
+  label?: string;
   children: React.ReactNode;
 }) => {
   return (
