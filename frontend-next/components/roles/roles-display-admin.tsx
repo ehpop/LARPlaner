@@ -43,19 +43,21 @@ const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
   );
 
   return (
-    <div className="w-full flex flex-col justify-center p-3 border-1 space-y-5">
+    <div className="w-full h-[80vh] flex flex-col justify-top p-3 border-1 space-y-5">
       <div className="w-full flex justify-center">
         <h1 className="text-2xl">
           <FormattedMessage defaultMessage="Roles" id="roles.title" />
         </h1>
       </div>
-      <div className="w-full flex flex-col space-y-3">
-        {addNewRoleButton}
-        <AdminTableDisplay
-          columns={columns}
-          rows={rows}
-          onRowClick={handleRowClick}
-        />
+      <div className="w-full h-full flex flex-col justify-between space-y-3">
+        <div className="flex flex-col space-y-3">
+          {addNewRoleButton}
+          <AdminTableDisplay
+            columns={columns}
+            rows={rows}
+            onRowClick={handleRowClick}
+          />
+        </div>
         <PaginationControl
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
