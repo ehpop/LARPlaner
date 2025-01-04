@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 
 import RolesService from "@/services/roles.service";
-import RolesDisplay from "@/components/roles/roles-display";
 import LoadingOverlay from "@/components/general/loading-overlay";
 import { IRole } from "@/types/roles.types";
+import RolesDisplayAdmin from "@/components/roles/roles-display-admin";
 
 export default function RolesPage() {
   const [rolesData, setRolesData] = useState<IRole[] | null>(null);
@@ -42,15 +42,8 @@ export default function RolesPage() {
 
   return (
     <div className="w-full space-y-3">
-      <div className="w-full flex justify-center">
-        <p className="text-3xl">Roles Page</p>
-      </div>
       <LoadingOverlay isLoading={loading} label={"Loading roles..."}>
-        <RolesDisplay
-          canAddNewRole={true}
-          rolesList={rolesData || []}
-          title={"Roles"}
-        />
+        <RolesDisplayAdmin rolesList={rolesData || []} />
       </LoadingOverlay>
     </div>
   );

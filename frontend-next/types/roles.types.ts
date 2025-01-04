@@ -7,7 +7,7 @@ import { IGetDTO, IPostDTO } from "@/types/dto.types";
 export type IRolePostDTO = IPostDTO & {
   name: string;
   description: string;
-  tags: ITag["id"][];
+  tags: ITag[];
 };
 
 /**

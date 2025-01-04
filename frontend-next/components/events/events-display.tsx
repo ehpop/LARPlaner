@@ -1,4 +1,4 @@
-import { Input, Pagination } from "@nextui-org/react";
+import { Input } from "@nextui-org/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Link } from "@nextui-org/link";
 import { Button } from "@nextui-org/button";
@@ -8,6 +8,8 @@ import { Event } from "./event";
 
 import { SearchIcon } from "@/components/icons";
 import { IEvent, IEventStatus } from "@/types/event.types";
+import { usePagination } from "@/hooks/use-pagination";
+import PaginationControl from "@/components/table/pagination-control";
 
 const EVENTS_PER_PAGE = 3;
 
@@ -15,7 +17,6 @@ export const EventsDisplay = ({
   list,
   title,
   canAddNewEvent = false,
-  isAdmin = false,
   eventStatus,
 }: {
   list: IEvent[];
@@ -24,31 +25,12 @@ export const EventsDisplay = ({
   isAdmin?: boolean;
   eventStatus: IEventStatus;
 }) => {
-  const getAmountOfPages = (list: IEvent[]) => {
-    return Math.ceil(list.length / EVENTS_PER_PAGE);
-  };
-
-  const getPages = (list: IEvent[]) => {
-    let pages: IEvent[][] = [];
-    let amountOfPages = getAmountOfPages(list);
-
-    for (let i = 1; i <= amountOfPages; i++) {
-      let page: IEvent[] = list.slice(
-        (i - 1) * EVENTS_PER_PAGE,
-        i * EVENTS_PER_PAGE,
-      );
-
-      pages.push(page);
-    }
-
-    return pages;
-  };
-
-  const [pages, setPages] = useState(getPages(list));
   const [filteredList, setFilteredList] = useState(list);
-  const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const intl = useIntl();
+
+  const { currentList, currentPage, totalPages, setCurrentPage } =
+    usePagination(filteredList, EVENTS_PER_PAGE);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
@@ -62,40 +44,27 @@ export const EventsDisplay = ({
       : list;
 
     setFilteredList(newFilteredList);
-    setPages(getPages(newFilteredList));
-    setCurrentPage(1);
   }, [searchValue, list]);
 
   const EventsElement = (
     <>
       <div className={`gap-4 grid sm:grid-cols-3 grid-cols-1`}>
-        {pages[currentPage - 1]?.map((event) => (
-          <Event
+        {currentList.map((event) => (
+          <a
             key={event.id}
-            event={event}
-            eventStatus={eventStatus}
-            link={isAdmin ? "/admin/events/" : "/events/"}
-          />
+            className="transition duration-500 hover:scale-105 hover:shadow-lg"
+            href={`/events/${event.id}/${event.status}`}
+          >
+            <Event event={event} eventStatus={eventStatus} />
+          </a>
         ))}
       </div>
       <div className="pt-5 flex justify-center align-center">
-        <div className="hidden md:block">
-          <Pagination
-            showControls
-            initialPage={currentPage}
-            total={pages.length}
-            onChange={(page) => setCurrentPage(page)}
-          />
-        </div>
-        <div className="block md:hidden">
-          <Pagination
-            showControls
-            initialPage={currentPage}
-            size="sm"
-            total={pages.length}
-            onChange={(page) => setCurrentPage(page)}
-          />
-        </div>
+        <PaginationControl
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          totalPages={totalPages}
+        />
       </div>
     </>
   );

@@ -20,7 +20,11 @@ import { Link } from "@nextui-org/link";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-import { emptyEvent, possibleScenarios } from "@/services/mock/mock-data";
+import {
+  emptyEvent,
+  getScenarioById,
+  possibleScenarios,
+} from "@/services/mock/mock-data";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import EventAssignRolesForm from "@/components/events/event-assign-roles-form";
@@ -358,11 +362,15 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
         variant="underlined"
         onChange={(e) => {
           const scenarioId = e.target.value;
+          const scenario = getScenarioById(scenarioId); //TODO: fetch using API
 
           setEvent({
             ...event,
             scenarioId: scenarioId,
-            assignedRoles: [],
+            assignedRoles: scenario.roles.map((role) => ({
+              scenarioRoleId: role.id,
+              assignedEmail: "",
+            })),
           });
           setTouched({
             ...touched,

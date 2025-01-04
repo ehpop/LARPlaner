@@ -1,12 +1,11 @@
 "use client";
 
-import { FormattedMessage } from "react-intl";
 import { useEffect, useState } from "react";
 
-import ScenariosDisplay from "@/components/scenarios/scenarios-display";
 import LoadingOverlay from "@/components/general/loading-overlay";
 import ScenariosService from "@/services/scenarios.service";
 import { IScenario } from "@/types/scenario.types";
+import ScenariosDisplayAdmin from "@/components/scenarios/scenarios-display-admin";
 
 function ScenariosPage() {
   const [scenariosData, setScenariosData] = useState<IScenario[] | null>(null);
@@ -43,17 +42,8 @@ function ScenariosPage() {
 
   return (
     <div className="w-full space-y-3">
-      <div className="w-full flex justify-center">
-        <p className="text-3xl">
-          <FormattedMessage defaultMessage="Scenarios" id="scenarios.title" />
-        </p>
-      </div>
       <LoadingOverlay isLoading={loading} label={"Loading scenarios..."}>
-        <ScenariosDisplay
-          canAddNewScenario={true}
-          scenariosList={scenariosData || []}
-          title={"Scenarios"}
-        />
+        <ScenariosDisplayAdmin scenariosList={scenariosData || []} />
       </LoadingOverlay>
     </div>
   );
