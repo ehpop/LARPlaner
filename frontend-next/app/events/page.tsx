@@ -21,7 +21,7 @@ const EventsPage = () => {
     <div className="space-y-5">
       <EventsDisplay
         eventStatus="active"
-        list={userEvents}
+        list={userEvents.filter((event) => event.status === "active")}
         title={intl.formatMessage({
           id: "events.page.display.title.active",
           defaultMessage: "Active events",
@@ -29,7 +29,7 @@ const EventsPage = () => {
       />
       <EventsDisplay
         eventStatus="upcoming"
-        list={userEvents}
+        list={userEvents.filter((event) => event.status === "upcoming")}
         title={intl.formatMessage({
           id: "events.page.display.title.upcoming",
           defaultMessage: "Upcoming events",
@@ -37,7 +37,7 @@ const EventsPage = () => {
       />
       <EventsDisplay
         eventStatus="historic"
-        list={userEvents}
+        list={userEvents.filter((event) => event.status === "historic")}
         title={intl.formatMessage({
           id: "events.page.display.title.historic",
           defaultMessage: "Historic events",
