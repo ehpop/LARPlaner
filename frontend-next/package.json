@@ -39,8 +39,10 @@
     "react-dom": "18.3.1",
     "react-intl": "^6.5.5",
     "react-qr-code": "^2.0.15",
+    "react-swiper": "^0.1.5",
     "react-toastify": "^10.0.6",
     "react-zxing": "2.0.2",
+    "swiper": "^11.2.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
