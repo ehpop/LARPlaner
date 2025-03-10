@@ -268,6 +268,9 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
         value={event?.date}
         variant="underlined"
         onChange={(date) => {
+          if (date === null) {
+            return;
+          }
           handleTouched("date");
 
           const newDate = event.date.set({

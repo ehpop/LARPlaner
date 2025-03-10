@@ -150,9 +150,7 @@ export const RoleItem = ({
       }}
     >
       {availableRoles.map((role) => (
-        <SelectItem key={String(role.id)} value={role.name}>
-          {role.name}
-        </SelectItem>
+        <SelectItem key={String(role.id)}>{role.name}</SelectItem>
       ))}
     </Select>
   );

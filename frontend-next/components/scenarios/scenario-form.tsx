@@ -55,7 +55,6 @@ export default function ScenarioForm({
       tagsToApplyOnFailure: [],
       tagsToRemoveOnSuccess: [],
       tagsToRemoveOnFailure: [],
-      expiresAfterMinutes: null,
     };
 
     setScenario({

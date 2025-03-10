@@ -53,7 +53,6 @@ const MultiselectSearch = ({
                 <Check className="mr-2 text-green-500" size={16} />
               )
             }
-            value={item.value}
             onPress={() => handleSelect(item)}
           >
             {item.value}

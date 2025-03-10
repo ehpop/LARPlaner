@@ -65,9 +65,7 @@ const MultiSelect = ({
             onChange={(e) => handleSelectChange(index, e)}
           >
             {getAvailableOptions(selectedOption).map((option: string) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
+              <SelectItem key={option}>{option}</SelectItem>
             ))}
           </Select>
           <div className="w-full flex flex-row space-x-3 items-baseline">

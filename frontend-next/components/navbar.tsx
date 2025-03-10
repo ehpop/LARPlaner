@@ -167,9 +167,7 @@ export const Navbar = () => {
       onChange={(event) => setLocale(event.target.value)}
     >
       {Object.keys(locales).map((key) => (
-        <SelectItem key={key} value={locales[key].name}>
-          {locales[key].name}
-        </SelectItem>
+        <SelectItem key={key}>{locales[key].name}</SelectItem>
       ))}
     </Select>
   );
