@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { uuidv4 } from "@firebase/util";
+import { v4 as uuidv4 } from "uuid";
 
 import { ScenarioRolesForm } from "@/components/scenarios/scenario-roles-form";
 import { emptyScenario, possibleRoles } from "@/services/mock/mock-data";

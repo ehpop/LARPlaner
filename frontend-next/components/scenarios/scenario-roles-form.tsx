@@ -1,7 +1,7 @@
 import { Button } from "@heroui/react";
 import React from "react";
 import { FormattedMessage } from "react-intl";
-import { uuidv4 } from "@firebase/util";
+import { v4 as uuidv4 } from "uuid";
 
 import { RoleItem } from "@/components/scenarios/role-item-display";
 import { emptyScenarioRole } from "@/services/mock/mock-data";

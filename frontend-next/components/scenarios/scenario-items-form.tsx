@@ -3,7 +3,7 @@
 import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
 import React, { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { uuidv4 } from "@firebase/util";
+import { v4 as uuidv4 } from "uuid";
 
 import { emptyScenarioItem } from "@/services/mock/mock-data";
 import {

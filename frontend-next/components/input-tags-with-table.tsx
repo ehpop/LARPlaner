@@ -12,8 +12,8 @@ import {
 } from "@heroui/react";
 import { Button } from "@heroui/button";
 import { useState } from "react";
-import { uuidv4 } from "@firebase/util";
 import { FormattedMessage, useIntl } from "react-intl";
+import { v4 as uuidv4 } from "uuid";
 
 import { ITag } from "@/types/tags.types";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";

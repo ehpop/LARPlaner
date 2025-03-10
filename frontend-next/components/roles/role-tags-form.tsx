@@ -2,7 +2,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Input } from "@heroui/react";
 import { Button } from "@heroui/button";
 import { useState } from "react";
-import { uuidv4 } from "@firebase/util";
+import { v4 as uuidv4 } from "uuid";
 
 import { IRole } from "@/types/roles.types";
 import { ITag } from "@/types/tags.types";

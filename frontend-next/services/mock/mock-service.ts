@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { uuidv4 } from "@firebase/util";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   eventsList,
