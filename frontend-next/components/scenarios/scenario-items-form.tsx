@@ -33,7 +33,9 @@ const ItemForm = ({
 
   const [showItem, setShowItem] = useState(true);
   const [showItemActions, setShowItemActions] = useState(true);
-  const [selectedItem, setSelectedItem] = React.useState("");
+  const [selectedItem, setSelectedItem] = React.useState<IScenarioItem | null>(
+    null,
+  );
   const [touched, setTouched] = useState({
     name: false,
     description: false,
@@ -43,7 +45,7 @@ const ItemForm = ({
     setTouched({ ...touched, [key]: true });
   };
 
-  const onOpenModal = (item: string) => {
+  const onOpenModal = (item: IScenarioItem) => {
     setSelectedItem(item);
     onOpen();
   };
@@ -98,7 +100,7 @@ const ItemForm = ({
         isDisabled={item.name === ""}
         size="sm"
         variant="bordered"
-        onPress={() => onOpenModal(item.name)}
+        onPress={() => onOpenModal(item)}
       >
         <FormattedMessage defaultMessage="QR Code" id="item.qr" />
       </Button>
@@ -218,7 +220,13 @@ const ItemForm = ({
       </div>
       <QrModal
         isOpen={isOpen}
-        itemName={selectedItem}
+        modalTitle={
+          intl.formatMessage({
+            defaultMessage: "QR Code for item: ",
+            id: "scenarios.new.page.qrCodeModalTitle",
+          }) + selectedItem?.name
+        }
+        qrCodeData={selectedItem?.id || ""}
         onOpenChange={onOpenChange}
       />
     </div>

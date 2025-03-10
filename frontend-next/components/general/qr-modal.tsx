@@ -13,11 +13,13 @@ import React from "react";
 export const QrModal = ({
   isOpen,
   onOpenChange,
-  itemName,
+  qrCodeData,
+  modalTitle,
 }: {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  itemName: string;
+  qrCodeData: string;
+  modalTitle?: string;
 }) => {
   const intl = useIntl();
 
@@ -51,11 +53,11 @@ export const QrModal = ({
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
-              {itemName}
+              {modalTitle || ""}
             </ModalHeader>
             <ModalBody className="dark:bg-white">
               <div className="w-full flex justify-center">
-                <QRCode value={itemName} />
+                <QRCode value={qrCodeData} />
               </div>
             </ModalBody>
             <ModalFooter>
