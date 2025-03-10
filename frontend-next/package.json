@@ -10,6 +10,7 @@
     "extract": "formatjs extract \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"config/**/*.{ts,tsx}\" --out-file lang/en-US.json --ignore 'lang/**/*' --format simple"
   },
   "dependencies": {
+    "@firebase/auth": "^1.9.1",
     "@heroui/button": "2.2.16",
     "@heroui/code": "2.2.12",
     "@heroui/input": "2.4.16",
@@ -29,7 +30,7 @@
     "axios": "^1.7.7",
     "axios-mock-adapter": "^2.1.0",
     "clsx": "2.1.1",
-    "firebase": "^10.13.2",
+    "firebase": "^10.14.1",
     "framer-motion": "~12.4.11",
     "html5-qrcode": "^2.3.8",
     "intl-messageformat": "^10.5.0",
