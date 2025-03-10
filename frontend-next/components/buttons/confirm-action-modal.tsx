@@ -5,7 +5,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { FormattedMessage } from "react-intl";
 
 const ConfirmActionModal = ({

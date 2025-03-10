@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useContext } from "react";
-import { NextUIProvider } from "@nextui-org/system";
+import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
@@ -22,7 +22,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
   const locale = useContext(LocaleContext);
 
   return (
-    <NextUIProvider navigate={router.push}>
+    <HeroUIProvider navigate={router.push}>
       <NextThemesProvider {...themeProps}>
         <LocaleProvider locale={locale}>
           <FirebaseProvider>
@@ -30,6 +30,6 @@ export function Providers({ children, themeProps }: ProvidersProps) {
           </FirebaseProvider>
         </LocaleProvider>
       </NextThemesProvider>
-    </NextUIProvider>
+    </HeroUIProvider>
   );
 }

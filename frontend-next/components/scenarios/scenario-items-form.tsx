@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input, Textarea, useDisclosure } from "@nextui-org/react";
+import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
 import React, { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { uuidv4 } from "@firebase/util";

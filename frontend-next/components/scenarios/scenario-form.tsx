@@ -1,6 +1,6 @@
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
-import { Button, Input, Textarea, useDisclosure } from "@nextui-org/react";
+import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { uuidv4 } from "@firebase/util";

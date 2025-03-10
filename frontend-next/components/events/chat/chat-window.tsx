@@ -1,5 +1,5 @@
 import { Timestamp } from "@firebase/firestore";
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/react";
 import { useIntl } from "react-intl";
 import { User } from "@firebase/auth";
 import Link from "next/link";

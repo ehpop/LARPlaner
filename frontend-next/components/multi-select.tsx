@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input, Select, SelectItem } from "@nextui-org/react";
+import { Button, Input, Select, SelectItem } from "@heroui/react";
 import React, { useState } from "react";
 
 interface MultiSelectProps {

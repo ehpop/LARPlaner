@@ -8,7 +8,7 @@ import {
   SelectItem,
   Textarea,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React, { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
@@ -16,7 +16,7 @@ import {
   today,
   ZonedDateTime,
 } from "@internationalized/date";
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/link";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 

@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { FormattedMessage } from "react-intl";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 
 import { IRole } from "@/types/roles.types";
 import { AdminTableDisplay } from "@/components/table/admin-table-display";

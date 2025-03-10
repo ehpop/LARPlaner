@@ -17,8 +17,8 @@ import {
   Timestamp,
   where,
 } from "@firebase/firestore";
-import { Spinner } from "@nextui-org/react";
-import { Button } from "@nextui-org/button";
+import { Spinner } from "@heroui/react";
+import { Button } from "@heroui/button";
 
 import { db } from "@/config/firebase";
 import Message, { IMessage } from "@/components/events/chat/messages";

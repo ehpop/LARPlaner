@@ -1,6 +1,6 @@
 import { FormattedMessage, useIntl } from "react-intl";
-import { Input } from "@nextui-org/react";
-import { Button } from "@nextui-org/button";
+import { Input } from "@heroui/react";
+import { Button } from "@heroui/button";
 import { useState } from "react";
 import { uuidv4 } from "@firebase/util";
 

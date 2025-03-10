@@ -10,10 +10,10 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { FormattedMessage } from "react-intl";
 import { Html5QrcodeScanner } from "html5-qrcode";
-import { CardBody, CardHeader } from "@nextui-org/card";
+import { CardBody, CardHeader } from "@heroui/card";
 
 import { IGameSession } from "@/types/game.types";
 import { IScenario, IScenarioItemAction } from "@/types/scenario.types";

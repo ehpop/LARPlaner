@@ -2,7 +2,7 @@
 
 import { useContext, useEffect, useState } from "react";
 import { redirect } from "next/navigation";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@heroui/react";
 import { FormattedMessage } from "react-intl";
 
 import { FirebaseContext } from "@/context/firebase-context";

@@ -1,10 +1,11 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
-import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { ReactNode } from "react";
 
 import "react-toastify/dist/ReactToastify.css";
+
+import { Link } from "@heroui/link";
 
 import { Providers } from "@/providers/providers";
 import { siteConfig } from "@/config/site";
@@ -51,11 +52,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Link
                 isExternal
                 className="flex items-center gap-1 text-current"
-                href="https://nextui.org/docs"
-                title="nextui.org homepage"
+                href="https://www.heroui.com/docs"
+                title="heroui.org homepage"
               >
                 <span className="text-default-600">Powered by</span>
-                <p className="text-primary">NextUI</p>
+                <p className="text-primary">HeroUI</p>
               </Link>
             </footer>
           </div>

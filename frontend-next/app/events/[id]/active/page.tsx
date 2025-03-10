@@ -1,10 +1,10 @@
 "use client";
 
 import { FormattedMessage, useIntl } from "react-intl";
-import { Link } from "@nextui-org/link";
-import { Card } from "@nextui-org/react";
-import { CardBody, CardHeader } from "@nextui-org/card";
-import { Button } from "@nextui-org/button";
+import { Link } from "@heroui/link";
+import { Card } from "@heroui/react";
+import { CardBody, CardHeader } from "@heroui/card";
+import { Button } from "@heroui/button";
 
 import useUserEventData from "@/hooks/use-user-data";
 import LoadingOverlay from "@/components/general/loading-overlay";

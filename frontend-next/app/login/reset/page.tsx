@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Button, Card, Input, Link, Spinner } from "@nextui-org/react";
+import { Button, Card, Input, Link, Spinner } from "@heroui/react";
 import { sendPasswordResetEmail } from "@firebase/auth";
 import { FormattedMessage, useIntl } from "react-intl";
 

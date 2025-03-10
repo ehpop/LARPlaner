@@ -1,4 +1,4 @@
-import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem, Input } from "@heroui/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 

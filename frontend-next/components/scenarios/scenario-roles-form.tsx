@@ -1,4 +1,4 @@
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import React from "react";
 import { FormattedMessage } from "react-intl";
 import { uuidv4 } from "@firebase/util";

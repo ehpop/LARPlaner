@@ -13,7 +13,7 @@ import {
   ModalHeader,
   Spinner,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { sendEmailVerification, updateProfile, UserInfo } from "@firebase/auth";
 import { FormattedMessage, useIntl } from "react-intl";
 

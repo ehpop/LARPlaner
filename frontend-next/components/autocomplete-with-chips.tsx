@@ -1,6 +1,6 @@
 "use client";
 
-import { Autocomplete, AutocompleteItem, Chip } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem, Chip } from "@heroui/react";
 import { Check, X } from "lucide-react";
 
 import { ITag } from "@/types/tags.types";
@@ -54,7 +54,7 @@ const MultiselectSearch = ({
               )
             }
             value={item.value}
-            onClick={() => handleSelect(item)}
+            onPress={() => handleSelect(item)}
           >
             {item.value}
           </AutocompleteItem>

@@ -1,4 +1,4 @@
-import { Textarea, TextAreaProps } from "@nextui-org/react";
+import { Textarea, TextAreaProps } from "@heroui/react";
 import { KeyboardEvent, RefObject } from "react";
 
 /**

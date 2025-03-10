@@ -1,4 +1,4 @@
-import { Button, Input, Textarea, useDisclosure } from "@nextui-org/react";
+import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";

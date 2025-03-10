@@ -1,5 +1,5 @@
-import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
-import { Link } from "@nextui-org/link";
+import { Card, CardBody, CardFooter, Image } from "@heroui/react";
+import { Link } from "@heroui/link";
 
 import { IEvent } from "@/types/event.types";
 

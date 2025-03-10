@@ -1,6 +1,6 @@
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
-import { Button, Select, SelectItem, Textarea } from "@nextui-org/react";
+import { Button, Select, SelectItem, Textarea } from "@heroui/react";
 
 import { IScenarioRole } from "@/types/scenario.types";
 import { IRole } from "@/types/roles.types";

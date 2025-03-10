@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Select, SelectItem } from "@nextui-org/react";
-import { Button } from "@nextui-org/button";
+import { Select, SelectItem } from "@heroui/react";
+import { Button } from "@heroui/button";
 
 const SelectUniqueOptions = ({ roles }: any) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);

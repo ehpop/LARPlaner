@@ -1,7 +1,7 @@
 "use client";
 
 import { FormattedMessage, useIntl } from "react-intl";
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/link";
 
 import { IEvent } from "@/types/event.types";
 import { IScenario } from "@/types/scenario.types";

@@ -1,6 +1,6 @@
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import {
   Input,
   Modal,
@@ -9,7 +9,7 @@ import {
   ModalFooter,
   ModalHeader,
   Textarea,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 import { IAction } from "@/types/scenario.types";
 import InputTagsWithTable from "@/components/input-tags-with-table";

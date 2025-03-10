@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Button, Card, Input, Link, Spinner } from "@nextui-org/react";
+import { Button, Card, Input, Link, Spinner } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import {
   createUserWithEmailAndPassword,
