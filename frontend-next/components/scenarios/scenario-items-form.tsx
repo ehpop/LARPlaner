@@ -272,7 +272,7 @@ const ScenarioItemsForm = ({
   };
 
   return (
-    <div className="w-full space-y-10 lg:space-y-3 overflow-y-auto">
+    <div className="w-full space-y-3 overflow-y-auto">
       {scenario.items.length === 0 ? (
         <div className="w-full flex justify-center">
           <p>

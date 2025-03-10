@@ -4,12 +4,14 @@ import { uuidv4 } from "@firebase/util";
 
 import {
   eventsList,
+  mockGameSessions,
   possibleRoles,
   possibleScenarios,
 } from "@/services/mock/mock-data";
 import { IScenario } from "@/types/scenario.types";
 import { IRole } from "@/types/roles.types";
 import { IEventGetDTO } from "@/types/event.types";
+import { IGameSession } from "@/types/game.types";
 
 const scenarios: IScenario[] = possibleScenarios;
 const roles: IRole[] = possibleRoles;
@@ -25,6 +27,8 @@ const rolesUrl =
   /\/roles\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
 const eventsUrl =
   /\/events\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
+const gameSessionsUrl =
+  /\/game\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
 
 export default function setupMock(api: AxiosInstance) {
   const mock = new MockAdapter(api);
@@ -32,6 +36,7 @@ export default function setupMock(api: AxiosInstance) {
   setupMockScenariosApi(mock);
   setupMockRolesApi(mock);
   setupMockEventsApi(mock);
+  setupMockGameSessionsApi(mock);
 }
 
 function setupMockScenariosApi(mock: MockAdapter) {
@@ -188,5 +193,58 @@ function setupMockEventsApi(mock: MockAdapter) {
     }
 
     return [404, { message: "Event not found" }];
+  });
+}
+
+function setupMockGameSessionsApi(mock: MockAdapter) {
+  mock.onGet("/game").reply(200, mockGameSessions);
+
+  mock.onGet(gameSessionsUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
+
+    const gameSession = mockGameSessions.find((gs) => gs.id === id);
+
+    return gameSession
+      ? [200, gameSession]
+      : [404, { message: "Game session not found" }];
+  });
+
+  mock.onPost("/game").reply((config) => {
+    const newGameSession = JSON.parse(config.data);
+
+    newGameSession.id = uuidv4();
+    mockGameSessions.push(newGameSession);
+
+    return [201, newGameSession];
+  });
+
+  mock.onPut(gameSessionsUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
+    const updatedGameSession: IGameSession = JSON.parse(config.data);
+    const gameSessionIndex = mockGameSessions.findIndex((gs) => gs.id === id);
+
+    if (gameSessionIndex !== -1) {
+      mockGameSessions[gameSessionIndex] = {
+        ...mockGameSessions[gameSessionIndex],
+        ...updatedGameSession,
+      };
+
+      return [200, mockGameSessions[gameSessionIndex]];
+    }
+
+    return [404, { message: "Game session not found" }];
+  });
+
+  mock.onDelete(gameSessionsUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
+    const gameSessionIndex = mockGameSessions.findIndex((gs) => gs.id === id);
+
+    if (gameSessionIndex !== -1) {
+      const deletedGameSession = mockGameSessions.splice(gameSessionIndex, 1);
+
+      return [200, deletedGameSession[0]];
+    }
+
+    return [404, { message: "Game session not found" }];
   });
 }

@@ -69,7 +69,7 @@ export type IAction = {
 
 export type IScenarioAction = IAction & {
   scenarioId: IScenario["id"] | null;
-  expiresAfterMinutes: number | null;
+  expiresAfterMinutes?: number;
 };
 
 export type IScenarioItemAction = IAction & {

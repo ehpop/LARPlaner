@@ -10,6 +10,12 @@ import {
   IScenarioRole,
 } from "@/types/scenario.types";
 import { ITag } from "@/types/tags.types";
+import {
+  IGameActionLog,
+  IGameItemState,
+  IGameRoleState,
+  IGameSession,
+} from "@/types/game.types";
 
 const preloadedUUIDs = {
   roles: [
@@ -77,9 +83,80 @@ const preloadedUUIDs = {
     "b00964f7-522f-4169-8534-e64ed6780f6e",
     "4942155a-2bd4-48cd-b9d6-c0f222891a18",
   ],
+  games: [
+    "4942155a-2bd4-48cd-b9d6-c0f222891aa1",
+    "4942155a-2bd4-48cd-b9d6-c0f222891aa2",
+    "4942155a-2bd4-48cd-b9d6-c0f222891aa3",
+    "4942155a-2bd4-48cd-b9d6-c0f222891aa4",
+    "4942155a-2bd4-48cd-b9d6-c0f222891aa5",
+  ],
+  tags: [
+    "4942155a-2bd4-48cd-b9d6-c0f222891aa6",
+    "4942155a-2bd4-48cd-b9d6-c0f222891aa7",
+    "4942155a-2bd4-48cd-b9d6-c0f222891aa8",
+    "4942155a-2bd4-48cd-b9d6-c0f222891aa9",
+    "4942155a-2bd4-48cd-b9d6-c0f222891ab1",
+    "4942155a-2bd4-48cd-b9d6-c0f222891ab2",
+    "4942155a-2bd4-48cd-b9d6-c0f222891ab3",
+    "4942155a-2bd4-48cd-b9d6-c0f222891ab4",
+    "4942155a-2bd4-48cd-b9d6-c0f222891ab5",
+    "4942155a-2bd4-48cd-b9d6-c0f222891ab6",
+  ],
 };
 
-export const possibleTags: ITag[] = [];
+export const possibleTags: ITag[] = [
+  {
+    id: preloadedUUIDs.tags[0],
+    value: "Tag 1",
+    isUnique: false,
+  },
+  {
+    id: preloadedUUIDs.tags[1],
+    value: "Tag 2",
+    isUnique: false,
+  },
+  {
+    id: preloadedUUIDs.tags[2],
+    value: "Tag 3",
+    isUnique: false,
+  },
+  {
+    id: preloadedUUIDs.tags[3],
+    value: "Tag 4",
+    isUnique: false,
+  },
+  {
+    id: preloadedUUIDs.tags[4],
+    value: "Tag 5",
+    isUnique: false,
+  },
+  {
+    id: preloadedUUIDs.tags[5],
+    value: "Tag 6",
+    isUnique: false,
+  },
+  {
+    id: preloadedUUIDs.tags[6],
+    value: "Tag 7",
+    isUnique: false,
+  },
+  {
+    id: preloadedUUIDs.tags[7],
+    value: "Tag 8",
+    isUnique: false,
+  },
+  {
+    id: preloadedUUIDs.tags[8],
+    value: "Tag 9 - expires",
+    isUnique: false,
+    expiresAfterMinutes: 5,
+  },
+  {
+    id: preloadedUUIDs.tags[9],
+    value: "Tag 10 - unique",
+    isUnique: true,
+  },
+];
 
 export const userEmails = [
   { label: "justidthe@gmail.com", value: "justidthe@gmail.com" },
@@ -104,7 +181,69 @@ export const possibleScenarios: IScenario[] = Array.from(
     description: `Description for Scenario #${i + 1}`,
     roles: [], // Placeholder
     items: [],
-    actions: [],
+    actions: [
+      {
+        id: `action-${i}-1`,
+        name: `Action #${i + 1}`,
+        scenarioId: preloadedUUIDs.scenarios[i],
+        description: `Description for Action #${i + 1}`,
+        messageOnSuccess: `Success message for Action #${i + 1}`,
+        messageOnFailure: `Failure message for Action #${i + 1}`,
+        tagsToApplyOnSuccess: [possibleTags[i * 2], possibleTags[i * 2 + 1]],
+        tagsToApplyOnFailure: [
+          possibleTags[i * 2 + 1],
+          possibleTags[i * 2 + 2],
+        ],
+        tagsToRemoveOnSuccess: [
+          possibleTags[i * 2 + 2],
+          possibleTags[i * 2 + 3],
+        ],
+        tagsToRemoveOnFailure: [
+          possibleTags[i * 2 + 3],
+          possibleTags[i * 2 + 4],
+        ],
+        requiredTagsToDisplay: [
+          possibleTags[i * 2 + 3],
+          possibleTags[i * 2 + 4],
+        ],
+        requiredTagsToSucceed: [
+          possibleTags[i * 2 + 4],
+          possibleTags[i * 2 + 5],
+        ],
+      },
+      {
+        id: `action-${i}-2`,
+        name: `Action #${i + 2}`,
+        scenarioId: preloadedUUIDs.scenarios[i],
+        description: `Description for Action #${i + 2}`,
+        messageOnSuccess: `Success message for Action #${i + 2}`,
+        messageOnFailure: `Failure message for Action #${i + 2}`,
+        tagsToApplyOnSuccess: [
+          possibleTags[i * 2 + 1],
+          possibleTags[i * 2 + 2],
+        ],
+        tagsToApplyOnFailure: [
+          possibleTags[i * 2 + 2],
+          possibleTags[i * 2 + 3],
+        ],
+        tagsToRemoveOnSuccess: [
+          possibleTags[i * 2 + 3],
+          possibleTags[i * 2 + 4],
+        ],
+        tagsToRemoveOnFailure: [
+          possibleTags[i * 2 + 4],
+          possibleTags[i * 2 + 5],
+        ],
+        requiredTagsToDisplay: [
+          possibleTags[i * 2 + 4],
+          possibleTags[i * 2 + 5],
+        ],
+        requiredTagsToSucceed: [
+          possibleTags[i * 2 + 5],
+          possibleTags[i * 2 + 6],
+        ],
+      },
+    ],
     tags: [],
   }),
 );
@@ -137,14 +276,91 @@ export const possibleScenarioItems: IScenarioItem[] = possibleScenarios.flatMap(
       scenarioId: scenario.id,
       name: `Item #${i + 1}`,
       description: `Description for Item #${i + 1}`,
-      actions: [],
+      actions: [
+        {
+          id: `action-${i}-1`,
+          itemId: preloadedUUIDs.scenarioItems[i * 2],
+          name: `Action #${i + 1}`,
+          description: `Description for Action #${i + 1}`,
+          messageOnSuccess: `Success message for Action #${i + 1}`,
+          messageOnFailure: `Failure message for Action #${i + 1}`,
+          tagsToApplyOnSuccess: [possibleTags[i * 2], possibleTags[i * 2 + 1]],
+          tagsToApplyOnFailure: [
+            possibleTags[i * 2 + 1],
+            possibleTags[i * 2 + 2],
+          ],
+          tagsToRemoveOnSuccess: [
+            possibleTags[i * 2 + 2],
+            possibleTags[i * 2 + 3],
+          ],
+          tagsToRemoveOnFailure: [
+            possibleTags[i * 2 + 3],
+            possibleTags[i * 2 + 4],
+          ],
+          requiredTagsToDisplay: [possibleTags[0]],
+          requiredTagsToSucceed: [possibleTags[1]],
+        },
+        {
+          id: `action-${i}-2`,
+          itemId: preloadedUUIDs.scenarioItems[i * 2],
+          name: `Action #${i + 2}`,
+          description: `Description for Action #${i + 2}`,
+          messageOnSuccess: `Success message for Action #${i + 2}`,
+          messageOnFailure: `Failure message for Action #${i + 2}`,
+          tagsToApplyOnSuccess: [
+            possibleTags[i * 2 + 1],
+            possibleTags[i * 2 + 2],
+          ],
+          tagsToApplyOnFailure: [
+            possibleTags[i * 2 + 2],
+            possibleTags[i * 2 + 3],
+          ],
+          tagsToRemoveOnSuccess: [
+            possibleTags[i * 2 + 3],
+            possibleTags[i * 2 + 4],
+          ],
+          tagsToRemoveOnFailure: [
+            possibleTags[i * 2 + 4],
+            possibleTags[i * 2 + 5],
+          ],
+          requiredTagsToDisplay: [possibleTags[0]],
+          requiredTagsToSucceed: [possibleTags[1]],
+        },
+      ],
     },
     {
       id: preloadedUUIDs.scenarioItems[i * 2 + 1],
       scenarioId: scenario.id,
       name: `Item #${i + 2}`,
       description: `Description for Item #${i + 2}`,
-      actions: [],
+      actions: [
+        {
+          id: `action-${i}-2`,
+          itemId: preloadedUUIDs.scenarioItems[i * 2 + 1],
+          name: `Action #${i + 2}`,
+          description: `Description for Action #${i + 2}`,
+          messageOnSuccess: `Success message for Action #${i + 2}`,
+          messageOnFailure: `Failure message for Action #${i + 2}`,
+          tagsToApplyOnSuccess: [
+            possibleTags[i * 2 + 1],
+            possibleTags[i * 2 + 2],
+          ],
+          tagsToApplyOnFailure: [
+            possibleTags[i * 2 + 2],
+            possibleTags[i * 2 + 3],
+          ],
+          tagsToRemoveOnSuccess: [
+            possibleTags[i * 2 + 3],
+            possibleTags[i * 2 + 4],
+          ],
+          tagsToRemoveOnFailure: [
+            possibleTags[i * 2 + 4],
+            possibleTags[i * 2 + 5],
+          ],
+          requiredTagsToDisplay: [possibleTags[0]],
+          requiredTagsToSucceed: [possibleTags[1]],
+        },
+      ],
     },
   ],
 );
@@ -163,6 +379,7 @@ export const eventsList: IEvent[] = Array.from({ length: 20 }, (_, i) => ({
   img: `/images/event-${i + 1}.jpg`,
   description: `Description for Event #${i + 1}`,
   scenarioId: possibleScenarios[i % possibleScenarios.length].id,
+  gameSessionId: i < 5 ? preloadedUUIDs.games[i] : null,
   assignedRoles: [
     {
       scenarioRoleId:
@@ -219,8 +436,86 @@ export const emptyEvent: IEvent = {
   date: now(getLocalTimeZone()).add({ days: 1 }),
   description: "",
   scenarioId: null,
+  gameSessionId: null,
   assignedRoles: [],
 };
+
+export const mockGameSessions: IGameSession[] = preloadedUUIDs.games.map(
+  (gameId, index) => ({
+    id: gameId,
+    eventId: eventsList[index % eventsList.length].id,
+    status: index === 0 ? "active" : "paused",
+    startTime: now(getLocalTimeZone()).subtract({ hours: index }).toString(),
+    endTime: index === 0 ? null : now(getLocalTimeZone()).toString(),
+    assignedRoles: [],
+    items: [],
+    actions: [],
+  }),
+);
+
+export const mockGameRoleStates: IGameRoleState[] = possibleScenarioRoles.map(
+  (role, index) => ({
+    scenarioRoleId: role.id,
+    assignedEmail:
+      index === 0 ? `tomeqtk@gmail.com` : `player${index}@game.com`,
+    actionHistory: [] as IGameActionLog[],
+    activeTags:
+      index === 0
+        ? [
+            {
+              id: possibleTags[0].id,
+              value: possibleTags[0].value,
+              isUnique: possibleTags[0].isUnique,
+            },
+            {
+              id: possibleTags[1].id,
+              value: possibleTags[1].value,
+              isUnique: possibleTags[1].isUnique,
+            },
+          ]
+        : ([] as ITag[]),
+  }),
+);
+
+export const mockGameItemStates: IGameItemState[] = possibleScenarioItems.map(
+  (item, index) => ({
+    scenarioItemId: item.id,
+    currentHolderRoleId:
+      possibleScenarioRoles[index % possibleScenarioRoles.length].id,
+    activeTags: [],
+    actionHistory: [],
+  }),
+);
+
+export const mockGameActionLogs: IGameActionLog[] = mockGameSessions.flatMap(
+  (session, index) => [
+    {
+      id: `action-${index}-1`,
+      sessionId: session.id,
+      actionId: `action-${index}`,
+      timestamp: now(getLocalTimeZone())
+        .subtract({ minutes: index * 5 })
+        .toString(),
+      performerRoleId:
+        possibleScenarioRoles[index % possibleScenarioRoles.length].id,
+      targetItemId:
+        possibleScenarioItems[index % possibleScenarioItems.length]?.id || null,
+      success: Math.random() > 0.5, // Random success/fail
+      message: "An action was performed",
+      appliedTags: [],
+      removedTags: [],
+    },
+  ],
+);
+
+// Assign generated roles, items, and actions to the game sessions
+mockGameSessions.forEach((session, index) => {
+  session.assignedRoles = mockGameRoleStates.slice(index * 2, index * 2 + 2);
+  session.items = mockGameItemStates.slice(index * 2, index * 2 + 2);
+  session.actions = mockGameActionLogs.filter(
+    (log) => log.sessionId === session.id,
+  );
+});
 
 export const getEvent = (id: number): IEvent => {
   return eventsList[id % eventsList.length];

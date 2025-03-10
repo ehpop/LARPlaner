@@ -2,6 +2,7 @@ import { ZonedDateTime } from "@internationalized/date";
 
 import { IScenario, IScenarioRole } from "@/types/scenario.types";
 import { IGetDTO, IPostDTO } from "@/types/dto.types";
+import { IGameSession } from "@/types/game.types";
 
 /**
  * Event DTO for POST and UPDATE requests
@@ -12,6 +13,7 @@ export type IEventPostDTO = IPostDTO & {
   date: string;
   description: string;
   scenarioId: IScenario["id"] | null;
+  gameSessionId: IGameSession["id"] | null;
   assignedRoles: {
     scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
@@ -27,6 +29,7 @@ export type IEventGetDTO = IGetDTO & {
   date: string;
   description: string;
   scenarioId: IScenario["id"];
+  gameSessionId: IGameSession["id"] | null;
   assignedRoles: {
     scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
@@ -41,6 +44,7 @@ export type IEvent = {
   date: ZonedDateTime;
   description: string;
   scenarioId: IScenario["id"] | null;
+  gameSessionId: IGameSession["id"] | null;
   assignedRoles: {
     scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
