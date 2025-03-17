@@ -10,6 +10,7 @@ import { IGameSession } from "@/types/game.types";
 import useGame from "@/hooks/use-game";
 import useEvent from "@/hooks/use-event";
 import QrItemScanner from "@/components/game/qr-item-scanner";
+import MyCharacterModal from "@/components/game/my-character-modal";
 
 const ActiveGamePage = ({ params }: any) => {
   const intl = useIntl();
@@ -66,12 +67,7 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
   const ActionMenuElement = (
     <div className="w-full flex justify-center">
       <div className="w-3/5 flex flex-col justify-between space-y-3">
-        <Button variant="bordered">
-          <FormattedMessage
-            defaultMessage="My character"
-            id="events.id.active.goToGame"
-          />
-        </Button>
+        <MyCharacterModal game={game} />
         <Button variant="bordered">
           <FormattedMessage
             defaultMessage="Actions"
@@ -81,7 +77,7 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
         <QrItemScanner game={game} scenario={scenario} />
         <Button variant="bordered">
           <FormattedMessage
-            defaultMessage="Write to admins"
+            defaultMessage="See action history"
             id="events.id.active.writeToAdmins"
           />
         </Button>
@@ -112,14 +108,14 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
           </div>
         </CardHeader>
         <CardBody className="space-y-4 text-center">
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 dark:text-gray-400">
             <FormattedMessage
               defaultMessage="Event: {eventName}"
               id="events.id.active.eventName"
               values={{ eventName: event?.name }}
             />
           </p>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 dark:text-gray-400">
             <FormattedMessage
               defaultMessage="Scenario: {scenarioName}"
               id="events.id.active.scenarioName"

@@ -58,6 +58,7 @@ const QrItemScanner = ({
     };
   }, [isModalOpen, isScanning]);
 
+  //TODO: this sequence should be performed at the backend
   const performAction = (action: IScenarioItemAction) => {
     const userRole = game?.assignedRoles.find(
       (role) => role.assignedEmail === auth.user?.email,
@@ -99,7 +100,6 @@ const QrItemScanner = ({
 
     newUserTags.push(...tagsToApply);
 
-    //TODO: use gameService to update game instance
     userRole.activeTags = newUserTags;
   };
 
@@ -157,7 +157,7 @@ const QrItemScanner = ({
               <Button
                 color="primary"
                 variant="bordered"
-                onClick={() => {
+                onPress={() => {
                   performAction(action);
                 }}
               >
@@ -304,7 +304,7 @@ const QrItemScanner = ({
     <>
       <Button
         variant="bordered"
-        onClick={() => {
+        onPress={() => {
           setIsModalOpen(true);
           setScannedData("");
         }}
