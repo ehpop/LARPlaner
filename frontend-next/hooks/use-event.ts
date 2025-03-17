@@ -1,11 +1,11 @@
 import { useIntl } from "react-intl";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 import { IEvent } from "@/types/event.types";
 import { IScenario } from "@/types/scenario.types";
 import eventsService from "@/services/events.service";
 import scenariosService from "@/services/scenarios.service";
+import { showErrorMessage } from "@/hooks/utils";
 
 const useEvent = (id: string) => {
   const intl = useIntl();
@@ -47,17 +47,6 @@ const useEvent = (id: string) => {
       setLoading(true);
     };
   }, [id]);
-
-  const showErrorMessage = (message: string | undefined) => {
-    toast(
-      message ||
-        intl.formatMessage({
-          id: "events.page.display.error",
-          defaultMessage: "An error occurred while fetching event data.",
-        }),
-      { type: "error" },
-    );
-  };
 
   return { event, scenario, loading };
 };

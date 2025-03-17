@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { useIntl } from "react-intl";
 
 import { useAuth } from "@/providers/firebase-provider";
@@ -9,6 +8,7 @@ import { IRole } from "@/types/roles.types";
 import eventsService from "@/services/events.service";
 import scenariosService from "@/services/scenarios.service";
 import rolesService from "@/services/roles.service";
+import { showErrorMessage } from "@/hooks/utils";
 
 const useUserEventData = ({ id }: { id: string }) => {
   const intl = useIntl();
@@ -20,17 +20,6 @@ const useUserEventData = ({ id }: { id: string }) => {
     useState<IScenarioRole | null>(null);
   const [userRole, setUserRole] = useState<IRole | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const showErrorMessage = (message: string | undefined) => {
-    toast(
-      message ||
-        intl.formatMessage({
-          id: "events.page.display.error",
-          defaultMessage: "An error occurred while fetching event data.",
-        }),
-      { type: "error" },
-    );
-  };
 
   useEffect(() => {
     const loadEventData = async () => {
