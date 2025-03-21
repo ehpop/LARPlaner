@@ -111,6 +111,7 @@ const MyCharacterModal = ({ game }: { game: IGameSession }) => {
   const MyCharacterModalElement = (
     <Modal
       isOpen={isModalOpen}
+      placement="center"
       onOpenChange={(isOpen) => {
         setIsModalOpen(isOpen);
       }}
@@ -146,7 +147,6 @@ const MyCharacterModal = ({ game }: { game: IGameSession }) => {
           id="game.myCharacterModal.button.label"
         />
       </Button>
-
       {MyCharacterModalElement}
     </>
   );

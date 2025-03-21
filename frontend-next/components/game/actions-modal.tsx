@@ -49,6 +49,56 @@ const ActionsModal = ({ game }: { game: IGameSession }) => {
     loadActions().finally(() => setIsLoading(false));
   }, [isModalOpen, loading]);
 
+  const ActionsModalElement = (
+    <Modal
+      isOpen={isModalOpen}
+      placement="center"
+      scrollBehavior="inside"
+      size="lg"
+      onOpenChange={(isOpen) => setIsModalOpen(isOpen)}
+    >
+      <ModalContent>
+        <ModalHeader>
+          <FormattedMessage
+            defaultMessage="Actions"
+            id="game.actionsModal.actions"
+          />
+        </ModalHeader>
+        <ModalBody>
+          {actions.length === 0 ? (
+            <FormattedMessage
+              defaultMessage="No actions available."
+              id="game.actionsModal.noActions"
+            />
+          ) : (
+            actions.map((action) => (
+              <Action
+                key={action.id}
+                action={action}
+                afterActionPerformed={() => {
+                  setIsModalOpen(false);
+                }}
+                game={game}
+              />
+            ))
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            color="danger"
+            variant="bordered"
+            onPress={() => setIsModalOpen(false)}
+          >
+            <FormattedMessage
+              defaultMessage="Close"
+              id="game.actionsModal.close"
+            />
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+
   return (
     <>
       <Button
@@ -61,44 +111,7 @@ const ActionsModal = ({ game }: { game: IGameSession }) => {
           id="game.actionsModal.actions"
         />
       </Button>
-      <Modal
-        isOpen={isModalOpen}
-        size="lg"
-        onOpenChange={(isOpen) => setIsModalOpen(isOpen)}
-      >
-        <ModalContent>
-          <ModalHeader>
-            <FormattedMessage
-              defaultMessage="Actions"
-              id="game.actionsModal.actions"
-            />
-          </ModalHeader>
-          <ModalBody>
-            {actions.length === 0 ? (
-              <FormattedMessage
-                defaultMessage="No actions available."
-                id="game.actionsModal.noActions"
-              />
-            ) : (
-              actions.map((action) => (
-                <Action key={action.id} action={action} game={game} />
-              ))
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              className="w-full"
-              disabled={isLoading}
-              onPress={() => setIsModalOpen(false)}
-            >
-              <FormattedMessage
-                defaultMessage="Close"
-                id="game.actionsModal.close"
-              />
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      {ActionsModalElement}
     </>
   );
 };

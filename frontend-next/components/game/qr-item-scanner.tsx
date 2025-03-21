@@ -135,7 +135,7 @@ const QrItemScanner = ({
   };
 
   const ScannedDataElement = (
-    <div className="p-3 border rounded-md">
+    <div className="p-3 rounded-md">
       <p className="mb-2">
         <FormattedMessage
           defaultMessage="Scanned data: {scannedData}"
@@ -150,6 +150,7 @@ const QrItemScanner = ({
   const ScannerMenuModal = (
     <Modal
       isOpen={isModalOpen}
+      placement="center"
       size="xl"
       onOpenChange={(isOpen) => {
         setIsModalOpen(isOpen);

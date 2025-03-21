@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   eventsList,
+  mockGameActionLogs,
   mockGameSessions,
   possibleRoles,
   possibleScenarios,
@@ -29,6 +30,10 @@ const eventsUrl =
   /\/events\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
 const gameSessionsUrl =
   /\/game\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
+const gameHistoryUrl =
+  /\/game\/history\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
+const gameHistoryGameIdUrl =
+  /\/game\/history\/gameId\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
 
 export default function setupMock(api: AxiosInstance) {
   const mock = new MockAdapter(api);
@@ -246,5 +251,38 @@ function setupMockGameSessionsApi(mock: MockAdapter) {
     }
 
     return [404, { message: "Game session not found" }];
+  });
+
+  mock.onGet("/game/history").reply(200, mockGameActionLogs);
+
+  mock.onGet(gameHistoryUrl).reply((config) => {
+    const id = config.url?.split("/").pop();
+
+    const gameHistory = mockGameActionLogs.find((gh) => gh.id === id);
+
+    return gameHistory
+      ? [200, gameHistory]
+      : [404, { message: "Game history not found" }];
+  });
+
+  mock.onGet(gameHistoryGameIdUrl).reply((config) => {
+    const gameId = config.url?.split("/").pop();
+
+    const gameHistory = mockGameActionLogs.filter(
+      (gh) => gh.sessionId === gameId,
+    );
+
+    return gameHistory
+      ? [200, gameHistory]
+      : [404, { message: "Game history not found" }];
+  });
+
+  mock.onPost("/game/history").reply((config) => {
+    const newGameHistory = JSON.parse(config.data);
+
+    newGameHistory.id = uuidv4();
+    mockGameActionLogs.push(newGameHistory);
+
+    return [201, newGameHistory];
   });
 }
