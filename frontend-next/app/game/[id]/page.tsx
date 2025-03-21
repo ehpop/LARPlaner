@@ -11,6 +11,7 @@ import useGame from "@/hooks/use-game";
 import useEvent from "@/hooks/use-event";
 import QrItemScanner from "@/components/game/qr-item-scanner";
 import MyCharacterModal from "@/components/game/my-character-modal";
+import ActionsModal from "@/components/game/actions-modal";
 
 const ActiveGamePage = ({ params }: any) => {
   const intl = useIntl();
@@ -68,12 +69,7 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
     <div className="w-full flex justify-center">
       <div className="w-3/5 flex flex-col justify-between space-y-3">
         <MyCharacterModal game={game} />
-        <Button variant="bordered">
-          <FormattedMessage
-            defaultMessage="Actions"
-            id="events.id.active.writeToAdmins"
-          />
-        </Button>
+        <ActionsModal game={game} />
         <QrItemScanner game={game} scenario={scenario} />
         <Button variant="bordered">
           <FormattedMessage

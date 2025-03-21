@@ -202,14 +202,8 @@ export const possibleScenarios: IScenario[] = Array.from(
           possibleTags[i * 2 + 3],
           possibleTags[i * 2 + 4],
         ],
-        requiredTagsToDisplay: [
-          possibleTags[i * 2 + 3],
-          possibleTags[i * 2 + 4],
-        ],
-        requiredTagsToSucceed: [
-          possibleTags[i * 2 + 4],
-          possibleTags[i * 2 + 5],
-        ],
+        requiredTagsToDisplay: [possibleTags[0]],
+        requiredTagsToSucceed: [possibleTags[0]],
       },
       {
         id: `action-${i}-2`,
@@ -234,14 +228,8 @@ export const possibleScenarios: IScenario[] = Array.from(
           possibleTags[i * 2 + 4],
           possibleTags[i * 2 + 5],
         ],
-        requiredTagsToDisplay: [
-          possibleTags[i * 2 + 4],
-          possibleTags[i * 2 + 5],
-        ],
-        requiredTagsToSucceed: [
-          possibleTags[i * 2 + 5],
-          possibleTags[i * 2 + 6],
-        ],
+        requiredTagsToDisplay: [possibleTags[0]],
+        requiredTagsToSucceed: [possibleTags[0]],
       },
     ],
     tags: [],
