@@ -3,7 +3,6 @@
 import { FormattedMessage, useIntl } from "react-intl";
 import { Card } from "@heroui/react";
 import { CardBody, CardHeader } from "@heroui/card";
-import { Button } from "@heroui/button";
 
 import LoadingOverlay from "@/components/general/loading-overlay";
 import { IGameSession } from "@/types/game.types";
@@ -12,6 +11,7 @@ import useEvent from "@/hooks/use-event";
 import QrItemScanner from "@/components/game/qr-item-scanner";
 import MyCharacterModal from "@/components/game/my-character-modal";
 import ActionsModal from "@/components/game/actions-modal";
+import UserGameHistory from "@/components/game/user-game-history";
 
 const ActiveGamePage = ({ params }: any) => {
   const intl = useIntl();
@@ -71,12 +71,7 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
         <MyCharacterModal game={game} />
         <ActionsModal game={game} />
         <QrItemScanner game={game} scenario={scenario} />
-        <Button variant="bordered">
-          <FormattedMessage
-            defaultMessage="See action history"
-            id="events.id.active.writeToAdmins"
-          />
-        </Button>
+        <UserGameHistory game={game} />
       </div>
     </div>
   );
