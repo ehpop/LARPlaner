@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   Button,
   Card,
-  CardFooter,
   Modal,
   ModalBody,
   ModalContent,
@@ -18,6 +17,7 @@ import { CardBody, CardHeader } from "@heroui/card";
 import { IGameSession } from "@/types/game.types";
 import { IScenario, IScenarioItemAction } from "@/types/scenario.types";
 import { useAuth } from "@/providers/firebase-provider";
+import Action from "@/components/game/action";
 
 const QrItemScanner = ({
   game,
@@ -29,8 +29,6 @@ const QrItemScanner = ({
   const auth = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isActionResultModalOpen, setIsActionResultModalOpen] = useState(false);
-  const [actionResultMessage, setActionResultMessage] = useState("");
   const [isScanning, setIsScanning] = useState(true);
   const [scannedData, setScannedData] = useState<string>("");
 
@@ -57,51 +55,6 @@ const QrItemScanner = ({
       scanner.clear().then(() => {});
     };
   }, [isModalOpen, isScanning]);
-
-  //TODO: this sequence should be performed at the backend
-  const performAction = (action: IScenarioItemAction) => {
-    const userRole = game?.assignedRoles.find(
-      (role) => role.assignedEmail === auth.user?.email,
-    );
-
-    if (!userRole) {
-      setIsActionResultModalOpen(true);
-      setActionResultMessage("User is not assigned to this game.");
-
-      return;
-    }
-
-    const doesUserHaveEveryRequiredTag = () => {
-      return action.requiredTagsToSucceed.every((requiredTag) => {
-        return userRole.activeTags.some(
-          (userTag) => userTag.id === requiredTag.id,
-        );
-      });
-    };
-
-    let didActionSucceeded = doesUserHaveEveryRequiredTag();
-
-    const messageToDisplay = didActionSucceeded
-      ? action.messageOnSuccess
-      : action.messageOnFailure;
-    const tagsToRemove = didActionSucceeded
-      ? action.tagsToRemoveOnSuccess
-      : action.tagsToRemoveOnFailure;
-    const tagsToApply = didActionSucceeded
-      ? action.tagsToApplyOnSuccess
-      : action.tagsToApplyOnFailure;
-
-    setIsActionResultModalOpen(true);
-    setActionResultMessage(messageToDisplay);
-
-    let newUserTags = userRole.activeTags.filter((userTag) => {
-      return tagsToRemove.some((tagToRemove) => tagToRemove.id === userTag.id);
-    });
-
-    newUserTags.push(...tagsToApply);
-
-    userRole.activeTags = newUserTags;
-  };
 
   const createScenarioItemFromScannedData = () => {
     const scenarioItem = scenario?.items.find(
@@ -143,31 +96,7 @@ const QrItemScanner = ({
       const itemActions = scenarioItem.actions
         .filter((action) => doesUserHaveEveryRequiredTag(action))
         .map((action) => (
-          <Card
-            key={action.id}
-            className="w-full flex flex-col space-y-1 border-1"
-          >
-            <CardHeader>
-              <p>{action.name}</p>
-            </CardHeader>
-            <CardBody>
-              <p>{action.description}</p>
-            </CardBody>
-            <CardFooter className="flex justify-end">
-              <Button
-                color="primary"
-                variant="bordered"
-                onPress={() => {
-                  performAction(action);
-                }}
-              >
-                <FormattedMessage
-                  defaultMessage="Perform action"
-                  id="scanner.performAction"
-                />
-              </Button>
-            </CardFooter>
-          </Card>
+          <Action key={action.id} action={action} game={game} />
         ));
 
       itemActionsElement = (
@@ -270,36 +199,6 @@ const QrItemScanner = ({
     </Modal>
   );
 
-  const ActionResultModal = (
-    <Modal
-      isOpen={isActionResultModalOpen}
-      onOpenChange={(isOpen) => {
-        setIsActionResultModalOpen(isOpen);
-      }}
-    >
-      <ModalContent>
-        <ModalHeader>
-          <FormattedMessage
-            defaultMessage="Action result"
-            id="scanner.actionResult"
-          />
-        </ModalHeader>
-        <ModalBody>{actionResultMessage}</ModalBody>
-        <ModalFooter>
-          <Button
-            color="danger"
-            variant="bordered"
-            onPress={() => {
-              setIsActionResultModalOpen(false);
-            }}
-          >
-            <FormattedMessage defaultMessage="Close" id="common.close" />
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
-
   return (
     <>
       <Button
@@ -316,7 +215,6 @@ const QrItemScanner = ({
       </Button>
 
       {ScannerMenuModal}
-      {ActionResultModal}
     </>
   );
 };
