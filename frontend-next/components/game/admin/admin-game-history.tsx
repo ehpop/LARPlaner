@@ -122,7 +122,7 @@ const GameHistoryElement = ({
       timestamp: new Date(historyItem.timestamp).toString(),
       performerRoleId: historyItem.performerRoleId,
       targetItemId: historyItem.targetItemId,
-      success: historyItem.success,
+      success: `${historyItem.success}`,
       message: historyItem.message,
       appliedTags: historyItem.appliedTags
         .map((historyItem) => historyItem.value)
