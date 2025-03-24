@@ -1,3 +1,5 @@
+"use client";
+
 import { FormattedMessage, useIntl } from "react-intl";
 import { Card } from "@heroui/react";
 import { CardBody, CardHeader } from "@heroui/card";
@@ -6,10 +8,7 @@ import useGame from "@/hooks/use-game";
 import LoadingOverlay from "@/components/general/loading-overlay";
 import { IGameSession } from "@/types/game.types";
 import useEvent from "@/hooks/use-event";
-import MyCharacterModal from "@/components/game/my-character-modal";
-import ActionsModal from "@/components/game/actions-modal";
-import QrItemScanner from "@/components/game/qr-item-scanner";
-import UserGameHistory from "@/components/game/user-game-history";
+import AdminGameHistory from "@/components/game/admin/admin-game-history";
 
 const ActiveAdminGamePage = ({ params }: any) => {
   const intl = useIntl();
@@ -66,10 +65,8 @@ const ActiveAdminGameDisplay = ({ game }: { game: IGameSession }) => {
   const ActionMenuElement = (
     <div className="w-full flex justify-center">
       <div className="sm:w-3/5 w-4/5 flex flex-col justify-between space-y-3">
-        <MyCharacterModal game={game} />
-        <ActionsModal game={game} />
-        <QrItemScanner game={game} scenario={scenario} />
-        <UserGameHistory game={game} />
+        {/*<ManageCharacters game={game} scenario={scenario} />*/}
+        <AdminGameHistory game={game} />
       </div>
     </div>
   );

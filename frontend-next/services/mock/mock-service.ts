@@ -22,18 +22,21 @@ const events: IEventGetDTO[] = eventsList.map((event) => ({
   date: event.date.toDate().toISOString(),
 }));
 
-const scenariosUrl =
-  /\/scenarios\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
-const rolesUrl =
-  /\/roles\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
-const eventsUrl =
-  /\/events\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
-const gameSessionsUrl =
-  /\/game\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
-const gameHistoryUrl =
-  /\/game\/history\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
-const gameHistoryGameIdUrl =
-  /\/game\/history\/gameId\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
+const uuidv4Regex =
+  /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
+const emailRegex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
+
+const scenariosUrl = new RegExp(`/scenarios/${uuidv4Regex.source}`);
+const rolesUrl = new RegExp(`/roles/${uuidv4Regex.source}`);
+const eventsUrl = new RegExp(`/events/${uuidv4Regex.source}`);
+const gameSessionsUrl = new RegExp(`/game/${uuidv4Regex.source}`);
+const gameHistoryUrl = new RegExp(`/game/history/${uuidv4Regex.source}`);
+const gameHistoryGameIdUrl = new RegExp(
+  `/game/history/gameId/${uuidv4Regex.source}`,
+);
+const gameHistoryUserIdGameIdUrl = new RegExp(
+  `/game/history/userId/${emailRegex.source}/gameId/${uuidv4Regex.source}`,
+);
 
 export default function setupMock(api: AxiosInstance) {
   const mock = new MockAdapter(api);
@@ -270,6 +273,25 @@ function setupMockGameSessionsApi(mock: MockAdapter) {
 
     const gameHistory = mockGameActionLogs.filter(
       (gh) => gh.sessionId === gameId,
+    );
+
+    return gameHistory
+      ? [200, gameHistory]
+      : [404, { message: "Game history not found" }];
+  });
+
+  mock.onGet(gameHistoryUserIdGameIdUrl).reply((config) => {
+    const userId = config.url?.split("/userId/")[1].split("/")[0];
+    const gameId = config.url?.split("/").pop();
+
+    const game = mockGameSessions.find((gs) => gs.id === gameId);
+
+    const userRoleId = game?.assignedRoles.find(
+      (role) => role.assignedEmail === userId,
+    )?.scenarioRoleId;
+
+    const gameHistory = mockGameActionLogs.filter(
+      (gh) => gh.sessionId === gameId && gh.performerRoleId === userRoleId,
     );
 
     return gameHistory
