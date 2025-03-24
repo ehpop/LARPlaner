@@ -51,7 +51,7 @@ export default function FirebaseProvider({ children }: any) {
     const signInWithAuthProvider = (authProvider: AuthProvider) => {
       signInWithPopup(auth, authProvider)
         .then((_result) => {
-          router.push("/profile");
+          router.push("/user/profile");
         })
         .catch((error) => {
           if (error.code === "auth/account-exists-with-different-credential") {
@@ -69,7 +69,7 @@ export default function FirebaseProvider({ children }: any) {
     const signInUserWithEmail = (email: string, password: string) => {
       signInWithEmailAndPassword(auth, email, password)
         .then((_userCredential) => {
-          router.push("/profile");
+          router.push("/user/profile");
         })
         .catch((_error) => {});
     };

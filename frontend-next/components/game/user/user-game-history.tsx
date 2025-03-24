@@ -13,22 +13,26 @@ import { CardBody, CardHeader } from "@heroui/card";
 
 import { IGameActionLog, IGameSession } from "@/types/game.types";
 import gameService from "@/services/game.service";
+import { useAuth } from "@/providers/firebase-provider";
 
 const UserGameHistory = ({ game }: { game: IGameSession }) => {
+  const auth = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [gameHistory, setGameHistory] = useState<IGameActionLog[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isModalOpen) return;
+    if (!isModalOpen || !auth.user?.email) return;
 
-    gameService.getGameHistoryByGameId(game.id).then((response) => {
-      if (response.success) {
-        setGameHistory(response.data);
-      } else {
-        setError(response.data);
-      }
-    });
+    gameService
+      .getGameHistoryByGameIdAndUserId(auth.user?.email, game.id)
+      .then((response) => {
+        if (response.success) {
+          setGameHistory(response.data);
+        } else {
+          setError(response.data);
+        }
+      });
   }, [isModalOpen]);
 
   const UserGameHistoryModalElement = (
@@ -165,3 +169,5 @@ const GameHistoryLogElement = ({
     </Card>
   );
 };
+
+export { GameHistoryLogElement };

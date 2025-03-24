@@ -12,7 +12,7 @@ import { FormattedMessage } from "react-intl";
 import { IGameSession } from "@/types/game.types";
 import useUserEventData from "@/hooks/use-user-data";
 import { IScenarioAction } from "@/types/scenario.types";
-import Action from "@/components/game/action";
+import Action from "@/components/game/user/action";
 import { useAuth } from "@/providers/firebase-provider";
 
 const ActionsModal = ({ game }: { game: IGameSession }) => {

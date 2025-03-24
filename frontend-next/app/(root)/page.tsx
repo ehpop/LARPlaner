@@ -8,7 +8,7 @@ const Page = () => {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center space-y-3">
       <FormattedMessage defaultMessage="Home page" id="home.message" />
-      <Button as={Link} href={"/events"}>
+      <Button as={Link} href={"/user/events"}>
         Go to events
       </Button>
     </div>
