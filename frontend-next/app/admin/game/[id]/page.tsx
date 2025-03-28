@@ -9,6 +9,7 @@ import LoadingOverlay from "@/components/general/loading-overlay";
 import { IGameSession } from "@/types/game.types";
 import useEvent from "@/hooks/use-event";
 import AdminGameHistory from "@/components/game/admin/admin-game-history";
+import ManageCharacters from "@/components/game/admin/manage-characters";
 
 const ActiveAdminGamePage = ({ params }: any) => {
   const intl = useIntl();
@@ -65,7 +66,7 @@ const ActiveAdminGameDisplay = ({ game }: { game: IGameSession }) => {
   const ActionMenuElement = (
     <div className="w-full flex justify-center">
       <div className="sm:w-3/5 w-4/5 flex flex-col justify-between space-y-3">
-        {/*<ManageCharacters game={game} scenario={scenario} />*/}
+        <ManageCharacters event={event} gameId={game.id} />
         <AdminGameHistory game={game} />
       </div>
     </div>

@@ -446,6 +446,8 @@ export const mockGameRoleStates: IGameRoleState[] = possibleScenarioRoles.map(
     scenarioRoleId: role.id,
     assignedEmail:
       index === 0 ? `tomeqtk@gmail.com` : `player${index}@game.com`,
+    assignedUserID:
+      index === 0 ? "n5CR0S93LMYmFAQObo0pVoXgFg33" : `user-${index}`,
     actionHistory: [] as IGameActionLog[],
     activeTags:
       index === 0
