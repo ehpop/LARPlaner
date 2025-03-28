@@ -13,7 +13,7 @@ export const siteConfig = {
     ],
     user: [
       { label: "nav.home", href: "/" },
-      { label: "nav.events", href: "/events" },
+      { label: "nav.events", href: "/user/events" },
     ],
   },
   navMenuItems: {
@@ -26,7 +26,7 @@ export const siteConfig = {
     ],
     user: [
       { label: "nav.home", href: "/" },
-      { label: "nav.events", href: "/events" },
+      { label: "nav.events", href: "/user/events" },
     ],
   },
   links: {

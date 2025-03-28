@@ -76,7 +76,7 @@ const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
           if (key === "log out") handleLogOut();
         }}
       >
-        <DropdownItem key="profile" href="/profile" textValue="profile">
+        <DropdownItem key="profile" href="/user/profile" textValue="profile">
           <FormattedMessage defaultMessage="Profile" id="nav.dashboard" />
         </DropdownItem>
         <DropdownItem

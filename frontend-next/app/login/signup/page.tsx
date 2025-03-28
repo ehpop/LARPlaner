@@ -72,7 +72,7 @@ export default function SignUpPage() {
       });
 
       // handleLogIn(emailAuthProvider, email, password);
-      router.push("/profile");
+      router.push("/user/profile");
     } catch (error) {
       setError(
         intl.formatMessage({

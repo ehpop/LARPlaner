@@ -39,8 +39,8 @@ export type IGameActionLog = {
   targetItemId?: IScenarioItem["id"]; // If the action was on an item
   success: boolean; // Whether the action was successful
   appliedTags: ITag[]; // Tags applied due to this action
-  message: string; // Description of the outcome
   removedTags: ITag[]; // Tags removed due to this action
+  message: string; // Description of the outcome
 };
 
 export type IGameActionRequest = {

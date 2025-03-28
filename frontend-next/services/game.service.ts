@@ -21,6 +21,26 @@ class GameSessionService extends CrudService<
     super("/game", convertGetDtoToGame, convertGameToPostDto);
   }
 
+  async getGameHistoryByGameIdAndUserId(
+    userId: string,
+    gameId: IGameSession["id"],
+  ): Promise<Response<IGameActionLog[]>> {
+    return api
+      .get(`/game/history/userId/${userId}/gameId/${gameId}`)
+      .then((result) => {
+        return {
+          success: true,
+          data: result.data,
+        };
+      })
+      .catch((error) => {
+        return {
+          success: false,
+          data: error.message,
+        };
+      });
+  }
+
   async getGameHistoryByGameId(
     gameId: IGameSession["id"],
   ): Promise<Response<IGameActionLog[]>> {

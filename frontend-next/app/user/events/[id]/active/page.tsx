@@ -2,7 +2,7 @@
 
 import { FormattedMessage, useIntl } from "react-intl";
 import { Link } from "@heroui/link";
-import { Card } from "@heroui/react";
+import { Card, CardFooter } from "@heroui/react";
 import { CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 
@@ -105,25 +105,25 @@ const ActiveEventDisplay = ({
             />
           </p>
         </CardBody>
+        <CardFooter className="flex flex-row justify-between">
+          <Link href={`/user/game/${event.gameSessionId}`}>
+            <Button variant="bordered">
+              <FormattedMessage
+                defaultMessage="Go to game page"
+                id="events.id.active.goToGame"
+              />
+            </Button>
+          </Link>
+          <Link href={`/user/events/${event.id}/active/chat`}>
+            <Button variant="bordered">
+              <FormattedMessage
+                defaultMessage="Write to admins"
+                id="events.id.active.writeToAdmins"
+              />
+            </Button>
+          </Link>
+        </CardFooter>
       </Card>
-      <div className="w-3/5 flex flex-row justify-between">
-        <Link href={`/game/${event.gameSessionId}`}>
-          <Button variant="bordered">
-            <FormattedMessage
-              defaultMessage="Go to game page"
-              id="events.id.active.goToGame"
-            />
-          </Button>
-        </Link>
-        <Link href={`/events/${event.id}/active/chat`}>
-          <Button variant="bordered">
-            <FormattedMessage
-              defaultMessage="Write to admins"
-              id="events.id.active.writeToAdmins"
-            />
-          </Button>
-        </Link>
-      </div>
     </div>
   );
 };

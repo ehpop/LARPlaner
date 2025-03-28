@@ -8,10 +8,10 @@ import LoadingOverlay from "@/components/general/loading-overlay";
 import { IGameSession } from "@/types/game.types";
 import useGame from "@/hooks/use-game";
 import useEvent from "@/hooks/use-event";
-import QrItemScanner from "@/components/game/qr-item-scanner";
-import MyCharacterModal from "@/components/game/my-character-modal";
-import ActionsModal from "@/components/game/actions-modal";
-import UserGameHistory from "@/components/game/user-game-history";
+import QrItemScanner from "@/components/game/user/qr-item-scanner";
+import MyCharacterModal from "@/components/game/user/my-character-modal";
+import ActionsModal from "@/components/game/user/actions-modal";
+import UserGameHistory from "@/components/game/user/user-game-history";
 
 const ActiveGamePage = ({ params }: any) => {
   const intl = useIntl();
@@ -67,7 +67,7 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
 
   const ActionMenuElement = (
     <div className="w-full flex justify-center">
-      <div className="w-3/5 flex flex-col justify-between space-y-3">
+      <div className="sm:w-3/5 w-4/5 flex flex-col justify-between space-y-3">
         <MyCharacterModal game={game} />
         <ActionsModal game={game} />
         <QrItemScanner game={game} scenario={scenario} />

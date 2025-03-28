@@ -17,7 +17,7 @@ import { CardBody, CardHeader } from "@heroui/card";
 import { IGameSession } from "@/types/game.types";
 import { IScenario, IScenarioItemAction } from "@/types/scenario.types";
 import { useAuth } from "@/providers/firebase-provider";
-import Action from "@/components/game/action";
+import Action from "@/components/game/user/action";
 
 const QrItemScanner = ({
   game,
