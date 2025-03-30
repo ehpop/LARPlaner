@@ -1,5 +1,5 @@
 import { FormattedMessage, useIntl } from "react-intl";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Button,
   Dropdown,
@@ -12,6 +12,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -26,6 +27,7 @@ import { IGameRoleState, IGameSession } from "@/types/game.types";
 import { IEvent } from "@/types/event.types";
 import InputTagsWithTable from "@/components/input-tags-with-table";
 import gameService from "@/services/game.service";
+import { ITag } from "@/types/tags.types";
 
 const ManageCharacters = ({
   gameId,
@@ -35,59 +37,50 @@ const ManageCharacters = ({
   event: IEvent;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
   const [error, setError] = useState<string | null>(null);
   const [game, setGame] = useState<IGameSession | null>(null);
 
   useEffect(() => {
-    if (!isModalOpen) return;
+    if (!isModalOpen || !gameId) {
+      setGame(null);
+      setError(null);
 
-    gameService.getById(gameId).then((response) => {
-      if (response.success) {
-        setGame(response.data);
-      } else {
-        setError(response.data);
-      }
-    });
-  }, [isModalOpen]);
+      return;
+    }
 
-  const ManageCharactersModalElement = (
-    <Modal
-      isOpen={isModalOpen}
-      placement="center"
-      scrollBehavior="inside"
-      size="full"
-      onOpenChange={(isOpen) => setIsModalOpen(isOpen)}
-    >
-      <ModalContent>
-        <ModalHeader>
-          <FormattedMessage
-            defaultMessage="Manage characters"
-            id="game.manageCharacters.modal.header"
-          />
-        </ModalHeader>
-        <ModalBody>
-          <div>
-            {game === null || error ? (
-              <p>{error}</p>
-            ) : (
-              <ManageCharactersForm event={event} initialGame={game} />
-            )}
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            color="danger"
-            variant="bordered"
-            onPress={() => {
-              setIsModalOpen(false);
-            }}
-          >
-            <FormattedMessage defaultMessage="Close" id="common.close" />
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
+    setIsLoading(true);
+    setError(null);
+    gameService
+      .getById(gameId)
+      .then((response) => {
+        if (response.success) {
+          setGame(response.data);
+        } else {
+          setError(response.data ?? "Failed to load game data.");
+          toast(response.data ?? "Failed to load game data.", {
+            type: "error",
+          });
+          setGame(null);
+        }
+      })
+      .catch((err) => {
+        setError(err);
+        toast(err, { type: "error" });
+        setGame(null);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [isModalOpen, gameId]); // Dependency array
+
+  const handleGameUpdate = useCallback((updatedGame: IGameSession) => {
+    setGame(updatedGame);
+  }, []);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <>
@@ -102,7 +95,58 @@ const ManageCharacters = ({
           id="game.manageCharacters.button"
         />
       </Button>
-      {ManageCharactersModalElement}
+
+      <Modal
+        isOpen={isModalOpen}
+        placement="center"
+        scrollBehavior="inside"
+        size="full"
+        onClose={handleCloseModal}
+        onOpenChange={setIsModalOpen}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>
+                <FormattedMessage
+                  defaultMessage="Manage characters"
+                  id="game.manageCharacters.modal.header"
+                />
+              </ModalHeader>
+              <ModalBody>
+                {isLoading && <Spinner label="Loading game data..." />}
+                {error && !isLoading && (
+                  <p className="text-danger">
+                    <FormattedMessage
+                      defaultMessage="Error loading game data: {error}"
+                      id="game.manageCharacters.error"
+                      values={{ error }}
+                    />
+                  </p>
+                )}
+                {!isLoading && !error && game && (
+                  <ManageCharactersForm
+                    event={event}
+                    game={game}
+                    onGameUpdate={handleGameUpdate}
+                  />
+                )}
+                {!isLoading && !error && !game && (
+                  <FormattedMessage
+                    defaultMessage="No game data loaded."
+                    id="game.manageCharacters.noGameData"
+                  />
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="bordered" onPress={onClose}>
+                  <FormattedMessage defaultMessage="Close" id="common.close" />
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 };
@@ -111,59 +155,71 @@ export default ManageCharacters;
 
 const ManageCharactersForm = ({
   event,
-  initialGame,
+  game,
+  onGameUpdate,
 }: {
   event: IEvent;
-  initialGame: IGameSession;
+  game: IGameSession;
+  onGameUpdate: (updatedGame: IGameSession) => void;
 }) => {
   const intl = useIntl();
   const router = useRouter();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditingModalOpen, setIsEditingModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<IGameRoleState | null>(null);
-  const [game, setGame] = useState<IGameSession>(initialGame);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const openModal = (role: IGameRoleState) => {
+  const [editingTags, setEditingTags] = useState<ITag[]>([]);
+
+  const openEditModal = (role: IGameRoleState) => {
+    setEditingTags(role.activeTags);
     setSelectedRole(role);
-    setIsModalOpen(true);
+    setIsEditingModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeEditModal = () => {
+    setIsEditingModalOpen(false);
     setSelectedRole(null);
+    setEditingTags([]);
+    setIsSaving(false);
   };
 
-  const onSaveActiveRole = () => {
-    gameService
-      .update(game.id, {
-        ...game,
-        assignedRoles: game.assignedRoles.map((role) => {
-          if (
-            selectedRole &&
-            role.scenarioRoleId === selectedRole.scenarioRoleId
-          ) {
-            return selectedRole;
-          }
+  const handleSaveRoleTags = () => {
+    if (!selectedRole) return;
 
-          return role;
-        }),
-      } as IGameSession)
+    setIsSaving(true);
+
+    const updatedRole = {
+      ...selectedRole,
+      activeTags: editingTags,
+    };
+
+    const updatedGameData = {
+      ...game,
+      assignedRoles: game.assignedRoles.map((role) =>
+        role.scenarioRoleId === updatedRole.scenarioRoleId ? updatedRole : role,
+      ),
+    } as IGameSession;
+
+    gameService
+      .update(game.id, updatedGameData)
       .then((response) => {
         if (response.success) {
-          toast("Role tags updated successfully", {
-            type: "success",
-          });
-
-          setGame(response.data);
+          toast("Role tags updated successfully", { type: "success" });
+          onGameUpdate(response.data);
+          closeEditModal();
         } else {
-          toast(response.data, {
+          toast(response.data ?? "Failed to update role tags.", {
             type: "error",
           });
         }
+      })
+      .catch((err) => {
+        toast(err, { type: "error" });
+      })
+      .finally(() => {
+        setIsSaving(false);
       });
-
-    setIsModalOpen(false);
-    setSelectedRole(null);
   };
 
   return (
@@ -195,35 +251,42 @@ const ManageCharactersForm = ({
             />
           </TableColumn>
         </TableHeader>
-        <TableBody>
-          {game.assignedRoles.map((role) => (
+        <TableBody
+          emptyContent={"No roles assigned."}
+          items={game.assignedRoles}
+        >
+          {(role) => (
             <TableRow key={role.scenarioRoleId}>
               <TableCell>{role.scenarioRoleId}</TableCell>
               <TableCell>{role.activeTags.length}</TableCell>
-              <TableCell>{role.assignedEmail}</TableCell>
+              <TableCell>{role.assignedEmail ?? "N/A"}</TableCell>
               <TableCell>
                 <Dropdown>
                   <DropdownTrigger>
-                    <Button variant="bordered" onPress={() => openModal(role)}>
+                    <Button size="sm" variant="bordered">
                       <FormattedMessage
                         defaultMessage="Actions"
-                        id="game.manageCharacters.actions"
+                        id="game.manageCharacters.actions.button"
                       />
                     </Button>
                   </DropdownTrigger>
-                  <DropdownMenu>
-                    <DropdownSection>
+                  <DropdownMenu
+                    aria-label={`Actions for role ${role.scenarioRoleId}`}
+                    disabledKeys={role.assignedUserID ? [] : ["message-player"]}
+                    variant="bordered"
+                  >
+                    <DropdownSection title="Role Actions">
                       <DropdownItem
-                        key="role tags"
-                        onPress={() => openModal(role)}
+                        key="role-tags"
+                        onPress={() => openEditModal(role)}
                       >
                         <FormattedMessage
-                          defaultMessage="Role Tags"
-                          id="game.manageCharacters.roleTags"
+                          defaultMessage="Edit Role Tags"
+                          id="game.manageCharacters.editRoleTags"
                         />
                       </DropdownItem>
                       <DropdownItem
-                        key="message player"
+                        key="message-player"
                         onPress={() =>
                           router.push(
                             `/admin/events/${event.id}/active/chats/${event.id}-${role.assignedUserID}`,
@@ -240,59 +303,71 @@ const ManageCharactersForm = ({
                 </Dropdown>
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
 
       <Modal
-        isOpen={isModalOpen}
+        isOpen={isEditingModalOpen}
         scrollBehavior="inside"
         size="4xl"
-        onOpenChange={(isOpen) => {
-          setIsModalOpen(isOpen);
-        }}
+        onClose={closeEditModal}
+        onOpenChange={setIsEditingModalOpen}
       >
         <ModalContent>
-          <ModalHeader>Role Tags</ModalHeader>
-          <ModalBody>
-            {!selectedRole && (
-              <FormattedMessage
-                defaultMessage="No role selected"
-                id="game.manageCharacters.noRoleSelected"
-              />
-            )}
-            {selectedRole && (
-              <InputTagsWithTable
-                addedTags={selectedRole.activeTags}
-                inputLabel={intl.formatMessage({
-                  defaultMessage: "Add active tag",
-                  id: "input-with-chips.addTag",
-                })}
-                setAddedTags={(tags) => {
-                  setSelectedRole({
-                    ...selectedRole,
-                    activeTags: tags,
-                  });
-                }}
-              />
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <div className="flex flex-row space-x-3">
-              <Button color="danger" variant="bordered" onPress={closeModal}>
-                <FormattedMessage defaultMessage="Close" id="common.close" />
-              </Button>
-              <Button
-                color="success"
-                variant="solid"
-                onPress={() => {
-                  onSaveActiveRole();
-                }}
-              >
-                <FormattedMessage defaultMessage="Save" id="common.save" />
-              </Button>
-            </div>
-          </ModalFooter>
+          {(onClose) => (
+            <>
+              <ModalHeader>
+                <FormattedMessage
+                  defaultMessage="Edit Tags for Role {roleId}"
+                  id="game.manageCharacters.editTags.header"
+                  values={{ roleId: selectedRole?.scenarioRoleId ?? "..." }}
+                />
+              </ModalHeader>
+              <ModalBody>
+                {selectedRole ? (
+                  <InputTagsWithTable
+                    addedTags={editingTags}
+                    inputLabel={intl.formatMessage({
+                      defaultMessage: "Add active tag",
+                      id: "input-with-chips.addTag",
+                    })}
+                    setAddedTags={setEditingTags}
+                  />
+                ) : (
+                  <FormattedMessage
+                    defaultMessage="No role selected for editing."
+                    id="game.manageCharacters.noRoleSelectedForEdit"
+                  />
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="danger"
+                  isDisabled={isSaving}
+                  variant="bordered"
+                  onPress={onClose}
+                >
+                  <FormattedMessage
+                    defaultMessage="Cancel"
+                    id="common.cancel"
+                  />
+                </Button>
+                <Button
+                  color="success"
+                  isDisabled={isSaving || !selectedRole}
+                  isLoading={isSaving}
+                  variant="solid"
+                  onPress={handleSaveRoleTags}
+                >
+                  <FormattedMessage
+                    defaultMessage="Save Changes"
+                    id="common.saveChanges"
+                  />
+                </Button>
+              </ModalFooter>
+            </>
+          )}
         </ModalContent>
       </Modal>
     </>
