@@ -75,7 +75,7 @@ const ManageCharacters = ({
       .finally(() => {
         setIsLoading(false);
       });
-  }, [isModalOpen, gameId]); // Dependency array
+  }, [isModalOpen, gameId]);
 
   const handleGameUpdate = useCallback((updatedGame: IGameSession) => {
     setGame(updatedGame);
@@ -218,7 +218,7 @@ const ManageCharactersForm = ({
         }
       })
       .catch((err) => {
-        showErrorToastWithTimeout(err);
+          showErrorToastWithTimeout(err);
       })
       .finally(() => {
         setIsSaving(false);
