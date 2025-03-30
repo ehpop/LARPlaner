@@ -44,7 +44,6 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
       timestamp: new Date(historyItem.timestamp).toLocaleString(intl.locale),
       performerRoleId: historyItem.performerRoleId,
       targetItemId: historyItem.targetItemId,
-      // Improved Boolean Formatting
       success: historyItem.success
         ? intl.formatMessage({ defaultMessage: "Yes", id: "common.yes" })
         : intl.formatMessage({ defaultMessage: "No", id: "common.no" }),

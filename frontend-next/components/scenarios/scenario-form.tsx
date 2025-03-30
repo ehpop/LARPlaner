@@ -1,7 +1,6 @@
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
@@ -15,6 +14,12 @@ import scenariosService from "@/services/scenarios.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
 import { ItemActionsForm } from "@/components/scenarios/item-actions-form";
 import InputTagsWithTable from "@/components/input-tags-with-table";
+import {
+  showErrorToast,
+  showErrorToastWithTimeout,
+  showSuccessToast,
+  showSuccessToastWithTimeout,
+} from "@/utils/toast";
 
 export default function ScenarioForm({
   initialScenario,
@@ -107,18 +112,14 @@ export default function ScenarioForm({
       .save(scenario)
       .then((result) => {
         if (result.success) {
-          toast("Scenario saved successfully", {
-            type: "success",
-          });
+          showSuccessToast("Scenario saved successfully");
           router.push("/admin/scenarios");
         } else {
-          toast(result.data, {
-            type: "error",
-          });
+          showErrorToast(result.data);
         }
       })
       .catch((error) => {
-        toast(error, { type: "error" });
+        showErrorToast(error);
       })
       .finally(() => {
         setIsSaving(false);
@@ -135,20 +136,16 @@ export default function ScenarioForm({
       .update(scenario.id, scenario)
       .then((result) => {
         if (result.success) {
-          toast("Scenario saved successfully", {
-            type: "success",
-          });
+          showSuccessToastWithTimeout("Scenario saved successfully", 3000);
           setScenario(result.data);
           setScenarioBeforeChanges(result.data);
           setIsBeingEdited(false);
         } else {
-          toast(result.data, {
-            type: "error",
-          });
+          showErrorToastWithTimeout(result.data);
         }
       })
       .catch((error) => {
-        toast(error, { type: "error" });
+        showErrorToastWithTimeout(error);
       })
       .finally(() => {
         setIsSaving(false);
@@ -165,18 +162,14 @@ export default function ScenarioForm({
       .delete(scenario.id)
       .then((result) => {
         if (result.success) {
-          toast("Scenario deleted successfully", {
-            type: "success",
-          });
+          showSuccessToastWithTimeout("Scenario deleted successfully");
           router.push("/admin/scenarios");
         } else {
-          toast(result.data, {
-            type: "error",
-          });
+          showErrorToastWithTimeout(result.data);
         }
       })
       .catch((error) => {
-        toast(error, { type: "error" });
+        showErrorToastWithTimeout(error);
       })
       .finally(() => {
         setIsDeleting(false);

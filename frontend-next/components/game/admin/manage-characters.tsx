@@ -21,13 +21,16 @@ import {
   TableRow,
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 
 import { IGameRoleState, IGameSession } from "@/types/game.types";
 import { IEvent } from "@/types/event.types";
 import InputTagsWithTable from "@/components/input-tags-with-table";
 import gameService from "@/services/game.service";
 import { ITag } from "@/types/tags.types";
+import {
+  showErrorToastWithTimeout,
+  showSuccessToastWithTimeout,
+} from "@/utils/toast";
 
 const ManageCharacters = ({
   gameId,
@@ -58,21 +61,21 @@ const ManageCharacters = ({
           setGame(response.data);
         } else {
           setError(response.data ?? "Failed to load game data.");
-          toast(response.data ?? "Failed to load game data.", {
-            type: "error",
-          });
+          showErrorToastWithTimeout(
+            response.data ?? "Failed to load game data.",
+          );
           setGame(null);
         }
       })
       .catch((err) => {
         setError(err);
-        toast(err, { type: "error" });
+        showErrorToastWithTimeout(err);
         setGame(null);
       })
       .finally(() => {
         setIsLoading(false);
       });
-  }, [isModalOpen, gameId]); // Dependency array
+  }, [isModalOpen, gameId]);
 
   const handleGameUpdate = useCallback((updatedGame: IGameSession) => {
     setGame(updatedGame);
@@ -205,17 +208,17 @@ const ManageCharactersForm = ({
       .update(game.id, updatedGameData)
       .then((response) => {
         if (response.success) {
-          toast("Role tags updated successfully", { type: "success" });
+          showSuccessToastWithTimeout("Role tags updated successfully");
           onGameUpdate(response.data);
           closeEditModal();
         } else {
-          toast(response.data ?? "Failed to update role tags.", {
-            type: "error",
-          });
+          showErrorToastWithTimeout(
+            response.data ?? "Failed to update role tags.",
+          );
         }
       })
       .catch((err) => {
-        toast(err, { type: "error" });
+          showErrorToastWithTimeout(err);
       })
       .finally(() => {
         setIsSaving(false);
