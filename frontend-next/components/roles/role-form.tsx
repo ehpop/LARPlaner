@@ -2,7 +2,6 @@ import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 
 import { emptyRole } from "@/services/mock/mock-data";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
@@ -11,6 +10,10 @@ import RoleTagsForm from "@/components/roles/role-tags-form";
 import { IRole } from "@/types/roles.types";
 import rolesService from "@/services/roles.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
+import {
+  showErrorToastWithTimeout,
+  showSuccessToastWithTimeout,
+} from "@/utils/toast";
 
 export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const intl = useIntl();
@@ -67,15 +70,15 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
       .save(role)
       .then((result) => {
         if (result.success) {
-          toast("Role saved successfully", { type: "success" });
+          showSuccessToastWithTimeout("Role saved successfully");
           router.push("/admin/roles");
         } else {
-          toast(result.data, {
-            type: "error",
-          });
+          showErrorToastWithTimeout(result.data);
         }
       })
-      .catch((error) => toast(error))
+      .catch((error) => {
+        showErrorToastWithTimeout(error);
+      })
       .finally(() => {
         setIsSaving(false);
       });
@@ -83,7 +86,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
 
   const handleSaveEditedRole = () => {
     if (!role.id) {
-      return toast("Role ID is missing", { type: "error" });
+      return showErrorToastWithTimeout("Role ID is missing");
     }
 
     setIsSaving(true);
@@ -92,17 +95,17 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
       .update(role.id, role)
       .then((result) => {
         if (result.success) {
-          toast("Role updated successfully", { type: "success" });
+          showSuccessToastWithTimeout("Role saved successfully");
           setIsBeingEdited(false);
           setRole(result.data);
           setRoleBeforeEdit(result.data);
         } else {
-          toast(result.data, {
-            type: "error",
-          });
+          showErrorToastWithTimeout(result.data);
         }
       })
-      .catch((error) => toast(error))
+      .catch((error) => {
+        showErrorToastWithTimeout(error);
+      })
       .finally(() => {
         setIsSaving(false);
       });
@@ -118,15 +121,15 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
       .delete(role.id)
       .then((result) => {
         if (result.success) {
-          toast("Role deleted successfully", { type: "success" });
+          showSuccessToastWithTimeout("Role deleted successfully");
           router.push("/admin/roles");
         } else {
-          toast(result.data, {
-            type: "error",
-          });
+          showErrorToastWithTimeout(result.data);
         }
       })
-      .catch((error) => toast(error))
+      .catch((error) => {
+        showErrorToastWithTimeout(error);
+      })
       .finally(() => {
         setIsDeleting(false);
       });

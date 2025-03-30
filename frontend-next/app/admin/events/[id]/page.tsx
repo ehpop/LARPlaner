@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 import EventForm from "@/components/events/event-form";
 import eventsService from "@/services/events.service";
 import { IEvent } from "@/types/event.types";
 import LoadingOverlay from "@/components/general/loading-overlay";
+import { showErrorToastWithTimeout } from "@/utils/toast";
 
 export default function EventPage({ params }: any) {
   const [eventData, setEventData] = useState<IEvent>();
@@ -22,9 +22,7 @@ export default function EventPage({ params }: any) {
           setEventData(response.data);
         } else {
           setError("Failed to fetch event");
-          toast(response.data, {
-            type: "error",
-          });
+          showErrorToastWithTimeout("Failed to fetch event");
         }
       } catch (err) {
         setError("An error occurred while fetching event");

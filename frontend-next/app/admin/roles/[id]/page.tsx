@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 import { IRole } from "@/types/roles.types";
 import RolesService from "@/services/roles.service";
 import RoleForm from "@/components/roles/role-form";
 import LoadingOverlay from "@/components/general/loading-overlay";
+import { showErrorToastWithTimeout } from "@/utils/toast";
 
 export default function RolePage({ params }: any) {
   const [roleData, setRoleData] = useState<IRole>();
@@ -22,9 +22,7 @@ export default function RolePage({ params }: any) {
           setRoleData(response.data);
         } else {
           setError("Failed to fetch role");
-          toast(response.data, {
-            type: "error",
-          });
+          showErrorToastWithTimeout("Failed to fetch role");
         }
       } catch (err) {
         setError("An error occurred while fetching role");

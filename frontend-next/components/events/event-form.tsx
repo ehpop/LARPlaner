@@ -17,7 +17,6 @@ import {
   ZonedDateTime,
 } from "@internationalized/date";
 import { Link } from "@heroui/link";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
 import {
@@ -32,6 +31,10 @@ import { IEvent } from "@/types/event.types";
 import eventsService from "@/services/events.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
 import { isValidEventDate, setTimeOnDate } from "@/utils/date-time";
+import {
+  showErrorToastWithTimeout,
+  showSuccessToastWithTimeout,
+} from "@/utils/toast";
 
 export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const intl = useIntl();
@@ -80,20 +83,14 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
       .save(event)
       .then((response) => {
         if (response.success) {
-          toast("Event saved", {
-            type: "success",
-          });
+          showSuccessToastWithTimeout("Event saved successfully");
           router.push("/admin/events");
         } else {
-          toast(response.data, {
-            type: "error",
-          });
+          showErrorToastWithTimeout(response.data);
         }
       })
       .catch((error) => {
-        toast(error, {
-          type: "error",
-        });
+        showErrorToastWithTimeout(error);
       })
       .finally(() => {
         setIsSaving(false);
@@ -110,22 +107,16 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
       .update(event.id, event)
       .then((response) => {
         if (response.success) {
-          toast("Event updated", {
-            type: "success",
-          });
+          showSuccessToastWithTimeout("Event saved successfully");
           setEvent(response.data);
           setEventBeforeChanges(response.data);
           setIsBeingEdited(false);
         } else {
-          toast(response.data, {
-            type: "error",
-          });
+          showErrorToastWithTimeout(response.data);
         }
       })
       .catch((error) => {
-        toast(error, {
-          type: "error",
-        });
+        showErrorToastWithTimeout(error);
       })
       .finally(() => {
         setIsSaving(false);
@@ -147,20 +138,14 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
       .delete(event.id)
       .then((response) => {
         if (response.success) {
-          toast("Event deleted successfully", {
-            type: "success",
-          });
+          showSuccessToastWithTimeout("Event deleted successfully");
           router.push("/admin/events");
         } else {
-          toast(response.data, {
-            type: "error",
-          });
+          showErrorToastWithTimeout(response.data);
         }
       })
       .catch((error) => {
-        toast(error, {
-          type: "error",
-        });
+        showErrorToastWithTimeout(error);
       })
       .finally(() => {
         setIsDeleting(false);
