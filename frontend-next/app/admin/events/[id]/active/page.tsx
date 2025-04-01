@@ -4,6 +4,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Link } from "@heroui/link";
 import { Button, Card, CardFooter } from "@heroui/react";
 import { CardBody, CardHeader } from "@heroui/card";
+import React from "react";
 
 import { IEvent } from "@/types/event.types";
 import { IScenario } from "@/types/scenario.types";
@@ -11,8 +12,10 @@ import LoadingOverlay from "@/components/general/loading-overlay";
 import useEvent from "@/hooks/use-event";
 
 const ActiveEventAdminPage = ({ params }: any) => {
+  const resolvedParams = React.use(params) as { id: string };
+  const eventId = resolvedParams.id;
   const intl = useIntl();
-  const { event, scenario, loading } = useEvent(params.id);
+  const { event, scenario, loading } = useEvent(eventId);
   const allDataLoaded = event && scenario;
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormattedMessage, useIntl } from "react-intl";
+import React from "react";
 
 import useUserEventData from "@/hooks/use-user-data";
 import LoadingOverlay from "@/components/general/loading-overlay";
@@ -9,9 +10,12 @@ import { IScenario, IScenarioRole } from "@/types/scenario.types";
 import { IRole } from "@/types/roles.types";
 
 const HistoricEventPage = ({ params }: any) => {
+  const resolvedParams = React.use(params) as { id: string };
+  const eventId = resolvedParams.id;
+
   const intl = useIntl();
   const { scenario, loading, event, userScenarioRole, userRole } =
-    useUserEventData({ id: params.id });
+    useUserEventData({ id: eventId });
 
   const allDataLoaded = event && scenario && userScenarioRole && userRole;
 
