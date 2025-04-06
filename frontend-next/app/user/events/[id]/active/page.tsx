@@ -5,6 +5,7 @@ import { Link } from "@heroui/link";
 import { Card, CardFooter } from "@heroui/react";
 import { CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
+import React from "react";
 
 import useUserEventData from "@/hooks/use-user-data";
 import LoadingOverlay from "@/components/general/loading-overlay";
@@ -13,9 +14,12 @@ import { IScenario } from "@/types/scenario.types";
 import { IRole } from "@/types/roles.types";
 
 const ActiveEventPage = ({ params }: any) => {
+  const resolvedParams = React.use(params) as { id: string };
+  const eventId = resolvedParams.id;
+
   const intl = useIntl();
   const { scenario, loading, event, userRole } = useUserEventData({
-    id: params.id,
+    id: eventId,
   });
 
   const allDataLoaded = event && scenario && userRole;

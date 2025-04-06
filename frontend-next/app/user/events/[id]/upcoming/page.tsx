@@ -10,9 +10,12 @@ import { IRole } from "@/types/roles.types";
 import useUserEventData from "@/hooks/use-user-data";
 
 const UpcomingEventPage = ({ params }: any) => {
+  const resolvedParams = React.use(params) as { id: string };
+  const eventId = resolvedParams.id;
+
   const intl = useIntl();
   const { scenario, loading, event, userScenarioRole, userRole } =
-    useUserEventData({ id: params.id });
+    useUserEventData({ id: eventId });
 
   const allDataLoaded = event && scenario && userScenarioRole && userRole;
 
@@ -58,22 +61,47 @@ const UpcomingEventDisplay = ({
 }) => {
   return (
     <div className="w-full flex-col justify-center">
-      <p>Upcoming Event Page</p>
+      <p>
+        <FormattedMessage
+          defaultMessage="Upcoming Event Page"
+          id="events.page.upcoming.title"
+        />
+      </p>
       <div className="flex-col space-y-5 border-1 p-3">
         <div>
-          <p>Event: </p>
+          <p>
+            <FormattedMessage
+              defaultMessage="Event: "
+              id="events.page.upcoming.event"
+            />
+          </p>
           <p>{event.name}</p>
         </div>
         <div>
-          <p>Scenario: </p>
+          <p>
+            <FormattedMessage
+              defaultMessage="Scenario: "
+              id="events.page.upcoming.scenario"
+            />
+          </p>
           <p>{scenario.name}</p>
         </div>
         <div>
-          <p>User Scenario Role: </p>
+          <p>
+            <FormattedMessage
+              defaultMessage="User Scenario Role: "
+              id="events.page.upcoming.userScenarioRole"
+            />
+          </p>
           <p>{userScenarioRole.descriptionForOwner}</p>
         </div>
         <div>
-          <p>User Role: </p>
+          <p>
+            <FormattedMessage
+              defaultMessage="User Role: "
+              id="events.page.upcoming.userRole"
+            />
+          </p>
           <p>{userRole.name}</p>
         </div>
       </div>

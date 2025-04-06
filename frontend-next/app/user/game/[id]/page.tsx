@@ -3,6 +3,7 @@
 import { FormattedMessage, useIntl } from "react-intl";
 import { Card } from "@heroui/react";
 import { CardBody, CardHeader } from "@heroui/card";
+import React from "react";
 
 import LoadingOverlay from "@/components/general/loading-overlay";
 import { IGameSession } from "@/types/game.types";
@@ -14,9 +15,12 @@ import ActionsModal from "@/components/game/user/actions-modal";
 import UserGameHistory from "@/components/game/user/user-game-history";
 
 const ActiveGamePage = ({ params }: any) => {
+  const resolvedParams = React.use(params) as { id: string };
+  const gameId = resolvedParams.id;
+
   const intl = useIntl();
   const { game, loading } = useGame({
-    id: params.id,
+    id: gameId,
   });
 
   const allDataLoaded = game && !loading;
