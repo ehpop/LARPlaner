@@ -9,7 +9,7 @@ import {
   Textarea,
   useDisclosure,
 } from "@heroui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   getLocalTimeZone,
@@ -19,11 +19,7 @@ import {
 import { Link } from "@heroui/link";
 import { useRouter } from "next/navigation";
 
-import {
-  emptyEvent,
-  getScenarioById,
-  possibleScenarios,
-} from "@/services/mock/mock-data";
+import { emptyEvent } from "@/services/mock/mock-data";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import EventAssignRolesForm from "@/components/events/event-assign-roles-form";
@@ -35,6 +31,8 @@ import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
+import { IScenario } from "@/types/scenario.types";
+import scenariosService from "@/services/scenarios.service";
 
 export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const intl = useIntl();
@@ -44,11 +42,36 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const [event, setEvent] = useState(
     isNewEvent ? emptyEvent : { ...initialEvent },
   );
+  const [selectedScenario, setSelectedScenario] = useState<IScenario>();
   const [eventBeforeChanges, setEventBeforeChanges] = useState(event);
   const [isBeingEdited, setIsBeingEdited] = useState(false);
   const [showAssignRoles, setShowAssignRoles] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [allScenarios, setAllScenarios] = useState<IScenario[]>([]);
+
+  useEffect(() => {
+    scenariosService
+      .getAll()
+      .then((res) => {
+        if (res.success) {
+          setAllScenarios(res.data);
+
+          if (event.scenarioId) {
+            const foundScenario = res.data.find(
+              (s) => s.id === event.scenarioId,
+            );
+
+            if (foundScenario) {
+              setSelectedScenario(foundScenario);
+            }
+          }
+        }
+      })
+      .catch((error) => showErrorToastWithTimeout(error))
+      .finally(() => setIsLoading(false));
+  }, []);
 
   const [touched, setTouched] = useState({
     name: false,
@@ -345,29 +368,48 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
           id: "events.page.display.selectScenario",
           defaultMessage: "Select a scenario...",
         })}
-        selectedKeys={event?.scenarioId ? [String(event.scenarioId)] : []}
+        selectedKeys={event?.scenarioId ? [event.scenarioId] : []}
         size="lg"
         variant="underlined"
-        onChange={(e) => {
-          const scenarioId = e.target.value;
-          const scenario = getScenarioById(scenarioId); //TODO: fetch using API
+        onSelectionChange={async (e) => {
+          const scenarioId = e.anchorKey;
 
-          setEvent({
-            ...event,
-            scenarioId: scenarioId,
-            assignedRoles: scenario.roles.map((role) => ({
-              scenarioRoleId: role.id,
-              assignedEmail: "",
-            })),
-          });
+          if (!scenarioId) {
+            return;
+          }
+
+          const getScenario = async (id: string) => {
+            const response = await scenariosService.getById(id);
+
+            if (response.success) {
+              return response.data;
+            }
+
+            return null;
+          };
+
+          const scenario = await getScenario(scenarioId);
+
+          if (scenario) {
+            setSelectedScenario(scenario);
+            setEvent({
+              ...event,
+              scenarioId: scenarioId,
+              assignedRoles: scenario.roles.map((role) => ({
+                scenarioRoleId: role.id as string,
+                assignedEmail: "",
+              })),
+            });
+          }
+
           setTouched({
             ...touched,
             scenarioId: true,
           });
         }}
       >
-        {possibleScenarios.map((scenario) => (
-          <SelectItem key={String(scenario.id)}>{scenario.name}</SelectItem>
+        {allScenarios.map((scenario) => (
+          <SelectItem key={scenario.id}>{scenario.name}</SelectItem>
         ))}
       </Select>
       <div className="flex flex-row sm:space-x-3 space-x-1">
@@ -455,6 +497,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
         <EventAssignRolesForm
           event={event}
           isBeingEdited={isNewEvent || isBeingEdited}
+          scenario={selectedScenario}
           setEvent={setEvent}
         />
       )}
@@ -496,7 +539,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
 
   return (
     <LoadingOverlay
-      isLoading={isSaving || isDeleting}
+      isLoading={isSaving || isDeleting || isLoading}
       label={isSaving ? "Saving event..." : "Deleting event..."}
     >
       {form}

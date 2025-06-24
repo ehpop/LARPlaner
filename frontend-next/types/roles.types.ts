@@ -7,7 +7,7 @@ import { IGetDTO, IPostDTO } from "@/types/dto.types";
 export type IRolePostDTO = IPostDTO & {
   name: string;
   description: string;
-  tags: ITag[];
+  tags: string[];
 };
 
 /**
@@ -20,7 +20,7 @@ export type IRoleGetDTO = IGetDTO & {
 };
 
 export type IRole = {
-  id: string | null;
+  id?: string;
   name: string;
   description: string;
   tags: ITag[];

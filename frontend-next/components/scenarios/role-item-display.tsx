@@ -41,13 +41,13 @@ export const RoleItem = ({
         defaultMessage: "Description of the character visible to the GM only.",
       })}
       errorMessage={intl.formatMessage({
-        id: "role.display.description.error",
+        id: "role.display.description.descriptionForGM.error",
         defaultMessage: "Description for GM is required",
       })}
       isDisabled={!isBeingEdited}
       isInvalid={touched.descriptionForGM && !role.descriptionForGM}
       label={intl.formatMessage({
-        id: "role.display.description.label",
+        id: "role.display.description.descriptionForGM.label",
         defaultMessage: "Description for GM",
       })}
       size="lg"
@@ -72,13 +72,13 @@ export const RoleItem = ({
           "Description of the character visible to the owner only.",
       })}
       errorMessage={intl.formatMessage({
-        id: "role.display.description.error",
+        id: "role.display.description.descriptionForOwner.error",
         defaultMessage: "Description for owner is required",
       })}
       isDisabled={!isBeingEdited}
       isInvalid={touched.descriptionForOwner && !role.descriptionForOwner}
       label={intl.formatMessage({
-        id: "role.display.description.label",
+        id: "role.display.description.descriptionForOwner.label",
         defaultMessage: "Description for owner",
       })}
       size="lg"
@@ -102,13 +102,13 @@ export const RoleItem = ({
         defaultMessage: "Description of the character visible to others.",
       })}
       errorMessage={intl.formatMessage({
-        id: "role.display.description.error",
+        id: "role.display.description.descriptionForOthers.error",
         defaultMessage: "Description for others is required",
       })}
       isDisabled={!isBeingEdited}
       isInvalid={touched.descriptionForOthers && !role.descriptionForOthers}
       label={intl.formatMessage({
-        id: "role.display.description.label",
+        id: "role.display.description.descriptionForOthers.label",
         defaultMessage: "Description for others",
       })}
       size="lg"

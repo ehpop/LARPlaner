@@ -3,9 +3,9 @@ import { api } from "@/services/axios";
 import { IGetDTO, IPostDTO } from "@/types/dto.types";
 
 class CrudService<E, G extends IGetDTO, P extends IPostDTO> {
-  private baseUrl: string;
-  private readonly convertGetDtoToEntity: (dto: G) => E;
-  private readonly convertEntityToPostDto: (entity: E) => P;
+  protected baseUrl: string;
+  protected readonly convertGetDtoToEntity: (dto: G) => E;
+  protected readonly convertEntityToPostDto: (entity: E) => P;
 
   constructor(
     baseUrl: string,
@@ -48,6 +48,8 @@ class CrudService<E, G extends IGetDTO, P extends IPostDTO> {
 
   async save(entity: E): Promise<Response<E>> {
     const postDto = this.convertEntityToPostDto(entity);
+
+    console.log(postDto);
 
     return api
       .post(this.baseUrl, postDto)

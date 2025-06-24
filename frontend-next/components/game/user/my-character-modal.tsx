@@ -13,11 +13,11 @@ import { FormattedMessage } from "react-intl";
 import { CardBody } from "@heroui/card";
 
 import { IGameSession } from "@/types/game.types";
-import useRole from "@/hooks/use-role";
+import useGameRole from "@/hooks/use-game-role";
 
 const MyCharacterModal = ({ game }: { game: IGameSession }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { role, scenarioRole, gameRoleState, loading } = useRole({
+  const { role, scenarioRole, gameRoleState, loading } = useGameRole({
     gameId: game.id,
     eventId: game.eventId,
   });

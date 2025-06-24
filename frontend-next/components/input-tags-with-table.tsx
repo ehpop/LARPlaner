@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  Autocomplete,
+  AutocompleteItem,
   Checkbox,
   Input,
   Table,
@@ -13,10 +15,12 @@ import {
 import { Button } from "@heroui/button";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { v4 as uuidv4 } from "uuid";
+import { useAsyncList } from "@react-stately/data";
 
 import { ITag } from "@/types/tags.types";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
+import tagsService from "@/services/tags.service";
+import { showErrorToastWithTimeout } from "@/utils/toast";
 
 const columns = [
   {
@@ -47,6 +51,12 @@ const columns = [
   },
 ];
 
+const emptyTag = {
+  value: "",
+  expiresAfterMinutes: 0,
+  isUnique: false,
+} as ITag;
+
 interface InputWithTableProps {
   inputLabel: string;
   isDisabled?: boolean;
@@ -64,14 +74,27 @@ const InputTagsWithTable = ({
   description,
   placeholder,
 }: InputWithTableProps) => {
-  const [inputValue, setInputValue] = useState("");
-  const [isUnique, setIsUnique] = useState(false);
-  const [expiresAfterMinutes, setExpiresAfterMinutes] = useState<
-    number | undefined
-  >(undefined);
+  const [key, setKey] = useState<string | undefined>(undefined);
+  const [tag, setTag] = useState<ITag>(emptyTag);
   const [isOpenConfirmClearAll, setIsOpenConfirmClearAll] = useState(false);
 
   const intl = useIntl();
+
+  let list = useAsyncList<ITag>({
+    async load({ signal, filterText }) {
+      let res = await fetch(
+        `http://localhost:8080/api/tags?search=${filterText}`,
+        { signal },
+      );
+      let json = await res.json();
+
+      console.log(`fetched ${json.length} items for search ${filterText}`);
+
+      return {
+        items: json,
+      };
+    },
+  });
 
   const handleDeleteSelection = (deletedTagId: string) => {
     setAddedTags(addedTags.filter((tag) => tag.id !== deletedTagId));
@@ -83,17 +106,27 @@ const InputTagsWithTable = ({
   };
 
   const handleAddTag = () => {
-    setAddedTags(
-      addedTags.concat({
-        id: uuidv4(),
-        value: inputValue,
-        isUnique,
-        expiresAfterMinutes,
-      } as ITag),
-    );
-    setInputValue("");
-    setIsUnique(false);
-    setExpiresAfterMinutes(undefined);
+    if (tag.id) {
+      setAddedTags([...addedTags, tag]);
+      setTag(emptyTag);
+
+      return;
+    }
+
+    tagsService
+      .saveAll([tag])
+      .then((res) => {
+        if (res.success) {
+          setAddedTags([...addedTags, ...res.data]);
+        } else {
+          showErrorToastWithTimeout(res.data);
+        }
+      })
+      .catch((err) => {
+        showErrorToastWithTimeout(err.message);
+      });
+
+    setTag(emptyTag);
   };
 
   const tableElement = (
@@ -128,7 +161,9 @@ const InputTagsWithTable = ({
                   color="danger"
                   isDisabled={isDisabled}
                   size="sm"
-                  onPress={() => handleDeleteSelection(tag.id)}
+                  onPress={() => {
+                    if (tag.id) handleDeleteSelection(tag.id);
+                  }}
                 >
                   <FormattedMessage
                     defaultMessage="Delete"
@@ -142,6 +177,7 @@ const InputTagsWithTable = ({
       </Table>
     </div>
   );
+
   const confirmClearAllModal = (
     <ConfirmActionModal
       handleOnConfirm={handleConfirmClearAll}
@@ -158,20 +194,42 @@ const InputTagsWithTable = ({
       onOpenChange={setIsOpenConfirmClearAll}
     />
   );
+
   const inputElement = (
     <>
       <div className="w-full flex flex-col space-y-1 border-1 p-3">
         <div className="w-full flex flex-row space-x-1 items-baseline">
-          <Input
+          <Autocomplete
+            allowsCustomValue
             isRequired
             description={description}
-            isDisabled={isDisabled}
+            inputValue={list.filterText}
+            isLoading={list.isLoading}
+            items={list.items}
             label={inputLabel}
             placeholder={placeholder}
-            value={inputValue}
+            selectedKey={key}
+            value={tag.value}
             variant="underlined"
-            onChange={(e) => setInputValue(e.target.value)}
-          />
+            onInputChange={(input) => {
+              list.setFilterText(input);
+              setTag({ ...tag, value: input });
+            }}
+            onSelectionChange={(key) => {
+              if (!key) return;
+              const tag = list.items.find((i) => i.id === key);
+
+              if (tag) {
+                setTag(tag);
+              }
+
+              setKey(undefined);
+            }}
+          >
+            {(item) => (
+              <AutocompleteItem key={item.id}>{item.value}</AutocompleteItem>
+            )}
+          </Autocomplete>
           <div className="flex flex-row space-x-1">
             <Button
               className="w-1/4"
@@ -188,7 +246,7 @@ const InputTagsWithTable = ({
             <Button
               className="w-1/4"
               color="success"
-              isDisabled={inputValue === ""}
+              isDisabled={tag.value === ""}
               size="sm"
               onPress={handleAddTag}
             >
@@ -216,9 +274,11 @@ const InputTagsWithTable = ({
               id: "input-with-chips.expiresInPlaceholder",
             })}
             type="number"
-            value={expiresAfterMinutes?.toString() || ""}
+            value={tag.expiresAfterMinutes?.toString() || ""}
             variant="underlined"
-            onChange={(e) => setExpiresAfterMinutes(parseInt(e.target.value))}
+            onChange={(e) =>
+              setTag({ ...tag, expiresAfterMinutes: parseInt(e.target.value) })
+            }
           />
           <Checkbox
             aria-label={intl.formatMessage({
@@ -226,8 +286,10 @@ const InputTagsWithTable = ({
               id: "input-with-chips.uniqueToggle",
             })}
             isDisabled={isDisabled}
-            isSelected={isUnique}
-            onValueChange={setIsUnique}
+            isSelected={tag.isUnique}
+            onValueChange={() => {
+              setTag({ ...tag, isUnique: !tag.isUnique });
+            }}
           >
             <FormattedMessage
               defaultMessage="Unique"

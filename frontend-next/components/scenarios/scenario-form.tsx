@@ -2,10 +2,9 @@ import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
 
 import { ScenarioRolesForm } from "@/components/scenarios/scenario-roles-form";
-import { emptyScenario, possibleRoles } from "@/services/mock/mock-data";
+import { emptyScenario } from "@/services/mock/mock-data";
 import ScenarioItemsForm from "@/components/scenarios/scenario-items-form";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
@@ -13,13 +12,13 @@ import { IScenario, IScenarioAction } from "@/types/scenario.types";
 import scenariosService from "@/services/scenarios.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
 import { ItemActionsForm } from "@/components/scenarios/item-actions-form";
-import InputTagsWithTable from "@/components/input-tags-with-table";
 import {
   showErrorToast,
   showErrorToastWithTimeout,
   showSuccessToast,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
+import useAllRoles from "@/hooks/roles/use-all-roles";
 
 export default function ScenarioForm({
   initialScenario,
@@ -29,6 +28,8 @@ export default function ScenarioForm({
   const intl = useIntl();
   const router = useRouter();
   const isNewScenario = !initialScenario;
+  const { roles: allRoles } = useAllRoles();
+
   const [scenario, setScenario] = useState(
     isNewScenario ? emptyScenario : { ...initialScenario },
   );
@@ -40,7 +41,6 @@ export default function ScenarioForm({
   const [showItemsSection, setShowItemsSection] = useState(true);
   const [showRolesSection, setShowRolesSection] = useState(true);
   const [showActionsSection, setShowActionsSection] = useState(true);
-  const [showTagsSection, setShowTagsSection] = useState(true);
   const [touched, setTouched] = useState({
     name: false,
     description: false,
@@ -48,7 +48,6 @@ export default function ScenarioForm({
 
   const handleAddAction = () => {
     const newAction: IScenarioAction = {
-      id: uuidv4(),
       scenarioId: scenario.id,
       name: "",
       description: "",
@@ -107,6 +106,8 @@ export default function ScenarioForm({
 
   const handleSave = () => {
     setIsSaving(true);
+
+    console.log(scenario);
 
     scenariosService
       .save(scenario)
@@ -249,7 +250,7 @@ export default function ScenarioForm({
       </div>
       <div className={showRolesSection ? "" : "hidden"}>
         <ScenarioRolesForm
-          availableRoles={possibleRoles}
+          availableRoles={allRoles}
           isBeingEdited={isBeingEdited}
           scenario={scenario}
           setScenario={setScenario}
@@ -406,51 +407,6 @@ export default function ScenarioForm({
     </div>
   );
 
-  const tagsElement = (
-    <div className="w-full border-1 p-3 space-y-3">
-      <div className="w-full flex flex-row justify-between">
-        <p className="text-xl">
-          <FormattedMessage
-            defaultMessage={"Tags in scenario:"}
-            id={"scenarios.new.page.tagsInScenario"}
-          />
-        </p>
-        <Button
-          size="sm"
-          variant="bordered"
-          onPress={() => setShowTagsSection(!showTagsSection)}
-        >
-          {showTagsSection ? "-" : "+"}
-        </Button>
-      </div>
-      <div className={showTagsSection ? "" : "hidden"}>
-        <InputTagsWithTable
-          addedTags={scenario.tags}
-          description={intl.formatMessage({
-            defaultMessage:
-              "Tags are used to categorize scenarios. They can be used to filter scenarios in the list.",
-            id: "scenarios.new.page.tagsDescription",
-          })}
-          inputLabel={intl.formatMessage({
-            defaultMessage: "Tag name",
-            id: "scenarios.new.page.tags",
-          })}
-          isDisabled={!(isBeingEdited || isNewScenario)}
-          placeholder={intl.formatMessage({
-            defaultMessage: "Insert tag name",
-            id: "scenarios.new.page.insertTagName",
-          })}
-          setAddedTags={(tags) => {
-            setScenario({
-              ...scenario,
-              tags: tags,
-            });
-          }}
-        />
-      </div>
-    </div>
-  );
-
   const form = (
     <div className="w-full flex justify-center">
       <div className="w-full space-y-3 border-1 p-3">
@@ -460,7 +416,6 @@ export default function ScenarioForm({
         {rolesElement}
         {itemsElement}
         {actionsElement}
-        {tagsElement}
         {isNewScenario ? saveButton : buttonsElement}
       </div>
     </div>

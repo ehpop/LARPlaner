@@ -61,15 +61,15 @@ export function ItemActionsForm<T extends IAction>({
           isRequired
           className="w-1/2"
           errorMessage={intl.formatMessage({
-            id: "scenarios.new.page.actionName.error",
+            id: "scenarios.item.action.actionName.error",
             defaultMessage: "Name is required",
           })}
           label={intl.formatMessage({
-            id: "scenarios.new.page.actionName",
+            id: "scenarios.item.action.actionName.display",
             defaultMessage: "Name",
           })}
           placeholder={intl.formatMessage({
-            id: "scenarios.new.page.actionNamePlaceholder",
+            id: "scenarios.item.action.actionNamePlaceholder",
             defaultMessage: "Name...",
           })}
           size="sm"
@@ -87,18 +87,18 @@ export function ItemActionsForm<T extends IAction>({
             >
               <FormattedMessage
                 defaultMessage={"Remove"}
-                id={"scenarios.new.page.removeActionButton"}
+                id={"scenarios.item.action.removeActionButton"}
               />
             </Button>
           )}
           <Button
             color="primary"
             size="sm"
-            onClick={() => onActionDetailsPressed(action.id as string)}
+            onPress={() => onActionDetailsPressed(action.id as string)}
           >
             <FormattedMessage
               defaultMessage={"Details"}
-              id={"scenarios.new.page.actionDetailsButton"}
+              id={"scenarios.item.action.actionDetailsButton"}
             />
           </Button>
         </div>
@@ -107,13 +107,13 @@ export function ItemActionsForm<T extends IAction>({
           isOpen={isRemoveOpen}
           prompt={intl.formatMessage(
             {
-              id: "scenarios.new.page.removeActionPrompt",
+              id: "scenarios.item.action.removeActionPrompt",
               defaultMessage: "Are you sure you want to remove this action?",
             },
             { actionName: action.name },
           )}
           title={intl.formatMessage({
-            id: "scenarios.new.page.removeActionTitle",
+            id: "scenarios.item.action.removeActionTitle",
             defaultMessage: "Remove action",
           })}
           onOpenChange={setIsRemoveOpen}
@@ -129,7 +129,7 @@ export function ItemActionsForm<T extends IAction>({
         isOpen={showActionForm}
         placement="center"
         scrollBehavior="inside"
-        size="5xl"
+        size="full"
         onOpenChange={setShowActionForm}
       >
         <ModalContent>
@@ -137,9 +137,8 @@ export function ItemActionsForm<T extends IAction>({
             <>
               <ModalHeader className="flex flex-col gap-1">
                 <FormattedMessage
-                  defaultMessage={"Details of action: {actionName}"}
-                  id={"scenarios.new.page.actionDetailsButton"}
-                  values={{ actionName: selectedAction?.name as string }}
+                  defaultMessage={"Details"}
+                  id={"scenarios.item.action.actionDetailsButton"}
                 />
               </ModalHeader>
               <ActionForm
@@ -171,7 +170,7 @@ export function ItemActionsForm<T extends IAction>({
           />
         ))
       ) : (
-        <div className="w-full p-5 flex justify-center">
+        <div className="w-full flex justify-center">
           <p>
             <FormattedMessage
               defaultMessage={"No actions in item"}
@@ -182,10 +181,10 @@ export function ItemActionsForm<T extends IAction>({
       )}
       {isRoleBeingEdited && (
         <div className="w-full flex justify-center pt-3">
-          <Button color="success" size="sm" onPress={() => handleAddAction()}>
+          <Button color="success" size="md" onPress={() => handleAddAction()}>
             <FormattedMessage
               defaultMessage={"Add action"}
-              id={"scenarios.new.page.addActionButton"}
+              id={"scenarios.item.action.addActionButton"}
             />
           </Button>
         </div>
@@ -277,18 +276,18 @@ const ActionForm = <T extends IAction>({
       <p>
         <FormattedMessage
           defaultMessage={"Required tags to display action:"}
-          id={"scenarios.new.page.requiredTagsToDisplayAction"}
+          id={"scenarios.item.action.requiredTagsToDisplayAction"}
         />
       </p>
       <InputTagsWithTable
         addedTags={requiredTagsToDisplay}
         description={intl.formatMessage({
           defaultMessage: "Tag that will be required to display action",
-          id: "scenarios.new.page.requiredTagsToDisplayActionDescription",
+          id: "scenarios.item.action.requiredTagsToDisplayActionDescription",
         })}
         inputLabel={intl.formatMessage({
           defaultMessage: "Tag value",
-          id: "scenarios.new.page.input",
+          id: "scenarios.item.action.input",
         })}
         isDisabled={!isActionBeingEdited}
         placeholder={intl.formatMessage({
@@ -305,18 +304,18 @@ const ActionForm = <T extends IAction>({
       <p>
         <FormattedMessage
           defaultMessage={"Required tags to succeed action:"}
-          id={"scenarios.new.page.requiredTagsToSucceedAction"}
+          id={"scenarios.item.action.requiredTagsToSucceedAction"}
         />
       </p>
       <InputTagsWithTable
         addedTags={requiredTagsToSucceed}
         description={intl.formatMessage({
           defaultMessage: "Tag that will be required to succeed action",
-          id: "scenarios.new.page.requiredTagsToSucceedActionDescription",
+          id: "scenarios.item.action.requiredTagsToSucceedActionDescription",
         })}
         inputLabel={intl.formatMessage({
           defaultMessage: "Tag value",
-          id: "scenarios.new.page.input",
+          id: "scenarios.item.action.input",
         })}
         isDisabled={!isActionBeingEdited}
         placeholder={intl.formatMessage({
@@ -333,7 +332,7 @@ const ActionForm = <T extends IAction>({
       <p>
         <FormattedMessage
           defaultMessage={"Tags to apply on success:"}
-          id={"scenarios.new.page.tagsToApplyOnSuccess"}
+          id={"scenarios.item.action.tagsToApplyOnSuccess"}
         />
       </p>
       <InputTagsWithTable
@@ -341,11 +340,11 @@ const ActionForm = <T extends IAction>({
         description={intl.formatMessage({
           defaultMessage:
             "Tag that will be applied on role when action succeeds",
-          id: "scenarios.new.page.tagsToApplyOnSuccessDescription",
+          id: "scenarios.item.action.tagsToApplyOnSuccessDescription",
         })}
         inputLabel={intl.formatMessage({
           defaultMessage: "Tag value",
-          id: "scenarios.new.page.input",
+          id: "scenarios.item.action.input",
         })}
         isDisabled={!isActionBeingEdited}
         placeholder={intl.formatMessage({
@@ -362,18 +361,18 @@ const ActionForm = <T extends IAction>({
       <p>
         <FormattedMessage
           defaultMessage={"Tags to apply on failure:"}
-          id={"scenarios.new.page.tagsToApplyOnFailure"}
+          id={"scenarios.item.action.tagsToApplyOnFailure"}
         />
       </p>
       <InputTagsWithTable
         addedTags={tagsToApplyOnFailure}
         description={intl.formatMessage({
           defaultMessage: "Tag that will be applied on role when action fails",
-          id: "scenarios.new.page.tagsToApplyOnFailureDescription",
+          id: "scenarios.item.action.tagsToApplyOnFailureDescription",
         })}
         inputLabel={intl.formatMessage({
           defaultMessage: "Tag value",
-          id: "scenarios.new.page.input",
+          id: "scenarios.item.action.input",
         })}
         isDisabled={!isActionBeingEdited}
         placeholder={intl.formatMessage({
@@ -390,7 +389,7 @@ const ActionForm = <T extends IAction>({
       <p>
         <FormattedMessage
           defaultMessage={"Tags to remove on success:"}
-          id={"scenarios.new.page.tagsToRemoveOnSuccess"}
+          id={"scenarios.item.action.tagsToRemoveOnSuccess"}
         />
       </p>
       <InputTagsWithTable
@@ -398,11 +397,11 @@ const ActionForm = <T extends IAction>({
         description={intl.formatMessage({
           defaultMessage:
             "Tag that will be removed on role when action succeeds",
-          id: "scenarios.new.page.tagsToRemoveOnSuccessDescription",
+          id: "scenarios.item.action.tagsToRemoveOnSuccessDescription",
         })}
         inputLabel={intl.formatMessage({
           defaultMessage: "Tag value",
-          id: "scenarios.new.page.input",
+          id: "scenarios.item.action.input",
         })}
         isDisabled={!isActionBeingEdited}
         placeholder={intl.formatMessage({
@@ -419,18 +418,18 @@ const ActionForm = <T extends IAction>({
       <p>
         <FormattedMessage
           defaultMessage={"Tags to remove on failure:"}
-          id={"scenarios.new.page.tagsToRemoveOnFailure"}
+          id={"scenarios.item.action.tagsToRemoveOnFailure"}
         />
       </p>
       <InputTagsWithTable
         addedTags={tagsToRemoveOnFailure}
         description={intl.formatMessage({
           defaultMessage: "Tag that will be removed on role when action fails",
-          id: "scenarios.new.page.tagsToRemoveOnFailureDescription",
+          id: "scenarios.item.action.tagsToRemoveOnFailureDescription",
         })}
         inputLabel={intl.formatMessage({
           defaultMessage: "Tag value",
-          id: "scenarios.new.page.input",
+          id: "scenarios.item.action.input",
         })}
         isDisabled={!isActionBeingEdited}
         placeholder={intl.formatMessage({
@@ -448,11 +447,11 @@ const ActionForm = <T extends IAction>({
       isDisabled={!isActionBeingEdited}
       label={intl.formatMessage({
         defaultMessage: "Action name",
-        id: "scenarios.new.page.actionName",
+        id: "scenarios.item.action.actionName",
       })}
       placeholder={intl.formatMessage({
         defaultMessage: "Insert action name...",
-        id: "scenarios.new.page.insertActionName",
+        id: "scenarios.item.action.insertActionName",
       })}
       value={action.name}
       variant="underlined"
@@ -470,11 +469,11 @@ const ActionForm = <T extends IAction>({
       isDisabled={!isActionBeingEdited}
       label={intl.formatMessage({
         defaultMessage: "Action description",
-        id: "scenarios.new.page.actionDescription",
+        id: "scenarios.item.action.actionDescription",
       })}
       placeholder={intl.formatMessage({
         defaultMessage: "Insert action description...",
-        id: "scenarios.new.page.insertActionDescription",
+        id: "scenarios.item.action.insertActionDescription",
       })}
       value={action.description}
       variant="underlined"
@@ -492,11 +491,11 @@ const ActionForm = <T extends IAction>({
       isDisabled={!isActionBeingEdited}
       label={intl.formatMessage({
         defaultMessage: "Message on success",
-        id: "scenarios.new.page.messageOnSuccess",
+        id: "scenarios.item.action.messageOnSuccess",
       })}
       placeholder={intl.formatMessage({
         defaultMessage: "Insert message on success...",
-        id: "scenarios.new.page.insertMessageOnSuccess",
+        id: "scenarios.item.action.insertMessageOnSuccess",
       })}
       value={action.messageOnSuccess}
       variant="underlined"
@@ -514,11 +513,11 @@ const ActionForm = <T extends IAction>({
       isDisabled={!isActionBeingEdited}
       label={intl.formatMessage({
         defaultMessage: "Message on failure",
-        id: "scenarios.new.page.messageOnFailure",
+        id: "scenarios.item.action.messageOnFailure",
       })}
       placeholder={intl.formatMessage({
         defaultMessage: "Insert message on failure...",
-        id: "scenarios.new.page.insertMessageOnFailure",
+        id: "scenarios.item.action.insertMessageOnFailure",
       })}
       value={action.messageOnFailure}
       variant="underlined"
@@ -542,7 +541,7 @@ const ActionForm = <T extends IAction>({
               <p>
                 <FormattedMessage
                   defaultMessage={"Messages:"}
-                  id={"scenarios.new.page.messages"}
+                  id={"scenarios.item.action.messages"}
                 />
               </p>
               <div>

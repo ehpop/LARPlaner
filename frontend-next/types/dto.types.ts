@@ -1,5 +1,5 @@
 export type IPostDTO = {
-  id: string | null;
+  id?: string;
 };
 
 export type IGetDTO = {
