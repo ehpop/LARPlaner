@@ -5,7 +5,7 @@ import { ITag } from "@/types/tags.types";
 export type IGameSession = {
   id: string; // Unique session ID
   eventId: IEvent["id"]; // Reference to the planned event
-  status: "active" | "paused" | "completed"; // Current session status
+  status: "active" | "paused" | "ended"; // Current session status
   startTime: string; // ISO timestamp when the session started
   endTime: string | null; // ISO timestamp when the session ended (null if ongoing)
   assignedRoles: IGameRoleState[]; // Current role states

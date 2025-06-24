@@ -366,64 +366,58 @@ export const eventsList: IEvent[] = Array.from({ length: 20 }, (_, i) => ({
   status: `${i < 2 ? "active" : i < 10 ? "upcoming" : "historic"}`,
   img: `/images/event-${i + 1}.jpg`,
   description: `Description for Event #${i + 1}`,
-  scenarioId: possibleScenarios[i % possibleScenarios.length].id,
-  gameSessionId: i < 5 ? preloadedUUIDs.games[i] : null,
+  scenarioId: possibleScenarios[i % possibleScenarios.length].id as string,
+  gameSessionId: preloadedUUIDs.games[i % 5],
   assignedRoles: [
     {
-      scenarioRoleId:
-        possibleScenarioRoles[(i * 2) % possibleScenarioRoles.length].id,
+      id: "1",
+      scenarioRoleId: possibleScenarioRoles[
+        (i * 2) % possibleScenarioRoles.length
+      ].id as string,
       assignedEmail: userEmails[(i * 2) % userEmails.length].value,
     },
     {
-      scenarioRoleId:
-        possibleScenarioRoles[(i * 2 + 1) % possibleScenarioRoles.length].id,
+      id: "2",
+      scenarioRoleId: possibleScenarioRoles[
+        (i * 2 + 1) % possibleScenarioRoles.length
+      ].id as string,
       assignedEmail: userEmails[(i * 2 + 1) % userEmails.length].value,
     },
   ],
 }));
 
 export const emptyRole: IRole = {
-  id: null,
   name: "",
   description: "",
   tags: [],
 };
 
 export const emptyScenarioRole: IScenarioRole = {
-  id: null,
-  scenarioId: null,
-  roleId: null,
   descriptionForGM: "",
   descriptionForOwner: "",
   descriptionForOthers: "",
 };
 
 export const emptyScenarioItem: IScenarioItem = {
-  id: null,
-  scenarioId: null,
   name: "",
   description: "",
   actions: [] as IScenarioItemAction[],
 };
 
 export const emptyScenario: IScenario = {
-  id: null,
   name: "",
   description: "",
   roles: [] as IScenarioRole[],
   items: [] as IScenarioItem[],
   actions: [] as IScenarioAction[],
-  tags: [] as ITag[],
 };
 
 export const emptyEvent: IEvent = {
-  id: null,
   name: "",
   img: "",
   status: "upcoming",
   date: now(getLocalTimeZone()).add({ days: 1 }),
   description: "",
-  scenarioId: null,
   gameSessionId: null,
   assignedRoles: [],
 };
@@ -486,10 +480,11 @@ export const mockGameActionLogs: IGameActionLog[] = mockGameSessions.flatMap(
       timestamp: now(getLocalTimeZone())
         .subtract({ minutes: index * 5 })
         .toString(),
-      performerRoleId:
-        possibleScenarioRoles[index % possibleScenarioRoles.length].id,
+      performerRoleId: possibleScenarioRoles[
+        index % possibleScenarioRoles.length
+      ].id as string,
       targetItemId:
-        possibleScenarioItems[index % possibleScenarioItems.length]?.id || null,
+        possibleScenarioItems[index % possibleScenarioItems.length]?.id,
       success: Math.random() > 0.5, // Random success/fail
       message: "An action was performed",
       appliedTags: [],

@@ -15,6 +15,7 @@ export type IEventPostDTO = IPostDTO & {
   scenarioId: IScenario["id"] | null;
   gameSessionId: IGameSession["id"] | null;
   assignedRoles: {
+    id: string;
     scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
   }[];
@@ -31,21 +32,23 @@ export type IEventGetDTO = IGetDTO & {
   scenarioId: IScenario["id"];
   gameSessionId: IGameSession["id"] | null;
   assignedRoles: {
+    id: string;
     scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
   }[];
 };
 
 export type IEvent = {
-  id: string | null;
+  id?: string;
   name: string;
   img: string;
   status: IEventStatus;
   date: ZonedDateTime;
   description: string;
-  scenarioId: IScenario["id"] | null;
+  scenarioId?: IScenario["id"];
   gameSessionId: IGameSession["id"] | null;
   assignedRoles: {
+    id?: string;
     scenarioRoleId: IScenarioRole["roleId"];
     assignedEmail: string;
   }[];

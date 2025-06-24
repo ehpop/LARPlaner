@@ -83,7 +83,6 @@ const Action = ({
       removedTags: tagsToRemove,
       message: messageToDisplay,
       sessionId: game.id,
-      targetItemId: null,
     };
 
     gameService.postGameHistory(gameHistoryLog).then((response) => {

@@ -56,7 +56,7 @@ export default function ScenarioDisplayPage({ params }: any) {
       }
     };
 
-    fetchScenario();
+    fetchScenario().finally(() => setLoading(false));
   }, [scenarioId]);
 
   if (error) {

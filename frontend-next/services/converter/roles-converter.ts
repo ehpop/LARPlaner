@@ -5,5 +5,5 @@ export function convertGetDtoToRole(dto: IRoleGetDTO): IRole {
 }
 
 export function convertRoleToPostDto(role: IRole): IRolePostDTO {
-  return { ...role } as IRolePostDTO;
+  return { ...role, tags: role.tags.map((t) => t.id) } as IRolePostDTO;
 }

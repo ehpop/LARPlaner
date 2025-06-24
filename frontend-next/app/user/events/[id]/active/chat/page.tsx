@@ -23,7 +23,7 @@ const ActiveEventChatPage = ({ params }: any) => {
       isLoading={auth.loading || loading}
       label={intl.formatMessage({
         defaultMessage: "Loading chat...",
-        id: "events.page.display.loading",
+        id: "events.active.chat.page.loading",
       })}
     >
       {userRole ? (
@@ -32,7 +32,7 @@ const ActiveEventChatPage = ({ params }: any) => {
         <div className="w-full flex justify-center">
           <FormattedMessage
             defaultMessage="Cannot load event data or user is not assigned to this event."
-            id="events.page.display.cannotLoad"
+            id="events.chat.page.display.cannotLoad"
           />
         </div>
       )}

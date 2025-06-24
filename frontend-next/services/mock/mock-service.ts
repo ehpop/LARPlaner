@@ -9,10 +9,10 @@ import {
   possibleRoles,
   possibleScenarios,
 } from "@/services/mock/mock-data";
-import { IScenario } from "@/types/scenario.types";
-import { IRole } from "@/types/roles.types";
 import { IEventGetDTO } from "@/types/event.types";
 import { IGameSession } from "@/types/game.types";
+import { IRole } from "@/types/roles.types";
+import { IScenario } from "@/types/scenario.types";
 
 const scenarios: IScenario[] = possibleScenarios;
 const roles: IRole[] = possibleRoles;
@@ -20,6 +20,13 @@ const events: IEventGetDTO[] = eventsList.map((event) => ({
   ...event,
   id: event.id as string,
   date: event.date.toDate().toISOString(),
+  scenarioId: possibleScenarios[0].id as string,
+  assignedRoles: [
+    ...event.assignedRoles.map((role, i) => ({
+      ...role,
+      id: role.id || `${i}`,
+    })),
+  ],
 }));
 
 const uuidv4Regex =

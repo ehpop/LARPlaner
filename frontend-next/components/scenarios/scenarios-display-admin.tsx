@@ -1,7 +1,7 @@
 import { Button } from "@heroui/button";
 import { FormattedMessage } from "react-intl";
 import { useRouter } from "next/navigation";
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Input } from "@heroui/input";
 import { SortDescriptor } from "@react-types/shared";
 
@@ -81,7 +81,6 @@ const ScenariosDisplayAdmin = ({
     { key: "rolesCount", label: "Roles", allowsSorting: true },
     { key: "itemsCount", label: "Items", allowsSorting: true },
     { key: "actionsCount", label: "Actions", allowsSorting: true },
-    { key: "tagsCount", label: "Tags", allowsSorting: true },
   ];
 
   const rows = currentList.map((scenario: IScenario) => ({
@@ -91,7 +90,6 @@ const ScenariosDisplayAdmin = ({
     rolesCount: scenario.roles.length,
     itemsCount: scenario.items.length,
     actionsCount: scenario.actions.length,
-    tagsCount: scenario.tags.length,
   }));
 
   const handleRowClick = (row: { id: string } & Record<string, any>) => {

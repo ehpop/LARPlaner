@@ -1,15 +1,12 @@
-import { Autocomplete, AutocompleteItem, Input } from "@heroui/react";
+import { Autocomplete, AutocompleteItem, Input, Spinner } from "@heroui/react";
 import { FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 
-import {
-  getRoleById,
-  getScenarioById,
-  userEmails,
-} from "@/services/mock/mock-data";
-import { IScenarioRole } from "@/types/scenario.types";
+import { userEmails } from "@/services/mock/mock-data";
+import { IScenario, IScenarioRole } from "@/types/scenario.types";
 import { IEvent } from "@/types/event.types";
 import { isValidEmail } from "@/utils/validation";
+import useRole from "@/hooks/roles/use-role";
 
 function RoleAssignmentEntry({
   event,
@@ -23,14 +20,14 @@ function RoleAssignmentEntry({
   isBeingEdited: boolean;
 }) {
   const intl = useIntl();
-  const role = getRoleById(scenarioRole.roleId); //TODO: Fetch by API
   const assignedRole = event.assignedRoles.find(
     (assignedRole) => assignedRole.scenarioRoleId === scenarioRole.id,
   );
-
   const [selectedEmail, setSelectedEmail] = useState<string>(
     assignedRole?.assignedEmail || "",
   );
+
+  const { role, loading } = useRole(scenarioRole.roleId as string);
 
   const handleRoleAssignment = (
     scenarioRoleId: IScenarioRole["id"],
@@ -55,7 +52,10 @@ function RoleAssignmentEntry({
       (assignedRole) => assignedRole.scenarioRoleId !== scenarioRoleId,
     );
 
-    updatedRoles.push({ scenarioRoleId: scenarioRoleId, assignedEmail: email });
+    updatedRoles.push({
+      scenarioRoleId: scenarioRoleId as string,
+      assignedEmail: email,
+    });
 
     return updatedRoles;
   };
@@ -73,6 +73,21 @@ function RoleAssignmentEntry({
       ? !isValidEmail(assignedRoleInEvent.assignedEmail)
       : false;
   };
+
+  if (loading) {
+    return (
+      <Spinner>
+        <FormattedMessage
+          defaultMessage="Loading..."
+          id="events.page.display.roles.loading"
+        />
+      </Spinner>
+    );
+  }
+
+  if (!role) {
+    return <></>;
+  }
 
   return (
     <div
@@ -127,14 +142,17 @@ function RoleAssignmentEntry({
 
 const EventAssignRolesForm = ({
   event,
+  scenario,
   setEvent,
   isBeingEdited,
 }: {
   event: IEvent;
+  scenario: IScenario | undefined;
   setEvent: (event: IEvent) => void;
   isBeingEdited: boolean;
 }) => {
-  const scenario = getScenarioById(event?.scenarioId); //TODO: Fetch by API
+  console.log("Scenario in event: ", scenario);
+  console.log("ScenarioId in event: ", event.scenarioId);
 
   if (!scenario || !event.scenarioId) {
     return (

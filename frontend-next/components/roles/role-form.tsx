@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { emptyRole } from "@/services/mock/mock-data";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
-import RoleTagsForm from "@/components/roles/role-tags-form";
 import { IRole } from "@/types/roles.types";
 import rolesService from "@/services/roles.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
@@ -14,6 +13,7 @@ import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
+import InputTagsWithTable from "@/components/input-tags-with-table";
 
 export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const intl = useIntl();
@@ -112,7 +112,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   };
 
   const handleConfirmDelete = () => {
-    if (role.id === null) {
+    if (!role.id) {
       return;
     }
 
@@ -226,10 +226,22 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
         </Button>
       </div>
       {showTags && (
-        <RoleTagsForm
-          isBeingEdited={isNewRole || isBeingEdited}
-          role={role}
-          setRole={setRole}
+        <InputTagsWithTable
+          addedTags={role.tags}
+          description={intl.formatMessage({
+            defaultMessage: "Tag that will be required to display action",
+            id: "scenarios.new.page.requiredTagsToDisplayActionDescription",
+          })}
+          inputLabel={intl.formatMessage({
+            defaultMessage: "Tag value",
+            id: "scenarios.new.page.input",
+          })}
+          isDisabled={!(isBeingEdited || isNewRole)}
+          placeholder={intl.formatMessage({
+            defaultMessage: "Insert tag name...",
+            id: "role.display.tag.name.placeholder",
+          })}
+          setAddedTags={(tags) => setRole({ ...role, tags: tags })}
         />
       )}
     </div>

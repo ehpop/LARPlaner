@@ -24,7 +24,6 @@ const UpcomingEventPage = ({ params }: any) => {
       <LoadingOverlay
         isLoading={loading}
         label={intl.formatMessage({
-          defaultMessage: "Loading event data...",
           id: "events.page.display.loading",
         })}
       >
@@ -39,7 +38,7 @@ const UpcomingEventPage = ({ params }: any) => {
           <div className="w-full flex justify-center">
             <FormattedMessage
               defaultMessage="Cannot load event data or user is not assigned to this event."
-              id="events.page.display.cannotLoad"
+              id="events.upcoming.page.display.cannotLoad"
             />
           </div>
         )}

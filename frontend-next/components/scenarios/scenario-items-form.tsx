@@ -3,7 +3,6 @@
 import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
 import React, { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { v4 as uuidv4 } from "uuid";
 
 import { emptyScenarioItem } from "@/services/mock/mock-data";
 import {
@@ -165,7 +164,6 @@ const ItemForm = ({
       actions: [
         ...item.actions,
         {
-          id: uuidv4(),
           name: "",
           description: "",
           tagsToRemoveOnSuccess: [] as ITag[],
@@ -214,8 +212,10 @@ const ItemForm = ({
           {itemActionButtons}
         </div>
         <div className={showItem ? "" : "hidden"}>
-          {itemDescription}
-          {itemActionsForm}
+          <div className="space-y-3">
+            {itemDescription}
+            {itemActionsForm}
+          </div>
         </div>
       </div>
       <QrModal
@@ -250,7 +250,6 @@ const ScenarioItemsForm = ({
         ...scenario.items,
         {
           ...emptyScenarioItem,
-          id: uuidv4(),
           scenarioId: scenario.id,
         },
       ],
@@ -295,7 +294,7 @@ const ScenarioItemsForm = ({
         ))
       )}
       {isBeingEdited && (
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center pt-3">
           <Button color="success" variant="solid" onPress={() => addItem()}>
             <FormattedMessage
               defaultMessage={"Add item"}

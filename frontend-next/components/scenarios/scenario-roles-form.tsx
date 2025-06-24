@@ -1,7 +1,6 @@
 import { Button } from "@heroui/react";
 import React from "react";
 import { FormattedMessage } from "react-intl";
-import { v4 as uuidv4 } from "uuid";
 
 import { RoleItem } from "@/components/scenarios/role-item-display";
 import { emptyScenarioRole } from "@/services/mock/mock-data";
@@ -24,8 +23,7 @@ export const ScenarioRolesForm = ({
       ...scenario.roles,
       {
         ...emptyScenarioRole,
-        id: uuidv4(),
-        scenarioId: scenario.id,
+        ...(scenario.id && { scenarioId: scenario.id }),
       },
     ];
 
@@ -76,7 +74,7 @@ export const ScenarioRolesForm = ({
         )}
       </div>
       {isBeingEdited && (
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center pt-3">
           <Button color="success" variant="solid" onPress={addRole}>
             <FormattedMessage
               defaultMessage={"Add role"}

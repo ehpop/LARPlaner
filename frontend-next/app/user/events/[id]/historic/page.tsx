@@ -39,7 +39,7 @@ const HistoricEventPage = ({ params }: any) => {
           <div className="w-full flex justify-center">
             <FormattedMessage
               defaultMessage="Cannot load event data or user is not assigned to this event."
-              id="events.page.display.cannotLoad"
+              id="events.historic.page.display.cannotLoad"
             />
           </div>
         )}

@@ -13,7 +13,7 @@ import rolesService from "@/services/roles.service";
 /**
  * Hook for getting the current user's role in the game.
  */
-const useRole = ({
+const useGameRole = ({
   gameId,
   eventId,
 }: {
@@ -42,7 +42,7 @@ const useRole = ({
       if (!game || !event || !scenario) {
         return showErrorMessage(
           intl.formatMessage({
-            id: "hooks.useRole.error.noData",
+            id: "hooks.useGameRole.error.noData",
             defaultMessage: "No game, event or scenario data found.",
           }),
         );
@@ -55,7 +55,7 @@ const useRole = ({
       if (!userRole) {
         return showErrorMessage(
           intl.formatMessage({
-            id: "hooks.useRole.error.noRole",
+            id: "hooks.useGameRole.error.noRole",
             defaultMessage: "User is not assigned to this game.",
           }),
         );
@@ -69,7 +69,7 @@ const useRole = ({
       if (!scenarioRoleId) {
         return showErrorMessage(
           intl.formatMessage({
-            id: "hooks.useRole.error.noScenarioRole",
+            id: "hooks.useGameRole.error.noScenarioRole",
             defaultMessage: "User is not assigned to this scenario.",
           }),
         );
@@ -82,7 +82,7 @@ const useRole = ({
       if (!foundScenarioRole) {
         return showErrorMessage(
           intl.formatMessage({
-            id: "hooks.useRole.error.noRole",
+            id: "hooks.useGameRole.error.noRole",
             defaultMessage: "User is not assigned to this scenario.",
           }),
         );
@@ -93,7 +93,7 @@ const useRole = ({
       if (!foundScenarioRole.roleId) {
         return showErrorMessage(
           intl.formatMessage({
-            id: "hooks.useRole.error.noRoleIdInScenarioRole",
+            id: "hooks.useGameRole.error.noRoleIdInScenarioRole",
             defaultMessage:
               "Scenario Role doesnt have role id assigned. Please contact with administrator.",
           }),
@@ -118,4 +118,4 @@ const useRole = ({
   return { role, scenarioRole, gameRoleState, loading: roleLoading };
 };
 
-export default useRole;
+export default useGameRole;
