@@ -1,7 +1,6 @@
 "use client";
 
-import { FC, useContext, useEffect, useState } from "react";
-import Image from "next/image";
+import { sendEmailVerification, updateProfile, UserInfo } from "@firebase/auth";
 import {
   Avatar,
   Button,
@@ -14,7 +13,8 @@ import {
   Spinner,
   useDisclosure,
 } from "@heroui/react";
-import { sendEmailVerification, updateProfile, UserInfo } from "@firebase/auth";
+import Image from "next/image";
+import { FC, useContext, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { FirebaseContext } from "@/context/firebase-context";
@@ -189,9 +189,15 @@ const ProfilePage: FC = () => {
               {user.providerData.map((provider: UserInfo) => (
                 <li key={provider.providerId}>
                   {provider.providerId === "google.com"
-                    ? "Google"
+                    ? intl.formatMessage({
+                        id: "profile.page.google",
+                        defaultMessage: "Google",
+                      })
                     : provider.providerId === "github.com"
-                      ? "GitHub"
+                      ? intl.formatMessage({
+                          id: "profile.page.github",
+                          defaultMessage: "GitHub",
+                        })
                       : provider.providerId}
                 </li>
               ))}

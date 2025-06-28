@@ -85,7 +85,12 @@ const useEventForGame = ({ gameId }: { gameId: string }) => {
 
         setError(errorMessage);
         showErrorMessage(
-          err instanceof Error ? err.message : "Failed to load event data",
+          err instanceof Error
+            ? err.message
+            : intl.formatMessage({
+                id: "hooks.use-event-for-game.failed.to.load.event.data",
+                defaultMessage: "Failed to load event data",
+              }),
         );
       } finally {
         setLoading(false);

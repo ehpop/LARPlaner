@@ -24,7 +24,7 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { User } from "@firebase/auth";
 import Image from "next/image";
 
@@ -53,6 +53,7 @@ interface NavbarMenuContentProps {
 }
 
 const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
+  const intl = useIntl();
   const buttonClass = "text-sm font-normal text-default-600 bg-default-100";
 
   if (!user) {
@@ -71,7 +72,10 @@ const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
         <Avatar showFallback src={user.photoURL || undefined} />
       </DropdownTrigger>
       <DropdownMenu
-        aria-label="Static Actions"
+        aria-label={intl.formatMessage({
+          id: "components.navbar.static.actions",
+          defaultMessage: "Static Actions",
+        })}
         onAction={(key) => {
           if (key === "log out") handleLogOut();
         }}
@@ -140,6 +144,8 @@ function NavbarMenuContent({
 }
 
 export const Navbar = () => {
+  const intl = useIntl();
+
   const { user, isAdmin, handleLogOut } = useContext(FirebaseContext);
   const { locale, setLocale } = useContext(LocaleContext);
 
@@ -159,7 +165,10 @@ export const Navbar = () => {
 
   const languageSelect = (
     <Select
-      aria-label="Select language"
+      aria-label={intl.formatMessage({
+        id: "components.navbar.select.language",
+        defaultMessage: "Select language",
+      })}
       className="w-32"
       defaultSelectedKeys={[locale]}
       size="md"
@@ -204,7 +213,14 @@ export const Navbar = () => {
       {/* Right-aligned content */}
       <NavbarContent className="basis-1/5 flex lg:basis-full" justify="end">
         <NavbarItem className="hidden lg:flex gap-2">
-          <Link isExternal aria-label="Github" href={siteConfig.links.github}>
+          <Link
+            isExternal
+            aria-label={intl.formatMessage({
+              id: "components.navbar.github",
+              defaultMessage: "Github",
+            })}
+            href={siteConfig.links.github}
+          >
             <GithubIcon className="text-default-500" />
           </Link>
         </NavbarItem>

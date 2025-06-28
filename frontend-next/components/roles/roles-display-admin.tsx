@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { Button } from "@heroui/button";
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Input } from "@heroui/input";
 import { SortDescriptor } from "@react-types/shared";
 
@@ -11,6 +11,7 @@ import PaginationControl from "@/components/table/pagination-control";
 import { usePagination } from "@/hooks/use-pagination";
 
 const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
+  const intl = useIntl();
   const itemsPerPage = 10;
   const router = useRouter();
 
@@ -65,9 +66,29 @@ const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
     usePagination(sortedRoles, itemsPerPage);
 
   const columns = [
-    { key: "name", label: "Name", allowsSorting: true },
-    { key: "description", label: "Description", allowsSorting: true },
-    { key: "tags", label: "Tags" },
+    {
+      key: "name",
+      label: intl.formatMessage({
+        id: "roles.roles-display-admin.name",
+        defaultMessage: "Name",
+      }),
+      allowsSorting: true,
+    },
+    {
+      key: "description",
+      label: intl.formatMessage({
+        id: "roles.roles-display-admin.description",
+        defaultMessage: "Description",
+      }),
+      allowsSorting: true,
+    },
+    {
+      key: "tags",
+      label: intl.formatMessage({
+        id: "roles.roles-display-admin.tags",
+        defaultMessage: "Tags",
+      }),
+    },
   ];
 
   const rows = currentList.map((role: IRole) => ({

@@ -23,7 +23,8 @@ const ActiveEventAdminPage = ({ params }: any) => {
       <LoadingOverlay
         isLoading={loading}
         label={intl.formatMessage({
-          id: "events.page.display.loading",
+          defaultMessage: "Loading active event...",
+          id: "events.active.page.display.loading",
         })}
       >
         {allDataLoaded ? (

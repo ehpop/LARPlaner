@@ -20,23 +20,65 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { IGameActionLog, IGameSession } from "@/types/game.types";
 import gameService from "@/services/game.service";
 
-const historyTableColumns = [
-  { key: "id", label: "ID" },
-  { key: "timestamp", label: "Timestamp" },
-  { key: "performerRoleId", label: "Performer Role ID" },
-  { key: "targetItemId", label: "Target Item ID" },
-  { key: "success", label: "Success" },
-  { key: "message", label: "Message" },
-  { key: "appliedTags", label: "Applied Tags" },
-  { key: "removedTags", label: "Removed Tags" },
-];
-
 interface GameHistoryElementProps {
   gameHistory: IGameActionLog[];
 }
 
 const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
   const intl = useIntl();
+
+  const historyTableColumns = [
+    { key: "id", label: "ID" },
+    {
+      key: "timestamp",
+      label: intl.formatMessage({
+        id: "admin.admin-game-history.timestamp",
+        defaultMessage: "Timestamp",
+      }),
+    },
+    {
+      key: "performerRoleId",
+      label: intl.formatMessage({
+        id: "admin.admin-game-history.performer.role.id",
+        defaultMessage: "Performer Role ID",
+      }),
+    },
+    {
+      key: "targetItemId",
+      label: intl.formatMessage({
+        id: "admin.admin-game-history.target.item.id",
+        defaultMessage: "Target Item ID",
+      }),
+    },
+    {
+      key: "success",
+      label: intl.formatMessage({
+        id: "admin.admin-game-history.success",
+        defaultMessage: "Success",
+      }),
+    },
+    {
+      key: "message",
+      label: intl.formatMessage({
+        id: "admin.admin-game-history.message",
+        defaultMessage: "Message",
+      }),
+    },
+    {
+      key: "appliedTags",
+      label: intl.formatMessage({
+        id: "admin.admin-game-history.applied.tags",
+        defaultMessage: "Applied Tags",
+      }),
+    },
+    {
+      key: "removedTags",
+      label: intl.formatMessage({
+        id: "admin.admin-game-history.removed.tags",
+        defaultMessage: "Removed Tags",
+      }),
+    },
+  ];
 
   const rows = useMemo(() => {
     return gameHistory.map((historyItem) => ({
@@ -54,7 +96,12 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
   }, [gameHistory, intl]);
 
   return (
-    <Table aria-label="Game Action History Table">
+    <Table
+      aria-label={intl.formatMessage({
+        id: "admin.admin-game-history.game.action.history.table",
+        defaultMessage: "Game Action History Table",
+      })}
+    >
       <TableHeader columns={historyTableColumns}>
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>

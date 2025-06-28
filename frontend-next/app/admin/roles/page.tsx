@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useIntl } from "react-intl";
 
 import RolesService from "@/services/roles.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
@@ -8,6 +9,7 @@ import { IRole } from "@/types/roles.types";
 import RolesDisplayAdmin from "@/components/roles/roles-display-admin";
 
 export default function RolesPage() {
+  const intl = useIntl();
   const [rolesData, setRolesData] = useState<IRole[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,10 +22,20 @@ export default function RolesPage() {
         if (response.success) {
           setRolesData(response.data);
         } else {
-          setError("Failed to fetch roles");
+          setError(
+            intl.formatMessage({
+              id: "roles.page.failed.to.fetch.roles",
+              defaultMessage: "Failed to fetch roles",
+            }),
+          );
         }
       } catch (err) {
-        setError("An error occurred while fetching roles");
+        setError(
+          intl.formatMessage({
+            id: "roles.page.an.error.occurred.while.fetching.roles",
+            defaultMessage: "An error occurred while fetching roles",
+          }),
+        );
       } finally {
         setLoading(false);
       }

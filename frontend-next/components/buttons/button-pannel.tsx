@@ -3,23 +3,30 @@ import { FormattedMessage } from "react-intl";
 
 export const ButtonPanel = ({
   isBeingEdited,
+  isSaveButtonTypeSubmit,
+  isSaveDisabled,
   onEditClicked,
   onCancelEditClicked,
   onDeleteClicked,
-  onSaveClicked,
 }: {
   isBeingEdited: boolean;
+  isSaveButtonTypeSubmit: boolean;
+  isSaveDisabled: boolean;
   onEditClicked: () => void;
   onCancelEditClicked: () => void;
   onDeleteClicked: () => void;
-  onSaveClicked: () => void;
 }) => {
   const editButtons = (
     <div className="flex space-x-3">
       <Button color="danger" size="lg" onPress={() => onCancelEditClicked()}>
         <FormattedMessage defaultMessage="Cancel" id="role.display.cancel" />
       </Button>
-      <Button color="success" size="lg" onPress={() => onSaveClicked()}>
+      <Button
+        color="success"
+        isDisabled={isSaveDisabled}
+        size="lg"
+        type={isSaveButtonTypeSubmit ? "submit" : "button"}
+      >
         <FormattedMessage defaultMessage="Save" id="role.display.save" />
       </Button>
     </div>

@@ -24,8 +24,8 @@ const HistoricEventPage = ({ params }: any) => {
       <LoadingOverlay
         isLoading={loading}
         label={intl.formatMessage({
-          defaultMessage: "Loading event data...",
-          id: "events.page.display.loading",
+          defaultMessage: "Loading historic event...",
+          id: "events.historic.page.display.loading",
         })}
       >
         {allDataLoaded ? (
@@ -61,9 +61,16 @@ const HistoricEventDisplay = ({
   userScenarioRole: IScenarioRole;
   userRole: IRole;
 }) => {
+  const intl = useIntl();
+
   return (
     <div className="w-full flex-col justify-center">
-      <p>Historic event page</p>
+      <p>
+        {intl.formatMessage({
+          id: "historic.page.historic.event.page",
+          defaultMessage: "Historic event page",
+        })}
+      </p>
       <div className="flex-col space-y-5 border-1 p-3">
         <h1>{event.name}</h1>
         <p>{scenario.name}</p>

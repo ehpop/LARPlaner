@@ -1,5 +1,5 @@
 import { Button } from "@heroui/button";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 import { Input } from "@heroui/input";
@@ -12,6 +12,7 @@ import { AdminTableDisplay } from "@/components/table/admin-table-display";
 import PaginationControl from "@/components/table/pagination-control";
 
 const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
+  const intl = useIntl();
   const itemsPerPage = 10;
   const router = useRouter();
 
@@ -77,12 +78,52 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
   };
 
   const columns = [
-    { key: "name", label: "Name", allowsSorting: true },
-    { key: "description", label: "Description", allowsSorting: true },
-    { key: "date", label: "Date", allowsSorting: true },
-    { key: "status", label: "Status", allowsSorting: true },
-    { key: "assignedRoles", label: "Assigned Roles" },
-    { key: "actions", label: "Actions" },
+    {
+      key: "name",
+      label: intl.formatMessage({
+        id: "events.events-display-admin.name",
+        defaultMessage: "Name",
+      }),
+      allowsSorting: true,
+    },
+    {
+      key: "description",
+      label: intl.formatMessage({
+        id: "events.events-display-admin.description",
+        defaultMessage: "Description",
+      }),
+      allowsSorting: true,
+    },
+    {
+      key: "date",
+      label: intl.formatMessage({
+        id: "events.events-display-admin.date",
+        defaultMessage: "Date",
+      }),
+      allowsSorting: true,
+    },
+    {
+      key: "status",
+      label: intl.formatMessage({
+        id: "events.events-display-admin.status",
+        defaultMessage: "Status",
+      }),
+      allowsSorting: true,
+    },
+    {
+      key: "assignedRoles",
+      label: intl.formatMessage({
+        id: "events.events-display-admin.assigned.roles",
+        defaultMessage: "Assigned Roles",
+      }),
+    },
+    {
+      key: "actions",
+      label: intl.formatMessage({
+        id: "events.events-display-admin.actions",
+        defaultMessage: "Actions",
+      }),
+    },
   ];
 
   const rows = currentList.map((event: IEvent) => ({

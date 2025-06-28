@@ -47,8 +47,18 @@ const useGameUserData = ({ gameId }: { gameId: string }) => {
         const eventResponse = await eventsService.getByGameId(gameId);
 
         if (!eventResponse.success) {
-          setError("Failed to load event data");
-          showErrorMessage("Failed to load event data");
+          setError(
+            intl.formatMessage({
+              id: "hooks.use-game-user-data.failed.to.load.event.data",
+              defaultMessage: "Failed to load event data",
+            }),
+          );
+          showErrorMessage(
+            intl.formatMessage({
+              id: "hooks.use-game-user-data.failed.to.load.event.data",
+              defaultMessage: "Failed to load event data",
+            }),
+          );
 
           return;
         }
@@ -57,8 +67,18 @@ const useGameUserData = ({ gameId }: { gameId: string }) => {
         const scenarioId = eventResponse.data.scenarioId;
 
         if (!scenarioId) {
-          setError("Failed to load scenario data");
-          showErrorMessage("Failed to load scenario data");
+          setError(
+            intl.formatMessage({
+              id: "hooks.use-game-user-data.failed.to.load.scenario.data",
+              defaultMessage: "Failed to load scenario data",
+            }),
+          );
+          showErrorMessage(
+            intl.formatMessage({
+              id: "hooks.use-game-user-data.failed.to.load.scenario.data",
+              defaultMessage: "Failed to load scenario data",
+            }),
+          );
 
           return;
         }
@@ -66,8 +86,18 @@ const useGameUserData = ({ gameId }: { gameId: string }) => {
         const scenarioResponse = await scenariosService.getById(scenarioId);
 
         if (!scenarioResponse.success) {
-          setError("Failed to load scenario data");
-          showErrorMessage("Failed to load scenario data");
+          setError(
+            intl.formatMessage({
+              id: "hooks.use-game-user-data.failed.to.load.scenario.data",
+              defaultMessage: "Failed to load scenario data",
+            }),
+          );
+          showErrorMessage(
+            intl.formatMessage({
+              id: "hooks.use-game-user-data.failed.to.load.scenario.data",
+              defaultMessage: "Failed to load scenario data",
+            }),
+          );
 
           return;
         }
@@ -79,8 +109,18 @@ const useGameUserData = ({ gameId }: { gameId: string }) => {
         );
 
         if (!assignedRole) {
-          setError("User is not assigned to this event");
-          showErrorMessage("User is not assigned to this event");
+          setError(
+            intl.formatMessage({
+              id: "hooks.use-game-user-data.user.is.not.assigned.to.this.event",
+              defaultMessage: "User is not assigned to this event",
+            }),
+          );
+          showErrorMessage(
+            intl.formatMessage({
+              id: "hooks.use-game-user-data.user.is.not.assigned.to.this.event",
+              defaultMessage: "User is not assigned to this event",
+            }),
+          );
 
           return;
         }
@@ -117,10 +157,20 @@ const useGameUserData = ({ gameId }: { gameId: string }) => {
         setUserRole(roleResponse.data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to load game data",
+          err instanceof Error
+            ? err.message
+            : intl.formatMessage({
+                id: "hooks.use-game-user-data.failed.to.load.game.data",
+                defaultMessage: "Failed to load game data",
+              }),
         );
         showErrorMessage(
-          err instanceof Error ? err.message : "Failed to load game data",
+          err instanceof Error
+            ? err.message
+            : intl.formatMessage({
+                id: "hooks.use-game-user-data.failed.to.load.game.data",
+                defaultMessage: "Failed to load game data",
+              }),
         );
       } finally {
         setLoading(false);

@@ -1,5 +1,6 @@
 "use client";
 
+import { Link } from "@heroui/link";
 import {
   Button,
   DatePicker,
@@ -9,63 +10,74 @@ import {
   Textarea,
   useDisclosure,
 } from "@heroui/react";
-import React, { useEffect, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
 import {
   getLocalTimeZone,
   today,
   ZonedDateTime,
 } from "@internationalized/date";
-import { Link } from "@heroui/link";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { FormattedMessage, useIntl } from "react-intl";
 
-import { emptyEvent } from "@/services/mock/mock-data";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import EventAssignRolesForm from "@/components/events/event-assign-roles-form";
-import { IEvent } from "@/types/event.types";
-import eventsService from "@/services/events.service";
 import LoadingOverlay from "@/components/general/loading-overlay";
+import eventsService from "@/services/events.service";
+import { emptyEvent } from "@/services/mock/mock-data";
+import scenariosService from "@/services/scenarios.service";
+import { IEvent } from "@/types/event.types";
+import { IScenario } from "@/types/scenario.types";
 import { isValidEventDate, setTimeOnDate } from "@/utils/date-time";
 import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
-import { IScenario } from "@/types/scenario.types";
-import scenariosService from "@/services/scenarios.service";
 
 export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const intl = useIntl();
   const router = useRouter();
-
   const isNewEvent = !initialEvent;
-  const [event, setEvent] = useState(
-    isNewEvent ? emptyEvent : { ...initialEvent },
-  );
-  const [selectedScenario, setSelectedScenario] = useState<IScenario>();
-  const [eventBeforeChanges, setEventBeforeChanges] = useState(event);
-  const [isBeingEdited, setIsBeingEdited] = useState(false);
+
+  const [selectedScenario, setSelectedScenario] = useState<
+    IScenario | undefined
+  >(undefined);
+  const [isBeingEdited, setIsBeingEdited] = useState(isNewEvent);
   const [showAssignRoles, setShowAssignRoles] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [allScenarios, setAllScenarios] = useState<IScenario[]>([]);
+  const [lastSavedEvent, setLastSavedEvent] = useState(initialEvent);
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { isDirty },
+  } = useForm<IEvent>({
+    defaultValues: lastSavedEvent || emptyEvent,
+  });
+
+  const watchedName = watch("name");
+  const watchedScenarioId = watch("scenarioId");
 
   useEffect(() => {
+    setIsLoading(true);
     scenariosService
       .getAll()
       .then((res) => {
         if (res.success) {
           setAllScenarios(res.data);
-
-          if (event.scenarioId) {
+          if (watchedScenarioId) {
             const foundScenario = res.data.find(
-              (s) => s.id === event.scenarioId,
+              (s) => s.id === watchedScenarioId,
             );
 
-            if (foundScenario) {
-              setSelectedScenario(foundScenario);
-            }
+            setSelectedScenario(foundScenario);
           }
         }
       })
@@ -73,92 +85,41 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const [touched, setTouched] = useState({
-    name: false,
-    description: false,
-    scenarioId: false,
-    date: false,
-  });
-
-  const handleTouched = (key: keyof typeof touched) => {
-    if (touched[key]) {
-      return;
-    }
-    setTouched({ ...touched, [key]: true });
-  };
-
-  const isInvalidProperty = (name: keyof typeof touched) => {
-    if (!touched[name]) {
-      return false;
-    }
-
-    return (
-      event[name as keyof IEvent] === undefined ||
-      event[name as keyof IEvent] === "" ||
-      event[name as keyof IEvent] === null
-    );
-  };
-
-  const handleSave = () => {
+  const onSubmit = (data: IEvent) => {
     setIsSaving(true);
+    const serviceCall = isNewEvent
+      ? eventsService.save(data)
+      : eventsService.update(data.id!, data);
 
-    eventsService
-      .save(event)
-      .then((response) => {
-        if (response.success) {
+    serviceCall
+      .then((res) => {
+        if (res.success) {
           showSuccessToastWithTimeout("Event saved successfully");
-          router.push("/admin/events");
+          if (isNewEvent) {
+            router.push("/admin/events");
+          } else {
+            setIsBeingEdited(false);
+            reset(res.data);
+            setLastSavedEvent(res.data);
+          }
         } else {
-          showErrorToastWithTimeout(response.data);
+          showErrorToastWithTimeout(res.data);
         }
       })
-      .catch((error) => {
-        showErrorToastWithTimeout(error);
-      })
-      .finally(() => {
-        setIsSaving(false);
-      });
-  };
-
-  const handleSaveEditedRole = () => {
-    if (!event.id) {
-      return;
-    }
-
-    setIsSaving(true);
-    eventsService
-      .update(event.id, event)
-      .then((response) => {
-        if (response.success) {
-          showSuccessToastWithTimeout("Event saved successfully");
-          setEvent(response.data);
-          setEventBeforeChanges(response.data);
-          setIsBeingEdited(false);
-        } else {
-          showErrorToastWithTimeout(response.data);
-        }
-      })
-      .catch((error) => {
-        showErrorToastWithTimeout(error);
-      })
-      .finally(() => {
-        setIsSaving(false);
-      });
+      .catch((error) => showErrorToastWithTimeout(error))
+      .finally(() => setIsSaving(false));
   };
 
   const handleConfirmCancel = () => {
+    reset(lastSavedEvent);
     setIsBeingEdited(false);
-    setEvent(eventBeforeChanges);
   };
 
   const handleConfirmDelete = () => {
-    if (!event.id) {
-      return;
-    }
-
+    if (!lastSavedEvent?.id) return;
     setIsDeleting(true);
     eventsService
-      .delete(event.id)
+      .delete(lastSavedEvent.id)
       .then((response) => {
         if (response.success) {
           showSuccessToastWithTimeout("Event deleted successfully");
@@ -167,12 +128,8 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
           showErrorToastWithTimeout(response.data);
         }
       })
-      .catch((error) => {
-        showErrorToastWithTimeout(error);
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+      .catch((error) => showErrorToastWithTimeout(error))
+      .finally(() => setIsDeleting(false));
   };
 
   const {
@@ -186,355 +143,269 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
     onOpenChange: onOpenChangeCancel,
   } = useDisclosure();
 
-  const confirmDelete = (
-    <ConfirmActionModal
-      handleOnConfirm={() => handleConfirmDelete()}
-      isOpen={isOpenDelete}
-      prompt={intl.formatMessage({
-        id: "events.id.page.delete",
-        defaultMessage:
-          "Are you sure you want to delete this event? This action will not be reversible.",
-      })}
-      title={intl.formatMessage({
-        id: "events.id.page.deleteTitle",
-        defaultMessage: "Do you want to delete this event?",
-      })}
-      onOpenChange={onOpenChangeDelete}
-    />
-  );
-
-  const confirmCancel = (
-    <ConfirmActionModal
-      handleOnConfirm={() => handleConfirmCancel()}
-      isOpen={isOpenCancel}
-      prompt={intl.formatMessage({
-        id: "events.id.page.cancelEdit",
-        defaultMessage:
-          "Are you sure you want to cancel your changes? This action will not be reversible.",
-      })}
-      title={intl.formatMessage({
-        id: "event.id.page.cancelEditTitle",
-        defaultMessage: "Do you want to cancel added changes?",
-      })}
-      onOpenChange={onOpenChangeCancel}
-    />
-  );
-
-  const nameElement = (
-    <Input
-      isRequired
-      className="w-full"
-      errorMessage={intl.formatMessage({
-        id: "events.page.display.nameError",
-        defaultMessage: "Name cannot be empty",
-      })}
-      isDisabled={!(isNewEvent || isBeingEdited)}
-      isInvalid={isInvalidProperty("name")}
-      label={intl.formatMessage({
-        id: "events.page.display.name",
-        defaultMessage: "Name",
-      })}
-      size="lg"
-      value={event?.name}
-      variant="underlined"
-      onChange={(e) => {
-        handleTouched("name");
-
-        setEvent({
-          ...event,
-          name: e.target.value,
-        });
-      }}
-    />
-  );
-
-  const isInvalidDate = (date: ZonedDateTime | undefined) => {
-    if (!touched.date) {
-      return false;
-    }
-
-    return date && !isValidEventDate(date);
-  };
-
-  const dateTimeElement = (
-    <div className="w-full flex justify-between space-x-3">
-      <DatePicker
-        className="w-1/2"
-        errorMessage={intl.formatMessage({
-          id: "events.page.display.dateError",
-          defaultMessage: "Date cannot be empty and must be in the future",
-        })}
-        granularity="day"
-        isDisabled={!(isNewEvent || isBeingEdited)}
-        isInvalid={isInvalidDate(event?.date)}
-        label={intl.formatMessage({
-          id: "events.page.display.date",
-          defaultMessage: "Date",
-        })}
-        minValue={today(getLocalTimeZone())}
-        size="lg"
-        value={event?.date}
-        variant="underlined"
-        onChange={(date) => {
-          if (date === null) {
-            return;
-          }
-          handleTouched("date");
-
-          const newDate = event.date.set({
-            year: date.year,
-            month: date.month,
-            day: date.day,
-          });
-
-          setEvent({
-            ...event,
-            date: newDate,
-          });
-        }}
-      />
-      <Input
-        className="w-1/2"
-        errorMessage={intl.formatMessage({
-          id: "events.page.display.timeError",
-          defaultMessage: "Time cannot be empty and must be in the future",
-        })}
-        isDisabled={!(isNewEvent || isBeingEdited)}
-        isInvalid={isInvalidDate(event?.date)}
-        label={intl.formatMessage({
-          id: "events.page.display.time",
-          defaultMessage: "Time",
-        })}
-        size="lg"
-        type="time"
-        value={event?.date.hour + ":" + event?.date.minute}
-        variant="underlined"
-        onChange={(e) => {
-          handleTouched("date");
-          const dateWithNewTime = setTimeOnDate(event.date, e.target.value);
-
-          setEvent({
-            ...event,
-            date: dateWithNewTime,
-          });
-        }}
-      />
-    </div>
-  );
-
-  const descriptionElement = (
-    <Textarea
-      isRequired
-      className="w-full"
-      errorMessage={intl.formatMessage({
-        id: "events.page.display.descriptionError",
-        defaultMessage: "Description cannot be empty",
-      })}
-      isDisabled={!(isNewEvent || isBeingEdited)}
-      isInvalid={isInvalidProperty("description")}
-      label={intl.formatMessage({
-        id: "events.page.display.description",
-        defaultMessage: "Description",
-      })}
-      size="lg"
-      value={event?.description}
-      variant="underlined"
-      onChange={(e) => {
-        handleTouched("description");
-
-        setEvent({
-          ...event,
-          description: e.target.value,
-        });
-      }}
-    />
-  );
-
-  const scenarioElement = (
-    <div className="w-full flex flex-row items-baseline space-x-3">
-      <Select
-        isRequired
-        errorMessage={intl.formatMessage({
-          id: "events.page.display.scenarioError",
-          defaultMessage: "Scenario cannot be empty",
-        })}
-        isDisabled={!(isNewEvent || isBeingEdited)}
-        isInvalid={isInvalidProperty("scenarioId")}
-        label={intl.formatMessage({
-          id: "events.page.display.scenario",
-          defaultMessage: "Scenario",
-        })}
-        placeholder={intl.formatMessage({
-          id: "events.page.display.selectScenario",
-          defaultMessage: "Select a scenario...",
-        })}
-        selectedKeys={event?.scenarioId ? [event.scenarioId] : []}
-        size="lg"
-        variant="underlined"
-        onSelectionChange={async (e) => {
-          const scenarioId = e.anchorKey;
-
-          if (!scenarioId) {
-            return;
-          }
-
-          const getScenario = async (id: string) => {
-            const response = await scenariosService.getById(id);
-
-            if (response.success) {
-              return response.data;
-            }
-
-            return null;
-          };
-
-          const scenario = await getScenario(scenarioId);
-
-          if (scenario) {
-            setSelectedScenario(scenario);
-            setEvent({
-              ...event,
-              scenarioId: scenarioId,
-              assignedRoles: scenario.roles.map((role) => ({
-                scenarioRoleId: role.id as string,
-                assignedEmail: "",
-              })),
-            });
-          }
-
-          setTouched({
-            ...touched,
-            scenarioId: true,
-          });
-        }}
-      >
-        {allScenarios.map((scenario) => (
-          <SelectItem key={scenario.id}>{scenario.name}</SelectItem>
-        ))}
-      </Select>
-      <div className="flex flex-row sm:space-x-3 space-x-1">
-        <Button
-          as={Link}
-          color="success"
-          href={"/admin/scenarios/new"}
-          isDisabled={!(isNewEvent || isBeingEdited)}
-        >
-          <FormattedMessage
-            defaultMessage="New"
-            id="events.page.display.addScenario"
-          />
-        </Button>
-        <Button
-          as={Link}
-          color="warning"
-          href={`/admin/scenarios/${event.scenarioId}`}
-          isDisabled={!((isNewEvent || isBeingEdited) && event.scenarioId)}
-        >
-          <FormattedMessage
-            defaultMessage="Edit"
-            id="events.page.display.editScenario"
-          />
-        </Button>
-      </div>
-    </div>
-  );
-
-  const actionButtons = (
-    <div className="w-full flex justify-end">
-      <ButtonPanel
-        isBeingEdited={isBeingEdited}
-        onCancelEditClicked={() => {
-          onOpenCancel();
-        }}
-        onDeleteClicked={() => {
-          onOpenDelete();
-        }}
-        onEditClicked={() => {
-          setIsBeingEdited(true);
-        }}
-        onSaveClicked={() => handleSaveEditedRole()}
-      />
-      {confirmCancel}
-      {confirmDelete}
-    </div>
-  );
-
-  const saveButton = (
-    <div className="w-full flex justify-end">
-      <Button
-        color="success"
-        size="lg"
-        onPress={() => {
-          handleSave();
-        }}
-      >
-        <FormattedMessage
-          defaultMessage="Save"
-          id="events.page.new.addEvent.save"
-        />
-      </Button>
-    </div>
-  );
-
-  const assignRolesElement = (
-    <div className="w-full flex flex-col p-3 border-1">
-      <div className="w-full flex flex-row justify-between">
-        <p className="text-xl">
-          <FormattedMessage
-            defaultMessage="Assign roles"
-            id="events.page.display.tags"
-          />
-        </p>
-        <Button
-          size="sm"
-          variant="bordered"
-          onPress={() => setShowAssignRoles(!showAssignRoles)}
-        >
-          {showAssignRoles ? "-" : "+"}
-        </Button>
-      </div>
-      {showAssignRoles && (
-        <EventAssignRolesForm
-          event={event}
-          isBeingEdited={isNewEvent || isBeingEdited}
-          scenario={selectedScenario}
-          setEvent={setEvent}
-        />
-      )}
-    </div>
-  );
-
-  const titleElement = (
-    <div className="w-full flex justify-center">
-      <p className="text-3xl" id="view-event-modal">
-        {event.id ? (
-          <FormattedMessage
-            defaultMessage='Event "{eventName}"'
-            id="event.form.title.edit"
-            values={{ eventName: event.name }}
-          />
-        ) : (
-          <FormattedMessage
-            defaultMessage="Add Event"
-            id="event.form.title.add.new"
-          />
-        )}
-      </p>
-    </div>
-  );
-
   const form = (
-    <div className="w-full flex justify-center">
+    <form
+      className="w-full flex justify-center"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="sm:w-4/5 w-full space-y-3 border-1 p-3">
-        {titleElement}
-        {nameElement}
-        {dateTimeElement}
-        {descriptionElement}
-        {scenarioElement}
-        {assignRolesElement}
-        {isNewEvent ? saveButton : actionButtons}
+        <div className="w-full flex justify-center">
+          <p className="text-3xl" id="view-event-modal">
+            {isNewEvent ? (
+              <FormattedMessage
+                defaultMessage="Add Event"
+                id="event.form.title.add.new"
+              />
+            ) : (
+              <FormattedMessage
+                defaultMessage='Event "{eventName}"'
+                id="event.form.title.edit"
+                values={{ eventName: watchedName }}
+              />
+            )}
+          </p>
+        </div>
+
+        <Controller
+          control={control}
+          name="name"
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              isRequired
+              errorMessage={fieldState.error?.message}
+              isDisabled={!isBeingEdited}
+              isInvalid={!!fieldState.error}
+              label={intl.formatMessage({
+                defaultMessage: "Name",
+                id: "events.page.display.name",
+              })}
+              size="lg"
+              variant="underlined"
+            />
+          )}
+          rules={{ required: "Name cannot be empty" }}
+        />
+
+        <Controller
+          control={control}
+          name="date"
+          render={({ field, fieldState }) => {
+            const handleDateChange = (datePart: ZonedDateTime | null) => {
+              if (!datePart) return;
+              const newDateTime = field.value.set({
+                year: datePart.year,
+                month: datePart.month,
+                day: datePart.day,
+              });
+
+              field.onChange(newDateTime);
+            };
+
+            const handleTimeChange = (
+              e: React.ChangeEvent<HTMLInputElement>,
+            ) => {
+              const newDateTime = setTimeOnDate(field.value, e.target.value);
+
+              field.onChange(newDateTime);
+            };
+
+            return (
+              <div className="w-full flex justify-between space-x-3">
+                <DatePicker
+                  className="w-1/2"
+                  errorMessage={fieldState.error?.message}
+                  granularity="day"
+                  isDisabled={!isBeingEdited}
+                  isInvalid={!!fieldState.error}
+                  label={intl.formatMessage({
+                    defaultMessage: "Date of the event",
+                    id: "events.page.display.date",
+                  })}
+                  minValue={today(getLocalTimeZone())}
+                  size="lg"
+                  value={field.value}
+                  variant="underlined"
+                  onChange={handleDateChange}
+                />
+                <Input
+                  className="w-1/2"
+                  isDisabled={!isBeingEdited}
+                  isInvalid={!!fieldState.error}
+                  label={intl.formatMessage({
+                    defaultMessage: "Time of the event",
+                    id: "events.page.display.time",
+                  })}
+                  size="lg"
+                  type="time"
+                  value={`${String(field.value.hour).padStart(2, "0")}:${String(field.value.minute).padStart(2, "0")}`}
+                  variant="underlined"
+                  onChange={handleTimeChange}
+                />
+              </div>
+            );
+          }}
+          rules={{
+            validate: (date) =>
+              isValidEventDate(date) || "Date and time must be in the future",
+          }}
+        />
+
+        <Controller
+          control={control}
+          name="description"
+          render={({ field, fieldState }) => (
+            <Textarea
+              {...field}
+              isRequired
+              errorMessage={fieldState.error?.message}
+              isDisabled={!isBeingEdited}
+              isInvalid={!!fieldState.error}
+              label={intl.formatMessage({
+                defaultMessage: "Description",
+                id: "events.page.display.description",
+              })}
+              size="lg"
+              variant="underlined"
+            />
+          )}
+          rules={{
+            required: intl.formatMessage({
+              defaultMessage: "Description cannot be empty",
+              id: "events.page.display.description.required",
+            }),
+          }}
+        />
+
+        <div className="w-full flex flex-row items-baseline space-x-3">
+          <Controller
+            control={control}
+            name="scenarioId"
+            render={({ field, fieldState }) => (
+              <Select
+                isRequired
+                errorMessage={fieldState.error?.message}
+                isDisabled={!isBeingEdited}
+                isInvalid={!!fieldState.error}
+                label={intl.formatMessage({
+                  defaultMessage: "Scenario",
+                  id: "events.page.display.scenario",
+                })}
+                placeholder={intl.formatMessage({
+                  defaultMessage: "Select scenario",
+                  id: "events.page.display.selectScenario",
+                })}
+                selectedKeys={field.value ? [field.value] : []}
+                size="lg"
+                variant="underlined"
+                onSelectionChange={async (key) => {
+                  if (!key) return;
+                  const scenarioId = key.anchorKey;
+
+                  field.onChange(scenarioId);
+
+                  const scenario = allScenarios.find(
+                    (s) => s.id === scenarioId,
+                  );
+
+                  if (scenario) {
+                    setSelectedScenario(scenario);
+                    setValue(
+                      "assignedRoles",
+                      scenario.roles.map((role) => ({
+                        scenarioRoleId: role.id as string,
+                        assignedEmail: "",
+                      })),
+                      { shouldValidate: true },
+                    );
+                  }
+                }}
+              >
+                {allScenarios.map((s) => (
+                  <SelectItem key={s.id!}>{s.name}</SelectItem>
+                ))}
+              </Select>
+            )}
+            rules={{
+              required: intl.formatMessage({
+                defaultMessage: "Scenario cannot be empty",
+                id: "events.page.display.scenario.required",
+              }),
+            }}
+          />
+          <div className="flex flex-row sm:space-x-3 space-x-1">
+            <Button
+              as={Link}
+              color="success"
+              href={"/admin/scenarios/new"}
+              isDisabled={!isBeingEdited}
+            >
+              New
+            </Button>
+            <Button
+              as={Link}
+              color="warning"
+              href={`/admin/scenarios/${watchedScenarioId}`}
+              isDisabled={!isBeingEdited || !watchedScenarioId}
+            >
+              Edit
+            </Button>
+          </div>
+        </div>
+
+        <div className="w-full flex flex-col p-3 border-1">
+          <div className="w-full flex flex-row justify-between">
+            <p className="text-xl">
+              {intl.formatMessage({
+                defaultMessage: "Assign roles",
+                id: "events.page.display.assignRoles",
+              })}
+            </p>
+            <Button
+              size="sm"
+              variant="bordered"
+              onPress={() => setShowAssignRoles(!showAssignRoles)}
+            >
+              {showAssignRoles ? "-" : "+"}
+            </Button>
+          </div>
+          {showAssignRoles && (
+            <EventAssignRolesForm
+              control={control}
+              isBeingEdited={isBeingEdited}
+              scenario={selectedScenario}
+            />
+          )}
+        </div>
+
+        {isNewEvent ? (
+          <div className="w-full flex justify-end">
+            <Button
+              color="success"
+              isLoading={isSaving}
+              size="lg"
+              type="submit"
+            >
+              {intl.formatMessage({
+                defaultMessage: "Save",
+                id: "events.page.display.save",
+              })}
+            </Button>
+          </div>
+        ) : (
+          <div className="w-full flex justify-end">
+            <ButtonPanel
+              isBeingEdited={isBeingEdited}
+              isSaveButtonTypeSubmit={true}
+              isSaveDisabled={!isDirty || isSaving}
+              onCancelEditClicked={onOpenCancel}
+              onDeleteClicked={onOpenDelete}
+              onEditClicked={() => setIsBeingEdited(true)}
+            />
+          </div>
+        )}
       </div>
-    </div>
+    </form>
   );
 
   return (
@@ -543,6 +414,32 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
       label={isSaving ? "Saving event..." : "Deleting event..."}
     >
       {form}
+      <ConfirmActionModal
+        handleOnConfirm={handleConfirmDelete}
+        isOpen={isOpenDelete}
+        prompt={intl.formatMessage({
+          defaultMessage: "Are you sure you want to delete this event?",
+          id: "events.id.page.delete",
+        })}
+        title={intl.formatMessage({
+          defaultMessage: "Delete event",
+          id: "events.id.page.deleteTitle",
+        })}
+        onOpenChange={onOpenChangeDelete}
+      />
+      <ConfirmActionModal
+        handleOnConfirm={handleConfirmCancel}
+        isOpen={isOpenCancel}
+        prompt={intl.formatMessage({
+          defaultMessage: "Are you sure you want to cancel editing this event?",
+          id: "events.id.page.cancelEdit",
+        })}
+        title={intl.formatMessage({
+          defaultMessage: "Cancel editing event",
+          id: "events.id.page.cancelEditTitle",
+        })}
+        onOpenChange={onOpenChangeCancel}
+      />
     </LoadingOverlay>
   );
 }

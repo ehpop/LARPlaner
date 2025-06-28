@@ -1,19 +1,21 @@
 import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
-import { FormattedMessage, useIntl } from "react-intl";
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form"; // <-- RHF imports
+import { FormattedMessage, useIntl } from "react-intl";
 
-import { emptyRole } from "@/services/mock/mock-data";
-import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
-import { IRole } from "@/types/roles.types";
-import rolesService from "@/services/roles.service";
+import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import LoadingOverlay from "@/components/general/loading-overlay";
+import InputTagsWithTable from "@/components/input-tags-with-table";
+import { TagsProvider } from "@/providers/tags-provider";
+import { emptyRole } from "@/services/mock/mock-data";
+import rolesService from "@/services/roles.service";
+import { IRole } from "@/types/roles.types";
 import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
-import InputTagsWithTable from "@/components/input-tags-with-table";
 
 export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const intl = useIntl();
@@ -22,35 +24,22 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const isNewRole = !initialRole;
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
-  const [role, setRole] = useState(initialRole || emptyRole);
-  const [roleBeforeEdit, setRoleBeforeEdit] = useState(role);
   const [showTags, setShowTags] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [lastSavedRole, setLastSavedRole] = useState(initialRole);
 
-  const [touched, setTouched] = useState({
-    name: false,
-    description: false,
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors, isDirty },
+  } = useForm<IRole>({
+    defaultValues: lastSavedRole || emptyRole,
   });
 
-  const handleTouched = (key: keyof typeof touched) => {
-    if (touched[key]) {
-      return;
-    }
-    setTouched({ ...touched, [key]: true });
-  };
-
-  const isInvalidProperty = (name: keyof typeof touched) => {
-    if (!touched[name]) {
-      return false;
-    }
-
-    return (
-      role[name as keyof IRole] === undefined ||
-      role[name as keyof IRole] === "" ||
-      role[name as keyof IRole] === null
-    );
-  };
+  const watchedRoleName = watch("name");
 
   const {
     onOpen: onOpenDelete,
@@ -63,62 +52,36 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
     onOpenChange: onOpenChangeCancel,
   } = useDisclosure();
 
-  const handleSave = () => {
+  const onSubmit = (data: IRole) => {
     setIsSaving(true);
+    const serviceAction = isNewRole
+      ? rolesService.save(data)
+      : rolesService.update(data.id!, data);
 
-    rolesService
-      .save(role)
+    serviceAction
       .then((result) => {
         if (result.success) {
           showSuccessToastWithTimeout("Role saved successfully");
-          router.push("/admin/roles");
+          if (isNewRole) {
+            router.push("/admin/roles");
+          } else {
+            setIsBeingEdited(false);
+            reset(result.data);
+            setLastSavedRole(result.data);
+          }
         } else {
           showErrorToastWithTimeout(result.data);
         }
       })
-      .catch((error) => {
-        showErrorToastWithTimeout(error);
-      })
-      .finally(() => {
-        setIsSaving(false);
-      });
-  };
-
-  const handleSaveEditedRole = () => {
-    if (!role.id) {
-      return showErrorToastWithTimeout("Role ID is missing");
-    }
-
-    setIsSaving(true);
-
-    rolesService
-      .update(role.id, role)
-      .then((result) => {
-        if (result.success) {
-          showSuccessToastWithTimeout("Role saved successfully");
-          setIsBeingEdited(false);
-          setRole(result.data);
-          setRoleBeforeEdit(result.data);
-        } else {
-          showErrorToastWithTimeout(result.data);
-        }
-      })
-      .catch((error) => {
-        showErrorToastWithTimeout(error);
-      })
-      .finally(() => {
-        setIsSaving(false);
-      });
+      .catch((error) => showErrorToastWithTimeout(error))
+      .finally(() => setIsSaving(false));
   };
 
   const handleConfirmDelete = () => {
-    if (!role.id) {
-      return;
-    }
-
+    if (!lastSavedRole?.id) return;
     setIsDeleting(true);
     rolesService
-      .delete(role.id)
+      .delete(lastSavedRole.id)
       .then((result) => {
         if (result.success) {
           showSuccessToastWithTimeout("Role deleted successfully");
@@ -127,124 +90,167 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
           showErrorToastWithTimeout(result.data);
         }
       })
-      .catch((error) => {
-        showErrorToastWithTimeout(error);
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+      .catch((error) => showErrorToastWithTimeout(error))
+      .finally(() => setIsDeleting(false));
   };
 
-  const roleDescription = (
-    <Textarea
-      isRequired
-      description={intl.formatMessage({
-        id: "events.id.page.description.description",
-        defaultMessage: "Base description of the character",
-      })}
-      errorMessage={intl.formatMessage({
-        id: "role.display.description.error",
-        defaultMessage: "Description cannot be empty",
-      })}
-      isDisabled={!(isBeingEdited || isNewRole)}
-      isInvalid={isInvalidProperty("description")}
-      label={intl.formatMessage({
-        id: "events.id.page.description.label",
-        defaultMessage: "Description",
-      })}
-      placeholder={intl.formatMessage({
-        id: "role.display.description.placeholder",
-        defaultMessage: "Insert role description...",
-      })}
-      size="lg"
-      value={role.description}
-      variant="underlined"
-      onChange={(e) => {
-        setRole({ ...role, description: e.target.value });
-        handleTouched("description");
-      }}
-    />
-  );
-  const roleName = (
-    <Input
-      isRequired
-      errorMessage={intl.formatMessage({
-        id: "role.display.name.error",
-        defaultMessage: "Role name cannot be empty",
-      })}
-      isDisabled={!(isBeingEdited || isNewRole)}
-      isInvalid={isInvalidProperty("name")}
-      label={intl.formatMessage({
-        id: "role.display.name",
-        defaultMessage: "Name",
-      })}
-      placeholder={intl.formatMessage({
-        id: "role.display.name.placeholder",
-        defaultMessage: "Insert role name...",
-      })}
-      size="lg"
-      value={role.name}
-      variant="underlined"
-      onChange={(e) => {
-        setRole({ ...role, name: e.target.value });
-        handleTouched("name");
-      }}
-    />
-  );
+  const handleConfirmCancel = () => {
+    reset(lastSavedRole);
+    setIsBeingEdited(false);
+  };
 
-  const titleElement = (
-    <div className="w-full flex justify-center">
-      <p className="text-3xl">
-        {isNewRole ? (
-          <FormattedMessage defaultMessage="New Role" id="role.form.newRole" />
-        ) : (
-          <FormattedMessage
-            defaultMessage='Role "{roleName}"'
-            id="role.form.roleName"
-            values={{ roleName: role.name }}
-          />
-        )}
-      </p>
-    </div>
-  );
+  const form = (
+    <TagsProvider>
+      <form
+        className="w-full flex flex-col justify-center border-1 p-3 space-y-3"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="w-full flex justify-center">
+          <p className="text-3xl">
+            {isNewRole ? (
+              <FormattedMessage
+                defaultMessage="New Role"
+                id="role.form.newRole"
+              />
+            ) : (
+              <FormattedMessage
+                defaultMessage='Role "{roleName}"'
+                id="role.form.roleName"
+                values={{ roleName: watchedRoleName }}
+              />
+            )}
+          </p>
+        </div>
 
-  const tagsElement = (
-    <div className="w-full min-h-full border-1 p-3 space-y-3">
-      <div className="w-full flex flex-row justify-between">
-        <p className="text-xl font-bold">
-          <FormattedMessage
-            defaultMessage="Character's tags:"
-            id="role.id.page.display.tags"
-          />
-        </p>
-        <Button
-          size="sm"
-          variant="bordered"
-          onPress={() => setShowTags(!showTags)}
-        >
-          {showTags ? "-" : "+"}
-        </Button>
-      </div>
-      {showTags && (
-        <InputTagsWithTable
-          addedTags={role.tags}
-          description={intl.formatMessage({
-            defaultMessage: "Tag that will be required to display action",
-            id: "scenarios.new.page.requiredTagsToDisplayActionDescription",
-          })}
-          inputLabel={intl.formatMessage({
-            defaultMessage: "Tag value",
-            id: "scenarios.new.page.input",
-          })}
-          isDisabled={!(isBeingEdited || isNewRole)}
-          placeholder={intl.formatMessage({
-            defaultMessage: "Insert tag name...",
-            id: "role.display.tag.name.placeholder",
-          })}
-          setAddedTags={(tags) => setRole({ ...role, tags: tags })}
+        <Controller
+          control={control}
+          name="name"
+          render={({ field }) => (
+            <Input
+              {...field}
+              isRequired
+              errorMessage={errors.name?.message}
+              isDisabled={!isNewRole && !isBeingEdited}
+              isInvalid={!!errors.name}
+              label={intl.formatMessage({
+                defaultMessage: "Role name",
+                id: "role.display.name",
+              })}
+              placeholder={intl.formatMessage({
+                defaultMessage: "Enter role name",
+                id: "role.display.name.placeholder",
+              })}
+              size="lg"
+              variant="underlined"
+            />
+          )}
+          rules={{
+            required: intl.formatMessage({
+              defaultMessage: "Role name cannot be empty",
+              id: "role.display.name.required",
+            }),
+          }}
         />
-      )}
-    </div>
+
+        <Controller
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <Textarea
+              {...field}
+              isRequired
+              description={intl.formatMessage({
+                id: "events.id.page.description.description",
+              })}
+              errorMessage={errors.description?.message}
+              isDisabled={!isNewRole && !isBeingEdited}
+              isInvalid={!!errors.description}
+              label={intl.formatMessage({
+                id: "events.id.page.description.label",
+              })}
+              placeholder={intl.formatMessage({
+                id: "role.display.description.placeholder",
+              })}
+              size="lg"
+              variant="underlined"
+            />
+          )}
+          rules={{
+            required: intl.formatMessage({
+              defaultMessage: "Description cannot be empty",
+              id: "role.display.description.required",
+            }),
+          }}
+        />
+
+        <div className="w-full min-h-full border-1 p-3 space-y-3">
+          <div className="w-full flex flex-row justify-between">
+            <p className="text-xl font-bold">
+              <FormattedMessage
+                defaultMessage="Character's tags:"
+                id="role.id.page.display.tags"
+              />
+            </p>
+            <Button
+              size="sm"
+              variant="bordered"
+              onPress={() => setShowTags(!showTags)}
+            >
+              {showTags ? "-" : "+"}
+            </Button>
+          </div>
+          {showTags && (
+            <Controller
+              control={control}
+              name="tags"
+              render={({ field }) => (
+                <InputTagsWithTable
+                  addedTags={field.value || []}
+                  description={intl.formatMessage({
+                    defaultMessage: "Required tags to display action",
+                    id: "scenarios.new.page.requiredTagsToDisplayActionDescription",
+                  })}
+                  inputLabel={intl.formatMessage({
+                    defaultMessage: "Required tags to display action",
+                    id: "scenarios.new.page.input",
+                  })}
+                  isDisabled={!isNewRole && !isBeingEdited}
+                  placeholder={intl.formatMessage({
+                    defaultMessage: "Enter tag name",
+                    id: "role.display.tag.name.placeholder",
+                  })}
+                  setAddedTags={field.onChange}
+                />
+              )}
+            />
+          )}
+        </div>
+
+        {isNewRole ? (
+          <div className="w-full flex justify-end space-x-3">
+            <Button
+              color="success"
+              isLoading={isSaving}
+              size="lg"
+              type="submit"
+            >
+              <FormattedMessage defaultMessage="Save" id="role.display.save" />
+            </Button>
+          </div>
+        ) : (
+          <div className="w-full flex justify-end">
+            <ButtonPanel
+              isBeingEdited={isBeingEdited}
+              isSaveButtonTypeSubmit={true}
+              isSaveDisabled={!isDirty || isSaving}
+              onCancelEditClicked={onOpenCancel}
+              onDeleteClicked={onOpenDelete}
+              onEditClicked={() => setIsBeingEdited(true)}
+            />
+          </div>
+        )}
+      </form>
+    </TagsProvider>
   );
 
   const confirmDelete = (
@@ -266,10 +272,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
 
   const confirmCancel = (
     <ConfirmActionModal
-      handleOnConfirm={() => {
-        setIsBeingEdited(false);
-        setRole(roleBeforeEdit);
-      }}
+      handleOnConfirm={handleConfirmCancel}
       isOpen={isOpenCancel}
       prompt={intl.formatMessage({
         id: "roles.id.page.cancelEdit",
@@ -284,56 +287,24 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
     />
   );
 
-  const actionButtons = (
-    <div className="w-full flex justify-end">
-      <ButtonPanel
-        isBeingEdited={isBeingEdited}
-        onCancelEditClicked={() => {
-          onOpenCancel();
-        }}
-        onDeleteClicked={() => {
-          onOpenDelete();
-        }}
-        onEditClicked={() => setIsBeingEdited(true)}
-        onSaveClicked={() => {
-          handleSaveEditedRole();
-        }}
-      />
-      {confirmCancel}
-      {confirmDelete}
-    </div>
-  );
-
-  const saveButton = (
-    <div className="w-full flex justify-end space-x-3">
-      <Button
-        color="success"
-        size="lg"
-        onPress={() => {
-          handleSave();
-        }}
-      >
-        <FormattedMessage defaultMessage="Save" id="role.display.save" />
-      </Button>
-    </div>
-  );
-
-  const form = (
-    <div className="w-full flex flex-col justify-center border-1 p-3 space-y-3">
-      {titleElement}
-      {roleName}
-      {roleDescription}
-      {tagsElement}
-      {isNewRole ? saveButton : actionButtons}
-    </div>
-  );
-
   return (
     <LoadingOverlay
       isLoading={isSaving || isDeleting}
-      label={isSaving ? "Saving..." : "Deleting..."}
+      label={
+        isSaving
+          ? intl.formatMessage({
+              defaultMessage: "Saving...",
+              id: "role.form.saving",
+            })
+          : intl.formatMessage({
+              defaultMessage: "Deleting...",
+              id: "role.form.deleting",
+            })
+      }
     >
       {form}
+      {confirmCancel}
+      {confirmDelete}
     </LoadingOverlay>
   );
 }

@@ -1,3 +1,4 @@
+import { CardBody, CardHeader } from "@heroui/card";
 import {
   Button,
   Card,
@@ -7,15 +8,15 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { FormattedMessage } from "react-intl";
 import { useEffect, useState } from "react";
-import { CardBody, CardHeader } from "@heroui/card";
+import { FormattedMessage, useIntl } from "react-intl";
 
-import { IGameActionLog, IGameSession } from "@/types/game.types";
-import gameService from "@/services/game.service";
 import { useAuth } from "@/providers/firebase-provider";
+import gameService from "@/services/game.service";
+import { IGameActionLog, IGameSession } from "@/types/game.types";
 
 const UserGameHistory = ({ game }: { game: IGameSession }) => {
+  const intl = useIntl();
   const auth = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [gameHistory, setGameHistory] = useState<IGameActionLog[]>([]);
@@ -115,6 +116,8 @@ const GameHistoryLogElement = ({
 }: {
   historyItem: IGameActionLog;
 }) => {
+  const intl = useIntl();
+
   return (
     <Card>
       <CardHeader>
@@ -133,7 +136,12 @@ const GameHistoryLogElement = ({
         <p
           className={`text-xs ${historyItem.success ? "text-green-500" : "text-red-500"}`}
         >
-          {historyItem.success ? "Success" : "Failed"}
+          {historyItem.success
+            ? intl.formatMessage({
+                id: "user.user-game-history.success",
+                defaultMessage: "Success",
+              })
+            : "Failed"}
         </p>
         {historyItem.appliedTags.length > 0 && (
           <div className="mt-2">

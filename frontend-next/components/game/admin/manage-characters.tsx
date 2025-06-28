@@ -31,6 +31,7 @@ import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
+import { TagsProvider } from "@/providers/tags-provider";
 
 const ManageCharacters = ({
   gameId,
@@ -208,7 +209,12 @@ const ManageCharactersForm = ({
       .update(game.id, updatedGameData)
       .then((response) => {
         if (response.success) {
-          showSuccessToastWithTimeout("Role tags updated successfully");
+          showSuccessToastWithTimeout(
+            intl.formatMessage({
+              id: "admin.manage-characters.role.tags.updated.successfully",
+              defaultMessage: "Role tags updated successfully",
+            }),
+          );
           onGameUpdate(response.data);
           closeEditModal();
         } else {
@@ -218,7 +224,7 @@ const ManageCharactersForm = ({
         }
       })
       .catch((err) => {
-          showErrorToastWithTimeout(err);
+        showErrorToastWithTimeout(err);
       })
       .finally(() => {
         setIsSaving(false);
@@ -226,8 +232,13 @@ const ManageCharactersForm = ({
   };
 
   return (
-    <>
-      <Table aria-label="Roles Table">
+    <TagsProvider>
+      <Table
+        aria-label={intl.formatMessage({
+          id: "admin.manage-characters.roles.table",
+          defaultMessage: "Roles Table",
+        })}
+      >
         <TableHeader>
           <TableColumn>
             <FormattedMessage
@@ -278,7 +289,12 @@ const ManageCharactersForm = ({
                     disabledKeys={role.assignedUserID ? [] : ["message-player"]}
                     variant="bordered"
                   >
-                    <DropdownSection title="Role Actions">
+                    <DropdownSection
+                      title={intl.formatMessage({
+                        id: "admin.manage-characters.role.actions",
+                        defaultMessage: "Role Actions",
+                      })}
+                    >
                       <DropdownItem
                         key="role-tags"
                         onPress={() => openEditModal(role)}
@@ -373,6 +389,6 @@ const ManageCharactersForm = ({
           )}
         </ModalContent>
       </Modal>
-    </>
+    </TagsProvider>
   );
 };

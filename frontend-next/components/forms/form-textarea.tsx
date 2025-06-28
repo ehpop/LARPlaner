@@ -1,5 +1,6 @@
 import { Textarea, TextAreaProps } from "@heroui/react";
 import { KeyboardEvent, RefObject } from "react";
+import { useIntl } from "react-intl";
 
 /**
  * FormTextareaProps interface
@@ -15,10 +16,18 @@ export interface FormTextareaProps extends TextAreaProps {
  * @param props - FormTextareaProps
  */
 const FormTextarea = ({ ...props }: FormTextareaProps) => {
+  const intl = useIntl();
   const formRef = props.formRef;
 
   const handleTextareaKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" && !event.shiftKey) {
+    if (
+      event.key ===
+        intl.formatMessage({
+          id: "forms.form-textarea.enter",
+          defaultMessage: "Enter",
+        }) &&
+      !event.shiftKey
+    ) {
       event.preventDefault();
       formRef.current?.requestSubmit();
     }

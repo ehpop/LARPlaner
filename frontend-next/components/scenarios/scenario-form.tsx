@@ -1,24 +1,25 @@
-import { FormattedMessage, useIntl } from "react-intl";
-import React, { useState } from "react";
 import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { FormattedMessage, useIntl } from "react-intl";
 
-import { ScenarioRolesForm } from "@/components/scenarios/scenario-roles-form";
-import { emptyScenario } from "@/services/mock/mock-data";
-import ScenarioItemsForm from "@/components/scenarios/scenario-items-form";
-import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
-import { IScenario, IScenarioAction } from "@/types/scenario.types";
-import scenariosService from "@/services/scenarios.service";
+import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import LoadingOverlay from "@/components/general/loading-overlay";
-import { ItemActionsForm } from "@/components/scenarios/item-actions-form";
+import ActionsListForm from "@/components/scenarios/actions-list-form";
+import ScenarioItemsForm from "@/components/scenarios/scenario-items-form";
+import { ScenarioRolesForm } from "@/components/scenarios/scenario-roles-form";
+import useAllRoles from "@/hooks/roles/use-all-roles";
+import { TagsProvider } from "@/providers/tags-provider";
+import { emptyScenario } from "@/services/mock/mock-data";
+import scenariosService from "@/services/scenarios.service";
+import { IScenario } from "@/types/scenario.types";
 import {
   showErrorToast,
   showErrorToastWithTimeout,
-  showSuccessToast,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
-import useAllRoles from "@/hooks/roles/use-all-roles";
 
 export default function ScenarioForm({
   initialScenario,
@@ -30,10 +31,15 @@ export default function ScenarioForm({
   const isNewScenario = !initialScenario;
   const { roles: allRoles } = useAllRoles();
 
-  const [scenario, setScenario] = useState(
-    isNewScenario ? emptyScenario : { ...initialScenario },
-  );
-  const [scenarioBeforeChanges, setScenarioBeforeChanges] = useState(scenario);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors, isDirty },
+  } = useForm<IScenario>({
+    defaultValues: initialScenario || emptyScenario,
+  });
 
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -41,57 +47,8 @@ export default function ScenarioForm({
   const [showItemsSection, setShowItemsSection] = useState(true);
   const [showRolesSection, setShowRolesSection] = useState(true);
   const [showActionsSection, setShowActionsSection] = useState(true);
-  const [touched, setTouched] = useState({
-    name: false,
-    description: false,
-  });
 
-  const handleAddAction = () => {
-    const newAction: IScenarioAction = {
-      scenarioId: scenario.id,
-      name: "",
-      description: "",
-      messageOnSuccess: "",
-      messageOnFailure: "",
-      requiredTagsToDisplay: [],
-      requiredTagsToSucceed: [],
-      tagsToApplyOnSuccess: [],
-      tagsToApplyOnFailure: [],
-      tagsToRemoveOnSuccess: [],
-      tagsToRemoveOnFailure: [],
-    };
-
-    setScenario({
-      ...scenario,
-      actions: [...scenario.actions, newAction],
-    });
-  };
-
-  const handleActionChange = (index: number, newAction: IScenarioAction) => {
-    const newActions = [...scenario.actions];
-
-    newActions[index] = newAction;
-
-    setScenario({
-      ...scenario,
-      actions: newActions,
-    });
-  };
-
-  const handleActionRemove = (index: number) => {
-    const newActions = [...scenario.actions];
-
-    newActions.splice(index, 1);
-
-    setScenario({
-      ...scenario,
-      actions: newActions,
-    });
-  };
-
-  const handleTouched = (key: keyof typeof touched) => {
-    setTouched({ ...touched, [key]: true });
-  };
+  const watchedScenarioName = watch("name");
 
   const {
     onOpen: onOpenDelete,
@@ -104,329 +61,297 @@ export default function ScenarioForm({
     onOpenChange: onOpenChangeCancel,
   } = useDisclosure();
 
-  const handleSave = () => {
+  const onSubmit = (data: IScenario) => {
     setIsSaving(true);
 
-    console.log(scenario);
+    const serviceCall = isNewScenario
+      ? scenariosService.save(data)
+      : scenariosService.update(data.id!, data);
 
-    scenariosService
-      .save(scenario)
+    serviceCall
       .then((result) => {
         if (result.success) {
-          showSuccessToast("Scenario saved successfully");
-          router.push("/admin/scenarios");
+          showSuccessToastWithTimeout(
+            intl.formatMessage({
+              defaultMessage: "Scenario saved successfully",
+              id: "scenario.form.save.success",
+            }),
+          );
+          if (isNewScenario) {
+            router.push("/admin/scenarios");
+          } else {
+            reset(result.data);
+            setIsBeingEdited(false);
+          }
         } else {
           showErrorToast(result.data);
         }
       })
-      .catch((error) => {
-        showErrorToast(error);
-      })
-      .finally(() => {
-        setIsSaving(false);
-      });
-  };
-
-  const handleSaveEditedScenario = () => {
-    if (!scenario.id) {
-      return;
-    }
-
-    setIsSaving(true);
-    scenariosService
-      .update(scenario.id, scenario)
-      .then((result) => {
-        if (result.success) {
-          showSuccessToastWithTimeout("Scenario saved successfully", 3000);
-          setScenario(result.data);
-          setScenarioBeforeChanges(result.data);
-          setIsBeingEdited(false);
-        } else {
-          showErrorToastWithTimeout(result.data);
-        }
-      })
-      .catch((error) => {
-        showErrorToastWithTimeout(error);
-      })
-      .finally(() => {
-        setIsSaving(false);
-      });
+      .catch((error) => showErrorToast(error))
+      .finally(() => setIsSaving(false));
   };
 
   const handleConfirmDelete = () => {
-    if (!scenario.id) {
-      return;
-    }
-
+    if (!initialScenario?.id) return;
     setIsDeleting(true);
     scenariosService
-      .delete(scenario.id)
+      .delete(initialScenario.id)
       .then((result) => {
         if (result.success) {
-          showSuccessToastWithTimeout("Scenario deleted successfully");
+          showSuccessToastWithTimeout(
+            intl.formatMessage({
+              defaultMessage: "Scenario deleted successfully",
+              id: "scenario.form.delete.success",
+            }),
+          );
           router.push("/admin/scenarios");
         } else {
           showErrorToastWithTimeout(result.data);
         }
       })
-      .catch((error) => {
-        showErrorToastWithTimeout(error);
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
+      .catch((error) => showErrorToastWithTimeout(error))
+      .finally(() => setIsDeleting(false));
   };
 
-  const nameElement = (
-    <Input
-      isRequired
-      className="w-full"
-      errorMessage={intl.formatMessage({
-        id: "scenarios.new.page.scenarioNameError",
-        defaultMessage: "Scenario name is required",
-      })}
-      isDisabled={!(isBeingEdited || isNewScenario)}
-      isInvalid={touched.name && !scenario.name}
-      label={intl.formatMessage({
-        id: "scenarios.new.page.scenarioName",
-        defaultMessage: "Name",
-      })}
-      placeholder={intl.formatMessage({
-        id: "scenarios.new.page.insertScenarioName",
-        defaultMessage: "Insert scenario name",
-      })}
-      size="lg"
-      value={scenario.name}
-      variant="underlined"
-      onChange={(e) => {
-        setScenario({ ...scenario, name: e.target.value });
-        handleTouched("name");
-      }}
-    />
-  );
-  const descriptionElement = (
-    <Textarea
-      isRequired
-      className="w-full"
-      errorMessage={intl.formatMessage({
-        id: "scenarios.new.page.scenarioDescriptionError",
-        defaultMessage: "Scenario description is required",
-      })}
-      isDisabled={!(isBeingEdited || isNewScenario)}
-      isInvalid={touched.description && !scenario.description}
-      label={intl.formatMessage({
-        id: "scenarios.new.page.scenarioDescription",
-        defaultMessage: "Description",
-      })}
-      placeholder={intl.formatMessage({
-        id: "scenarios.new.page.insertScenarioDescription",
-        defaultMessage: "Insert scenario description",
-      })}
-      size="lg"
-      value={scenario.description}
-      variant="underlined"
-      onChange={(e) => {
-        setScenario({ ...scenario, description: e.target.value });
-        handleTouched("description");
-      }}
-    />
-  );
-  const rolesElement = (
-    <div className="w-full border-1 p-3 space-y-3">
-      <div className="w-full flex flex-row justify-between">
-        <p className="text-xl">
-          <FormattedMessage
-            defaultMessage={"Roles in scenario:"}
-            id={"scenarios.new.page.rolesInScenario"}
-          />
-        </p>
-        <Button
-          size="sm"
-          variant="bordered"
-          onPress={() => setShowRolesSection(!showRolesSection)}
-        >
-          {showRolesSection ? "-" : "+"}
-        </Button>
-      </div>
-      <div className={showRolesSection ? "" : "hidden"}>
-        <ScenarioRolesForm
-          availableRoles={allRoles}
-          isBeingEdited={isBeingEdited}
-          scenario={scenario}
-          setScenario={setScenario}
-        />
-      </div>
-    </div>
-  );
-  const itemsElement = (
-    <div className="w-full border-1 p-3 space-y-3">
-      <div className="w-full flex flex-row justify-between">
-        <p className="text-xl">
-          <FormattedMessage
-            defaultMessage={"Items in scenario:"}
-            id={"scenarios.new.page.itemsInScenario"}
-          />
-        </p>
-        <Button
-          size="sm"
-          variant="bordered"
-          onPress={() => setShowItemsSection(!showItemsSection)}
-        >
-          {showItemsSection ? "-" : "+"}
-        </Button>
-      </div>
-      <div className={showItemsSection ? "" : "hidden"}>
-        <ScenarioItemsForm
-          initialItems={scenario.items}
-          isBeingEdited={isBeingEdited || isNewScenario}
-          scenario={scenario}
-          setScenario={setScenario}
-        />
-      </div>
-    </div>
-  );
-  const saveButton = (
-    <div className="w-full flex justify-end">
-      <div className="flex justify-between space-x-3">
-        <Button color="success" size="lg" onPress={handleSave}>
-          <FormattedMessage
-            defaultMessage={"Save"}
-            id={"scenarios.new.page.save"}
-          />
-        </Button>
-      </div>
-    </div>
-  );
-
-  const confirmDelete = (
-    <ConfirmActionModal
-      handleOnConfirm={() => {
-        handleConfirmDelete();
-      }}
-      isOpen={isOpenDelete}
-      prompt={intl.formatMessage({
-        id: "scenarios.id.page.delete",
-        defaultMessage:
-          "Are you sure you want to delete this scenario? This action will not be reversible.",
-      })}
-      title={intl.formatMessage({
-        id: "scenarios.id.page.deleteTitle",
-        defaultMessage: "Do you want to delete this scenario?",
-      })}
-      onOpenChange={onOpenChangeDelete}
-    />
-  );
-
-  const confirmCancel = (
-    <ConfirmActionModal
-      handleOnConfirm={() => {
-        setScenario(scenarioBeforeChanges);
-        setIsBeingEdited(false);
-      }}
-      isOpen={isOpenCancel}
-      prompt={intl.formatMessage({
-        id: "scenarios.id.page.cancelEdit",
-        defaultMessage:
-          "Are you sure you want to cancel your changes? This action will not be reversible.",
-      })}
-      title={intl.formatMessage({
-        id: "scenarios.id.page.cancelEditTitle",
-        defaultMessage: "Do you want to cancel added changes?",
-      })}
-      onOpenChange={onOpenChangeCancel}
-    />
-  );
-
-  const buttonsElement = (
-    <div className="w-full flex justify-end">
-      <ButtonPanel
-        isBeingEdited={isBeingEdited}
-        onCancelEditClicked={() => {
-          onOpenCancel();
-        }}
-        onDeleteClicked={() => {
-          onOpenDelete();
-        }}
-        onEditClicked={() => {
-          setIsBeingEdited(true);
-        }}
-        onSaveClicked={() => {
-          handleSaveEditedScenario();
-        }}
-      />
-      {confirmCancel}
-      {confirmDelete}
-    </div>
-  );
-
-  const titleElement = (
-    <div className="w-full flex justify-center">
-      <p className="text-3xl" id="add-event-modal">
-        {isNewScenario ? (
-          <FormattedMessage
-            defaultMessage={"Add new scenario"}
-            id={"scenarios.new.page.addNewScenario"}
-          />
-        ) : (
-          <FormattedMessage
-            defaultMessage='Scenario "{scenarioName}"'
-            id="scenarios.new.page.editScenario"
-            values={{ scenarioName: scenario.name }}
-          />
-        )}
-      </p>
-    </div>
-  );
-
-  const actionsElement = (
-    <div className="w-full border-1 p-3 space-y-3">
-      <div className="w-full flex flex-row justify-between">
-        <p className="text-xl">
-          <FormattedMessage
-            defaultMessage={"Actions in scenario:"}
-            id={"scenarios.new.page.actionsInScenario"}
-          />
-        </p>
-        <Button
-          size="sm"
-          variant="bordered"
-          onPress={() => setShowActionsSection(!showActionsSection)}
-        >
-          {showActionsSection ? "-" : "+"}
-        </Button>
-      </div>
-      <div className={showActionsSection ? "" : "hidden"}>
-        <ItemActionsForm
-          actions={scenario.actions}
-          handleActionChange={handleActionChange}
-          handleActionRemove={handleActionRemove}
-          handleAddAction={handleAddAction}
-          isRoleBeingEdited={isBeingEdited}
-        />
-      </div>
-    </div>
-  );
+  const handleConfirmCancel = () => {
+    reset(initialScenario);
+    setIsBeingEdited(false);
+  };
 
   const form = (
-    <div className="w-full flex justify-center">
-      <div className="w-full space-y-3 border-1 p-3">
-        {titleElement}
-        {nameElement}
-        {descriptionElement}
-        {rolesElement}
-        {itemsElement}
-        {actionsElement}
-        {isNewScenario ? saveButton : buttonsElement}
-      </div>
-    </div>
+    <TagsProvider>
+      <form
+        className="w-full flex justify-center"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="w-full space-y-3 border-1 p-3">
+          <div className="w-full flex justify-center">
+            <p className="text-3xl" id="add-event-modal">
+              {isNewScenario ? (
+                <FormattedMessage
+                  defaultMessage={"Add new scenario"}
+                  id={"scenarios.new.page.addNewScenario"}
+                />
+              ) : (
+                <FormattedMessage
+                  defaultMessage='Scenario "{scenarioName}"'
+                  id="scenarios.new.page.editScenario"
+                  values={{ scenarioName: watchedScenarioName }}
+                />
+              )}
+            </p>
+          </div>
+
+          <Controller
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <Input
+                {...field}
+                isRequired
+                className="w-full"
+                errorMessage={errors.name?.message}
+                isDisabled={!isBeingEdited}
+                isInvalid={!!errors.name}
+                label={intl.formatMessage({
+                  defaultMessage: "Scenario name",
+                  id: "scenarios.new.page.scenarioName",
+                })}
+                placeholder={intl.formatMessage({
+                  defaultMessage: "Enter scenario name",
+                  id: "scenarios.new.page.insertScenarioName",
+                })}
+                size="lg"
+                variant="underlined"
+              />
+            )}
+            rules={{
+              required: intl.formatMessage({
+                defaultMessage: "Scenario name is required",
+                id: "scenarios.new.page.scenarioName.required",
+              }),
+            }}
+          />
+
+          <Controller
+            control={control}
+            name="description"
+            render={({ field }) => (
+              <Textarea
+                {...field}
+                isRequired
+                className="w-full"
+                errorMessage={errors.description?.message}
+                isDisabled={!isBeingEdited}
+                isInvalid={!!errors.description}
+                label={intl.formatMessage({
+                  defaultMessage: "Scenario description",
+                  id: "scenarios.new.page.scenarioDescription",
+                })}
+                placeholder={intl.formatMessage({
+                  defaultMessage: "Enter scenario description",
+                  id: "scenarios.new.page.insertScenarioDescription",
+                })}
+                size="lg"
+                variant="underlined"
+              />
+            )}
+            rules={{
+              required: intl.formatMessage({
+                defaultMessage: "Scenario description is required",
+                id: "scenarios.new.page.scenarioDescription.required",
+              }),
+            }}
+          />
+
+          <div className="w-full border-1 p-3 space-y-3">
+            <div className="w-full flex flex-row justify-between">
+              <p className="text-xl">
+                <FormattedMessage
+                  defaultMessage="Roles in scenario"
+                  id="scenarios.new.page.rolesInScenario"
+                />
+              </p>
+              <Button
+                size="sm"
+                variant="bordered"
+                onPress={() => setShowRolesSection(!showRolesSection)}
+              >
+                {showRolesSection ? "-" : "+"}
+              </Button>
+            </div>
+            {showRolesSection && (
+              <ScenarioRolesForm
+                availableRoles={allRoles}
+                control={control}
+                isBeingEdited={isBeingEdited}
+              />
+            )}
+          </div>
+
+          <div className="w-full border-1 p-3 space-y-3">
+            <div className="w-full flex flex-row justify-between">
+              <p className="text-xl">
+                <FormattedMessage
+                  defaultMessage="Items in scenario"
+                  id="scenarios.new.page.itemsInScenario"
+                />
+              </p>
+              <Button
+                size="sm"
+                variant="bordered"
+                onPress={() => setShowItemsSection(!showItemsSection)}
+              >
+                {showItemsSection ? "-" : "+"}
+              </Button>
+            </div>
+            {showItemsSection && (
+              <ScenarioItemsForm
+                control={control}
+                isBeingEdited={isBeingEdited}
+              />
+            )}
+          </div>
+
+          <div className="w-full border-1 p-3 space-y-3">
+            <div className="w-full flex flex-row justify-between">
+              <p className="text-xl">
+                <FormattedMessage
+                  defaultMessage="Actions in scenario"
+                  id="scenarios.new.page.actionsInScenario"
+                />
+              </p>
+              <Button
+                size="sm"
+                variant="bordered"
+                onPress={() => setShowActionsSection(!showActionsSection)}
+              >
+                {showActionsSection ? "-" : "+"}
+              </Button>
+            </div>
+            {showActionsSection && (
+              <ActionsListForm
+                basePath={`actions`}
+                control={control}
+                isBeingEdited={isBeingEdited}
+              />
+            )}
+          </div>
+
+          {isNewScenario ? (
+            <div className="w-full flex justify-end">
+              <Button
+                color="success"
+                isLoading={isSaving}
+                size="lg"
+                type="submit"
+              >
+                <FormattedMessage
+                  defaultMessage="Save"
+                  id="scenarios.new.page.save"
+                />
+              </Button>
+            </div>
+          ) : (
+            <div className="w-full flex justify-end">
+              <ButtonPanel
+                isBeingEdited={isBeingEdited}
+                isSaveButtonTypeSubmit={true}
+                isSaveDisabled={!isDirty || isSaving}
+                onCancelEditClicked={onOpenCancel}
+                onDeleteClicked={onOpenDelete}
+                onEditClicked={() => setIsBeingEdited(true)}
+              />
+            </div>
+          )}
+        </div>
+      </form>
+    </TagsProvider>
   );
 
   return (
     <LoadingOverlay
       isLoading={isSaving || isDeleting}
-      label={isSaving ? "Saving scenario..." : "Deleting scenario..."}
+      label={
+        isSaving
+          ? intl.formatMessage({
+              defaultMessage: "Saving scenario...",
+              id: "scenarios.id.page.saving",
+            })
+          : intl.formatMessage({
+              defaultMessage: "Deleting scenario...",
+              id: "scenarios.id.page.deleting",
+            })
+      }
     >
       {form}
+      <ConfirmActionModal
+        handleOnConfirm={handleConfirmDelete}
+        isOpen={isOpenDelete}
+        prompt={intl.formatMessage({
+          defaultMessage: "Are you sure you want to delete this scenario?",
+          id: "scenarios.id.page.delete",
+        })}
+        title={intl.formatMessage({
+          defaultMessage: "Delete scenario",
+          id: "scenarios.id.page.deleteTitle",
+        })}
+        onOpenChange={onOpenChangeDelete}
+      />
+      <ConfirmActionModal
+        handleOnConfirm={handleConfirmCancel}
+        isOpen={isOpenCancel}
+        prompt={intl.formatMessage({
+          defaultMessage:
+            "Are you sure you want to cancel editing this scenario?",
+          id: "scenarios.id.page.cancelEdit",
+        })}
+        title={intl.formatMessage({
+          defaultMessage: "Cancel editing scenario",
+          id: "scenarios.id.page.cancelEditTitle",
+        })}
+        onOpenChange={onOpenChangeCancel}
+      />
     </LoadingOverlay>
   );
 }

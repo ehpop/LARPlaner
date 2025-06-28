@@ -30,7 +30,8 @@ const ActiveGamePage = ({ params }: any) => {
       <LoadingOverlay
         isLoading={loading}
         label={intl.formatMessage({
-          id: "events.page.display.loading",
+          defaultMessage: "Loading game data...",
+          id: "game.id.page.display.loading",
         })}
       >
         {allDataLoaded ? (
@@ -39,7 +40,7 @@ const ActiveGamePage = ({ params }: any) => {
           <div className="w-full flex justify-center">
             <FormattedMessage
               defaultMessage="Cannot load game data or user is not assigned to this game."
-              id="game.page.display.cannotLoad"
+              id="game.id.page.cannotLoad"
             />
           </div>
         )}

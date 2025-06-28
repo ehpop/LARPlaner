@@ -24,7 +24,8 @@ const UpcomingEventPage = ({ params }: any) => {
       <LoadingOverlay
         isLoading={loading}
         label={intl.formatMessage({
-          id: "events.page.display.loading",
+          defaultMessage: "Loading upcoming event...",
+          id: "events.page.upcoming.display.loading",
         })}
       >
         {allDataLoaded ? (

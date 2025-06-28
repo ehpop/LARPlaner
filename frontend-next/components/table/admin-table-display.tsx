@@ -35,7 +35,10 @@ export const AdminTableDisplay = ({
   return (
     <Table
       isStriped
-      aria-label="Admin Table"
+      aria-label={intl.formatMessage({
+        id: "table.admin-table-display.admin.table",
+        defaultMessage: "Admin Table",
+      })}
       sortDescriptor={sortDescriptor ?? undefined}
       topContent={topContent}
       onSortChange={onSortChange}

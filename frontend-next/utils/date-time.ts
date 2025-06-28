@@ -26,7 +26,7 @@ export const isValidEventDate = (date: ZonedDateTime): boolean => {
     return true;
   }
 
-  return date.compare(fromDate(new Date(), date.timeZone)) < 0;
+  return date.compare(fromDate(new Date(), date.timeZone)) > 0;
 };
 
 /**

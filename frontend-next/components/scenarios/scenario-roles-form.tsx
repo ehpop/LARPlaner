@@ -1,56 +1,46 @@
 import { Button } from "@heroui/react";
-import React from "react";
+import React, { useMemo } from "react";
 import { FormattedMessage } from "react-intl";
+import { Control, useFieldArray, useWatch } from "react-hook-form";
 
 import { RoleItem } from "@/components/scenarios/role-item-display";
 import { emptyScenarioRole } from "@/services/mock/mock-data";
-import { IScenario, IScenarioRole } from "@/types/scenario.types";
+import { IScenario } from "@/types/scenario.types";
 import { IRole } from "@/types/roles.types";
 
-export const ScenarioRolesForm = ({
-  availableRoles,
-  isBeingEdited,
-  scenario,
-  setScenario,
-}: {
+interface ScenarioRolesFormProps {
+  control: Control<IScenario>;
   availableRoles: IRole[];
   isBeingEdited?: boolean;
-  scenario: IScenario;
-  setScenario: (scenario: IScenario) => void;
-}) => {
+}
+
+export const ScenarioRolesForm = ({
+  control,
+  availableRoles,
+  isBeingEdited,
+}: ScenarioRolesFormProps) => {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "roles",
+  });
+
+  const watchedRoles = useWatch({
+    control,
+    name: "roles",
+  });
+
   const addRole = () => {
-    const newScenarioRoles = [
-      ...scenario.roles,
-      {
-        ...emptyScenarioRole,
-        ...(scenario.id && { scenarioId: scenario.id }),
-      },
-    ];
-
-    setScenario({ ...scenario, roles: newScenarioRoles });
+    append({ ...emptyScenarioRole });
   };
 
-  const handleRoleChange = (index: number, newScenarioRole: IScenarioRole) => {
-    const newScenarioRoles = [...scenario.roles];
-
-    newScenarioRoles[index] = newScenarioRole;
-    setScenario({ ...scenario, roles: newScenarioRoles });
-  };
-
-  const handleRoleRemove = (index: number) => {
-    const newScenarioRoles = [...scenario.roles];
-
-    newScenarioRoles.splice(index, 1);
-    setScenario({
-      ...scenario,
-      roles: newScenarioRoles,
-    });
-  };
+  const disabledRoleIds = useMemo(() => {
+    return new Set(watchedRoles.map((role) => role.roleId as string));
+  }, [watchedRoles]);
 
   return (
     <div className="w-full flex flex-col space-y-3">
       <div className="w-full flex flex-col space-y-3">
-        {scenario.roles.length === 0 ? (
+        {fields.length === 0 ? (
           <div className="w-full flex justify-center">
             <p>
               <FormattedMessage
@@ -60,15 +50,15 @@ export const ScenarioRolesForm = ({
             </p>
           </div>
         ) : (
-          scenario.roles.map((role, index) => (
+          fields.map((field, index) => (
             <RoleItem
-              key={role.id}
+              key={field.id}
               availableRoles={availableRoles}
-              handleRoleChange={handleRoleChange}
-              handleRoleRemove={handleRoleRemove}
+              control={control}
+              disabledRoleIds={disabledRoleIds}
               index={index}
               isBeingEdited={isBeingEdited || false}
-              role={role}
+              remove={remove}
             />
           ))
         )}

@@ -42,7 +42,13 @@ const ChatWindow = ({
       <div className="w-full max-w-full flex flex-row justify-start items-start border space-x-3 p-3">
         <div className="min-w-fit self-center">
           <Image
-            alt={chat.userData?.displayName || "User"}
+            alt={
+              chat.userData?.displayName ||
+              intl.formatMessage({
+                id: "chat.chat-window.user",
+                defaultMessage: "User",
+              })
+            }
             className="rounded-full border"
             height={40}
             src={chat.chatImage || "/images/user-fallback.png"}

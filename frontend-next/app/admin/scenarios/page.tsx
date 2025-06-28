@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useIntl } from "react-intl";
 
 import LoadingOverlay from "@/components/general/loading-overlay";
 import ScenariosService from "@/services/scenarios.service";
@@ -8,6 +9,7 @@ import { IScenario } from "@/types/scenario.types";
 import ScenariosDisplayAdmin from "@/components/scenarios/scenarios-display-admin";
 
 function ScenariosPage() {
+  const intl = useIntl();
   const [scenariosData, setScenariosData] = useState<IScenario[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,10 +22,20 @@ function ScenariosPage() {
         if (response.success) {
           setScenariosData(response.data);
         } else {
-          setError("Failed to fetch scenarios");
+          setError(
+            intl.formatMessage({
+              id: "scenarios.page.failed.to.fetch.scenarios",
+              defaultMessage: "Failed to fetch scenarios",
+            }),
+          );
         }
       } catch (err) {
-        setError("An error occurred while fetching scenarios");
+        setError(
+          intl.formatMessage({
+            id: "scenarios.page.an.error.occurred.while.fetching.scenarios",
+            defaultMessage: "An error occurred while fetching scenarios",
+          }),
+        );
       } finally {
         setLoading(false);
       }
