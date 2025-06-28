@@ -3,7 +3,9 @@ package com.larplaner.mapper.scenario;
 import com.larplaner.dto.scenario.item.ScenarioItemRequestDTO;
 import com.larplaner.dto.scenario.item.ScenarioItemResponseDTO;
 import com.larplaner.dto.scenario.item.UpdateScenarioItemRequestDTO;
+import com.larplaner.mapper.action.ActionMapper;
 import com.larplaner.model.scenario.ScenarioItem;
+import com.larplaner.model.scenario.ScenarioItemAction;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class ScenarioItemMapper {
 
   private final ScenarioItemActionMapper scenarioItemActionMapper;
+  private final ActionMapper actionMapper;
 
   public ScenarioItemResponseDTO toDTO(ScenarioItem scenarioItem) {
     if (scenarioItem == null) {

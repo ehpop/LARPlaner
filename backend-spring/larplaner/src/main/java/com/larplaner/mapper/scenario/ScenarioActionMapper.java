@@ -52,7 +52,6 @@ public class ScenarioActionMapper {
       return;
     }
 
-    // Update base action fields using the base ActionMapper
     actionMapper.updateEntityFromDTO(dto, entity);
   }
 }

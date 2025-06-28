@@ -1,6 +1,7 @@
 package com.larplaner.dto.scenario.action;
 
 import com.larplaner.dto.action.ActionRequestDTO;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

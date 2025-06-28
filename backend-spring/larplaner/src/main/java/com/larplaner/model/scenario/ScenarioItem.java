@@ -58,9 +58,4 @@ public class ScenarioItem extends BaseEntity {
     scenarioItemAction.setItem(this);
   }
 
-  public void removeScenarioItemAction(ScenarioItemAction scenarioItemAction) {
-    this.actions.remove(scenarioItemAction);
-    scenarioItemAction.setItem(null);
-  }
-
 }

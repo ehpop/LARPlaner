@@ -1,22 +1,17 @@
 package com.larplaner.dto.scenario.role;
 
-import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @SuperBuilder
-public class UpdateScenarioRoleRequestDTO {
+public class UpdateScenarioRoleRequestDTO extends ScenarioRoleRequestDTO {
 
   private UUID id;
 
-  @NotNull(message = "Role ID cannot be null")
-  private UUID roleId;
-
-  private String descriptionForGM;
-  private String descriptionForOwner;
-  private String descriptionForOthers;
 }

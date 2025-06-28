@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 public class TagHelper {
 
   private final TagRepository tagRepository;
-  private final TagMapper tagMapper;
 
   public List<Tag> processTags(List<UUID> tagIds) {
     if (tagIds == null || tagIds.isEmpty()) {

@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
-public class UpdateScenarioItemActionRequestDTO extends UpdateActionRequestDTO {
+public class UpdateScenarioItemActionRequestDTO extends ScenarioItemActionRequestDTO {
 
   private UUID id;
 

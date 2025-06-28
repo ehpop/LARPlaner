@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder.Default;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,29 +50,14 @@ public class Scenario extends BaseEntity {
     scenarioRole.setScenario(this);
   }
 
-  public void removeScenarioRole(ScenarioRole scenarioRole) {
-    this.roles.remove(scenarioRole);
-    scenarioRole.setScenario(null);
-  }
-
   public void addScenarioItem(ScenarioItem scenarioItem) {
     this.items.add(scenarioItem);
     scenarioItem.setScenario(this);
   }
 
-  public void removeScenarioItem(ScenarioItem scenarioItem) {
-    this.items.remove(scenarioItem);
-    scenarioItem.setScenario(null);
-  }
-
   public void addScenarioAction(ScenarioAction scenarioAction) {
     this.actions.add(scenarioAction);
     scenarioAction.setScenario(this);
-  }
-
-  public void removeScenarioAction(ScenarioAction scenarioAction) {
-    this.actions.remove(scenarioAction);
-    scenarioAction.setScenario(null);
   }
 
 }

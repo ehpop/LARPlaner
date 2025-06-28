@@ -13,22 +13,21 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class ScenarioItemActionRequestDTO extends ActionRequestDTO {
 
-  public ScenarioItemActionRequestDTO(ActionRequestDTO actionDto) {
-    super();
-
-    if (actionDto == null) {
-      return;
-    }
-
-    this.setName(actionDto.getName());
-    this.setDescription(actionDto.getDescription());
-    this.setMessageOnSuccess(actionDto.getMessageOnSuccess());
-    this.setMessageOnFailure(actionDto.getMessageOnFailure());
-    this.setRequiredTagsToDisplay(actionDto.getRequiredTagsToDisplay());
-    this.setRequiredTagsToSucceed(actionDto.getRequiredTagsToSucceed());
-    this.setTagsToApplyOnSuccess(actionDto.getTagsToApplyOnSuccess());
-    this.setTagsToApplyOnFailure(actionDto.getTagsToApplyOnFailure());
-    this.setTagsToRemoveOnSuccess(actionDto.getTagsToRemoveOnSuccess());
-    this.setTagsToRemoveOnFailure(actionDto.getTagsToRemoveOnFailure());
+  public static ScenarioItemActionRequestDTO fromUpdateDTO(
+      UpdateScenarioItemActionRequestDTO dto
+  ) {
+    return ScenarioItemActionRequestDTO
+        .builder()
+        .name(dto.getName())
+        .description(dto.getDescription())
+        .messageOnFailure(dto.getMessageOnFailure())
+        .messageOnSuccess(dto.getMessageOnSuccess())
+        .requiredTagsToDisplay(dto.getRequiredTagsToDisplay())
+        .requiredTagsToSucceed(dto.getRequiredTagsToSucceed())
+        .tagsToApplyOnFailure(dto.getTagsToApplyOnFailure())
+        .tagsToApplyOnSuccess(dto.getTagsToApplyOnSuccess())
+        .tagsToRemoveOnFailure(dto.getTagsToRemoveOnFailure())
+        .tagsToRemoveOnSuccess(dto.getTagsToRemoveOnSuccess())
+        .build();
   }
 }
