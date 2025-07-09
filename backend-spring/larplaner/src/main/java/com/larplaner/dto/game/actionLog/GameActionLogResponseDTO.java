@@ -2,6 +2,7 @@ package com.larplaner.dto.game.actionLog;
 
 import com.larplaner.dto.BaseResponseDTO;
 import com.larplaner.dto.tag.TagResponseDTO;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -18,11 +19,16 @@ public class GameActionLogResponseDTO extends BaseResponseDTO {
 
   private UUID gameSessionId;
   private UUID actionId;
-  private String timestamp;
+
+  private ZonedDateTime timestamp;
+
   private UUID performerRoleId;
   private UUID targetItemId;
+
   private Boolean success;
+
   private List<TagResponseDTO> appliedTags;
   private List<TagResponseDTO> removedTags;
+
   private String message;
 }

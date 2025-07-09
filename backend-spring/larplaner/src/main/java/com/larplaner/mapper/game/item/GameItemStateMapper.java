@@ -16,32 +16,24 @@ public class GameItemStateMapper {
   private final GameActionLogMapper gameActionLogMapper;
 
   public GameItemStateResponseDTO toDTO(GameItemState gameItemState) {
-    GameItemStateResponseDTO dto = GameItemStateResponseDTO.builder()
+
+    return GameItemStateResponseDTO.builder()
         .id(gameItemState.getId())
+        .gameSessionId(gameItemState.getGameSession().getId())
         .scenarioItemId(gameItemState.getScenarioItem().getId())
         .currentHolderRoleId(
             gameItemState.getCurrentHolderRole() != null
                 ? gameItemState.getCurrentHolderRole().getId()
                 : null)
-        .activeTags(gameItemState.getActiveTags().stream()
-            .map(tagMapper::toDTO)
-            .collect(Collectors.toList()))
         .actionHistory(gameItemState.getActionHistory().stream()
             .map(gameActionLogMapper::toDTO)
             .collect(Collectors.toList()))
         .build();
-
-    return dto;
   }
 
   public GameItemState toEntity(GameItemStateResponseDTO dto) {
-    GameItemState entity = GameItemState.builder()
+    return GameItemState.builder()
         .id(dto.getId())
-        .activeTags(
-            dto.getActiveTags() != null ? dto.getActiveTags().stream().map(tagMapper::toEntity)
-                .collect(java.util.stream.Collectors.toList()) : null)
         .build();
-
-    return entity;
   }
 }

@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 public class MapperHelper {
 
   /**
-   * Maps a list of Tag entities to a list of TagResponseDTOs using the provided TagMapper. Returns
-   * an empty list if the input list is null or empty.
+   * Maps a userEvents of Tag entities to a userEvents of TagResponseDTOs using the provided TagMapper. Returns
+   * an empty userEvents if the input userEvents is null or empty.
    *
-   * @param tags      The list of Tag entities to map.
+   * @param tags      The userEvents of Tag entities to map.
    * @param tagMapper The TagMapper instance to use for mapping individual tags.
-   * @return A list of TagResponseDTOs.
+   * @return A userEvents of TagResponseDTOs.
    */
   public static List<TagResponseDTO> mapTagsToDTOs(List<Tag> tags, TagMapper tagMapper) {
     if (tags == null || tags.isEmpty()) {

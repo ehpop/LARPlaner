@@ -85,8 +85,8 @@ public class ScenarioMapper {
 
     // TODO: Implement logic in the service layer to handle updates to roles, items,
     // actions, tags lists.
-    // This typically involves fetching existing children, comparing with DTO list,
+    // This typically involves fetching existing children, comparing with DTO userEvents,
     // creating new ones,
-    // updating existing ones, and removing ones not present in the DTO list.
+    // updating existing ones, and removing ones not present in the DTO userEvents.
   }
 }

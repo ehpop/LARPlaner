@@ -1,5 +1,6 @@
 package com.larplaner.exception;
 
+import com.larplaner.exception.event.status.EventStatusCouldNotBeChanged;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -103,6 +104,21 @@ public class GlobalRestExceptionHandler {
         HttpStatus.BAD_REQUEST.value(),
         "Bad Request",
         errorMessage,
+        request.getRequestURI()
+    );
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(EventStatusCouldNotBeChanged.class)
+  public ResponseEntity<ErrorResponse> handleEventStatusCouldNotBeChanged(
+      EventStatusCouldNotBeChanged ex, HttpServletRequest request) {
+
+    log.warn("EventStatusCouldNotBeChanged: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = new ErrorResponse(
+        HttpStatus.BAD_REQUEST.value(),
+        "Bad Request",
+        ex.getMessage(),
         request.getRequestURI()
     );
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

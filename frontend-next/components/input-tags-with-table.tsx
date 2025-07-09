@@ -281,7 +281,7 @@ const InputTagsWithTable = ({
   const addedTagsTableElement = (
     <div className="mt-6">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold">
+        <h3 className="text-medium font-semibold">
           <FormattedMessage
             defaultMessage="Added Tags"
             id="input-with-chips.addedTagsTitle"
@@ -311,14 +311,13 @@ const InputTagsWithTable = ({
             defaultMessage: "No tags added",
             id: "input-with-chips.noTagsAdded",
           })}
-          items={addedTags}
         >
-          {(item) => (
-            <TableRow key={item.id}>
-              <TableCell>{item.value}</TableCell>
-              <TableCell>{item.expiresAfterMinutes || "-"}</TableCell>
+          {addedTags.map((tag) => (
+            <TableRow key={tag.id}>
+              <TableCell>{tag.value}</TableCell>
+              <TableCell>{tag.expiresAfterMinutes || "-"}</TableCell>
               <TableCell>
-                {item.isUnique ? (
+                {tag.isUnique ? (
                   <FormattedMessage defaultMessage="Yes" id="common.yes" />
                 ) : (
                   <FormattedMessage defaultMessage="No" id="common.no" />
@@ -329,7 +328,7 @@ const InputTagsWithTable = ({
                   color="danger"
                   isDisabled={isDisabled}
                   size="sm"
-                  onPress={() => handleDeleteTag(item.id!)}
+                  onPress={() => handleDeleteTag(tag.id!)}
                 >
                   <FormattedMessage
                     defaultMessage="Delete"
@@ -338,7 +337,7 @@ const InputTagsWithTable = ({
                 </Button>
               </TableCell>
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
     </div>

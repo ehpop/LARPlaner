@@ -9,7 +9,7 @@ import React from "react";
 import { IEvent } from "@/types/event.types";
 import { IScenario } from "@/types/scenario.types";
 import LoadingOverlay from "@/components/general/loading-overlay";
-import useEvent from "@/hooks/use-event";
+import useEvent from "@/hooks/event/use-event";
 
 const ActiveEventAdminPage = ({ params }: any) => {
   const resolvedParams = React.use(params) as { id: string };

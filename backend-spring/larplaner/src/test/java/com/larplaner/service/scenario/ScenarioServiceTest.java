@@ -16,11 +16,11 @@ public interface ScenarioServiceTest {
 
   // === getAllScenarios Tests ===
   @Test
-  @DisplayName("getAllScenarios: Should return a list of scenario DTOs when scenarios exist")
+  @DisplayName("getAllScenarios: Should return a userEvents of scenario DTOs when scenarios exist")
   void getAllScenarios_whenScenariosExist_shouldReturnListOfDTOs();
 
   @Test
-  @DisplayName("getAllScenarios: Should return an empty list when no scenarios exist")
+  @DisplayName("getAllScenarios: Should return an empty userEvents when no scenarios exist")
   void getAllScenarios_whenNoScenariosExist_shouldReturnEmptyList();
 
   // === createScenario Tests ===

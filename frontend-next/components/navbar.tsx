@@ -27,6 +27,7 @@ import {
 import { FormattedMessage, useIntl } from "react-intl";
 import { User } from "@firebase/auth";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { SiteConfig, siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -54,6 +55,7 @@ interface NavbarMenuContentProps {
 
 const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
   const intl = useIntl();
+  const router = useRouter();
   const buttonClass = "text-sm font-normal text-default-600 bg-default-100";
 
   if (!user) {
@@ -78,9 +80,10 @@ const AccountElement: FC<AccountElementProps> = ({ user, handleLogOut }) => {
         })}
         onAction={(key) => {
           if (key === "log out") handleLogOut();
+          else if (key === "profile") router.push("/user/profile");
         }}
       >
-        <DropdownItem key="profile" href="/user/profile" textValue="profile">
+        <DropdownItem key="profile" textValue="profile">
           <FormattedMessage defaultMessage="Profile" id="nav.dashboard" />
         </DropdownItem>
         <DropdownItem

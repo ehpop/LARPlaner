@@ -11,12 +11,13 @@ import {
 } from "@heroui/react";
 import { FormattedMessage } from "react-intl";
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 
-import { IAction } from "@/types/scenario.types";
-import { IGameActionLog, IGameSession } from "@/types/game.types";
+import { IScenarioAction, IScenarioItemAction } from "@/types/scenario.types";
+import { IGameSession } from "@/types/game.types";
 import { useAuth } from "@/providers/firebase-provider";
 import gameService from "@/services/game.service";
+import LoadingOverlay from "@/components/general/loading-overlay";
+import { showErrorToastWithTimeout } from "@/utils/toast";
 
 const Action = ({
   game,
@@ -24,72 +25,46 @@ const Action = ({
   afterActionPerformed,
 }: {
   game: IGameSession;
-  action: IAction;
+  action: IScenarioAction | IScenarioItemAction;
   afterActionPerformed?: () => void;
 }) => {
   const auth = useAuth();
   const [isActionResultModalOpen, setIsActionResultModalOpen] = useState(false);
   const [actionResultMessage, setActionResultMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(auth.loading);
 
-  //TODO: this sequence should be performed at the backend
-  const performAction = (action: IAction) => {
-    const userRole = game?.assignedRoles.find(
-      (role) => role.assignedEmail === auth.user?.email,
-    );
+  const userRole = game.assignedRoles.find(
+    (ar) => ar.assignedUserID === auth.user?.uid,
+  );
 
+  const performAction = (action: IScenarioAction | IScenarioItemAction) => {
+    setIsLoading(true);
     if (!userRole) {
       setIsActionResultModalOpen(true);
-      setActionResultMessage("User is not assigned to this game.");
+      setActionResultMessage("Something went wrong");
+      setIsLoading(false);
 
       return;
     }
 
-    const doesUserHaveEveryRequiredTag = () => {
-      return action.requiredTagsToSucceed.every((requiredTag) => {
-        return userRole.activeTags.some(
-          (userTag) => userTag.id === requiredTag.id,
-        );
+    gameService
+      .performAction(game.id, {
+        actionId: action.id,
+        performerRoleId: userRole?.scenarioRoleId,
+        targetItemId: "itemId" in action ? action?.itemId : undefined,
+      })
+      .then((res) => {
+        if (res.success) {
+          setIsActionResultModalOpen(true);
+          setActionResultMessage(res.data.message);
+        } else {
+          showErrorToastWithTimeout(res.data);
+        }
+      })
+      .catch((error) => showErrorToastWithTimeout(error))
+      .finally(() => {
+        setIsLoading(false);
       });
-    };
-
-    let didActionSucceeded = doesUserHaveEveryRequiredTag();
-
-    const messageToDisplay = didActionSucceeded
-      ? action.messageOnSuccess
-      : action.messageOnFailure;
-    const tagsToRemove = didActionSucceeded
-      ? action.tagsToRemoveOnSuccess
-      : action.tagsToRemoveOnFailure;
-    const tagsToApply = didActionSucceeded
-      ? action.tagsToApplyOnSuccess
-      : action.tagsToApplyOnFailure;
-
-    setIsActionResultModalOpen(true);
-    setActionResultMessage(messageToDisplay);
-
-    let newUserTags = userRole.activeTags.filter((userTag) => {
-      return tagsToRemove.some((tagToRemove) => tagToRemove.id === userTag.id);
-    });
-
-    newUserTags.push(...tagsToApply);
-
-    const gameHistoryLog: IGameActionLog = {
-      id: uuidv4(),
-      actionId: action.id,
-      success: didActionSucceeded,
-      performerRoleId: userRole.scenarioRoleId,
-      timestamp: new Date().toISOString(),
-      appliedTags: tagsToApply,
-      removedTags: tagsToRemove,
-      message: messageToDisplay,
-      sessionId: game.id,
-    };
-
-    gameService.postGameHistory(gameHistoryLog).then((response) => {
-      console.log(response);
-    });
-
-    userRole.activeTags = newUserTags;
   };
 
   const ActionResultModalElement = (
@@ -131,7 +106,7 @@ const Action = ({
   );
 
   return (
-    <>
+    <LoadingOverlay isLoading={isLoading}>
       <Card key={action.id} className="w-full flex flex-col space-y-1">
         <CardHeader>
           <p>{action.name}</p>
@@ -155,7 +130,7 @@ const Action = ({
         </CardFooter>
       </Card>
       {ActionResultModalElement}
-    </>
+    </LoadingOverlay>
   );
 };
 

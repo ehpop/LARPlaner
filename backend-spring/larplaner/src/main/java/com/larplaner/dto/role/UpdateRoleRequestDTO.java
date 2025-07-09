@@ -21,7 +21,7 @@ public class UpdateRoleRequestDTO {
   @NotBlank(message = "Role description cannot be blank")
   private String description;
 
-  @NotNull(message = "Tags list cannot be null")
+  @NotNull(message = "Tags userEvents cannot be null")
   private List<UUID> tags;
 
 }

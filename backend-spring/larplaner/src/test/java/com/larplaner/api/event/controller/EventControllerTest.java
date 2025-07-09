@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.larplaner.service.event.EventService;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -33,7 +34,6 @@ import com.larplaner.dto.event.EventRequestDTO;
 import com.larplaner.dto.event.EventResponseDTO;
 import com.larplaner.dto.event.assignedRole.AssignedRoleRequestDTO;
 import com.larplaner.dto.event.assignedRole.AssignedRoleResponseDTO;
-import com.larplaner.service.event.EventService;
 
 @WebMvcTest(EventControllerImpl.class)
 public class EventControllerTest extends BaseTestClass {

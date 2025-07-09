@@ -4,6 +4,7 @@ import com.larplaner.api.event.EventController;
 import com.larplaner.dto.event.EventRequestDTO;
 import com.larplaner.dto.event.EventResponseDTO;
 import com.larplaner.dto.event.EventUpdateRequestDTO;
+import com.larplaner.dto.event.statusUpdate.UpdateEventStatusRequestDTO;
 import com.larplaner.service.event.EventService;
 import java.util.List;
 import java.util.UUID;
@@ -51,5 +52,14 @@ public class EventControllerImpl implements EventController {
   public ResponseEntity<Void> deleteEvent(UUID id) {
     eventService.deleteEvent(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<EventResponseDTO> updateEventStatus(UUID id,
+      UpdateEventStatusRequestDTO statusUpdateRequest) {
+    EventResponseDTO updatedEvent = eventService.updateEventStatus(id,
+        statusUpdateRequest.getStatus());
+
+    return ResponseEntity.ok(updatedEvent);
   }
 }

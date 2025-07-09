@@ -426,7 +426,6 @@ export const mockGameSessions: IGameSession[] = preloadedUUIDs.games.map(
   (gameId, index) => ({
     id: gameId,
     eventId: eventsList[index % eventsList.length].id,
-    status: index === 0 ? "active" : "paused",
     startTime: now(getLocalTimeZone()).subtract({ hours: index }).toString(),
     endTime: index === 0 ? null : now(getLocalTimeZone()).toString(),
     assignedRoles: [],
@@ -466,7 +465,6 @@ export const mockGameItemStates: IGameItemState[] = possibleScenarioItems.map(
     scenarioItemId: item.id,
     currentHolderRoleId:
       possibleScenarioRoles[index % possibleScenarioRoles.length].id,
-    activeTags: [],
     actionHistory: [],
   }),
 );

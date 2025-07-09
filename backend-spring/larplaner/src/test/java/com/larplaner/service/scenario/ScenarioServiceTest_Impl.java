@@ -132,7 +132,7 @@ class ScenarioServiceTest_Impl implements ScenarioServiceTest {
   // === getAllScenarios Tests ===
 
   @Test
-  @DisplayName("getAllScenarios: Should return a list of scenario DTOs when scenarios exist")
+  @DisplayName("getAllScenarios: Should return a userEvents of scenario DTOs when scenarios exist")
   @Override
   public void getAllScenarios_whenScenariosExist_shouldReturnListOfDTOs() {
     // Arrange
@@ -158,7 +158,7 @@ class ScenarioServiceTest_Impl implements ScenarioServiceTest {
   }
 
   @Test
-  @DisplayName("getAllScenarios: Should return an empty list when no scenarios exist")
+  @DisplayName("getAllScenarios: Should return an empty userEvents when no scenarios exist")
   @Override
   public void getAllScenarios_whenNoScenariosExist_shouldReturnEmptyList() {
     // Arrange
@@ -490,7 +490,7 @@ class ScenarioServiceTest_Impl implements ScenarioServiceTest {
         .builder()
         .id(existingItem.getId())
         .actions(List.of())
-        .build(); // Empty list of actions
+        .build(); // Empty userEvents of actions
 
     UpdateScenarioRequestDTO updateDTO = UpdateScenarioRequestDTO
         .builder()

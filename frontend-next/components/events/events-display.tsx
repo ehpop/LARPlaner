@@ -13,19 +13,25 @@ import { IEvent, IEventStatus } from "@/types/event.types";
 import Event from "@/components/events/event";
 
 export const EventsDisplay = ({
-  list,
+  userEvents,
   title,
   eventStatus,
 }: {
-  list: IEvent[];
+  userEvents: IEvent[];
   title: string;
   eventStatus: IEventStatus;
 }) => {
-  const userEvents = list.filter((event) => event.status === eventStatus);
-  const [filteredList, setFilteredList] = useState(userEvents);
-  const [searchValue, setSearchValue] = useState("");
   const intl = useIntl();
   const theme = useTheme();
+
+  const userEventsWithCorrectStatus = userEvents.filter(
+    (event) => event.status === eventStatus,
+  );
+
+  const [filteredList, setFilteredList] = useState<IEvent[]>(
+    userEventsWithCorrectStatus,
+  );
+  const [searchValue, setSearchValue] = useState("");
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
@@ -33,13 +39,13 @@ export const EventsDisplay = ({
 
   useEffect(() => {
     const newFilteredList = searchValue
-      ? list.filter((item) =>
+      ? userEventsWithCorrectStatus.filter((item) =>
           item.name.toLowerCase().includes(searchValue.toLowerCase()),
         )
-      : list;
+      : userEventsWithCorrectStatus;
 
     setFilteredList(newFilteredList);
-  }, [searchValue]);
+  }, [userEvents, searchValue]);
 
   const SearchElement = (
     <div className="w-full flex justify-between space-x-3 items-baseline">

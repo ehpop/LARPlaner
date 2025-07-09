@@ -43,6 +43,7 @@ public class Event extends BaseEntity {
 
   @Column(length = 4096)
   private String img;
+
   private ZonedDateTime date;
 
   @Default
@@ -73,8 +74,11 @@ public class Event extends BaseEntity {
     assignedRole.setEvent(this);
   }
 
-  public void removeAssignedRoleToEvent(AssignedRole assignedRole) {
-    this.assignedRoles.remove(assignedRole);
-    assignedRole.setEvent(null);
+  public List<String> getEmailsAssignedToEvent() {
+    return this.assignedRoles.stream()
+        .map(AssignedRole::getAssignedEmail)
+        .filter(StringUtils::hasText)
+        .toList();
   }
+
 }

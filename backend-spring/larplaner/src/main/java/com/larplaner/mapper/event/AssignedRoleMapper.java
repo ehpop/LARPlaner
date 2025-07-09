@@ -20,8 +20,6 @@ public class AssignedRoleMapper {
   }
 
   public AssignedRoleResponseDTO toDTO(AssignedRole assignedRole) {
-    log.info("AssignedRole = {}", assignedRole);
-
     return AssignedRoleResponseDTO.builder()
         .id(assignedRole.getId())
         .scenarioRoleId(assignedRole.getScenarioRole() != null ? assignedRole.getScenarioRole().getId() : null)

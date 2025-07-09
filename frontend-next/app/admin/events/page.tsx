@@ -55,7 +55,10 @@ function EventsPage() {
   return (
     <div className="space-y-5">
       <LoadingOverlay isLoading={loading} label={"Loading active events..."}>
-        <EventsDisplayAdmin eventsList={eventsData} />
+        <EventsDisplayAdmin
+          eventsList={eventsData}
+          setEventsData={setEventsData}
+        />
       </LoadingOverlay>
     </div>
   );

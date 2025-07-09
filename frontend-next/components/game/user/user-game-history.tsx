@@ -16,7 +16,6 @@ import gameService from "@/services/game.service";
 import { IGameActionLog, IGameSession } from "@/types/game.types";
 
 const UserGameHistory = ({ game }: { game: IGameSession }) => {
-  const intl = useIntl();
   const auth = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [gameHistory, setGameHistory] = useState<IGameActionLog[]>([]);
@@ -26,7 +25,7 @@ const UserGameHistory = ({ game }: { game: IGameSession }) => {
     if (!isModalOpen || !auth.user?.email) return;
 
     gameService
-      .getGameHistoryByGameIdAndUserId(auth.user?.email, game.id)
+      .getGameHistoryByGameIdAndUserId(game.id, auth.user?.uid)
       .then((response) => {
         if (response.success) {
           setGameHistory(response.data);

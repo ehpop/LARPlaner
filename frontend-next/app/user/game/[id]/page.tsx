@@ -8,7 +8,7 @@ import React from "react";
 import LoadingOverlay from "@/components/general/loading-overlay";
 import { IGameSession } from "@/types/game.types";
 import useGame from "@/hooks/use-game";
-import useEvent from "@/hooks/use-event";
+import useEvent from "@/hooks/event/use-event";
 import QrItemScanner from "@/components/game/user/qr-item-scanner";
 import MyCharacterModal from "@/components/game/user/my-character-modal";
 import ActionsModal from "@/components/game/user/actions-modal";
@@ -19,9 +19,7 @@ const ActiveGamePage = ({ params }: any) => {
   const gameId = resolvedParams.id;
 
   const intl = useIntl();
-  const { game, loading } = useGame({
-    id: gameId,
-  });
+  const { game, loading } = useGame(gameId);
 
   const allDataLoaded = game && !loading;
 
@@ -98,7 +96,7 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
                   id="events.id.active.status"
                 />
               </p>
-              <p className="text-success">{game.status}</p>
+              <p className="text-success">{event.status}</p>
             </div>
           </div>
         </CardHeader>

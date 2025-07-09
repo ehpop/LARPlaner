@@ -29,6 +29,28 @@ class EventsService extends CrudService<IEvent, IEventGetDTO, IEventPostDTO> {
         };
       });
   }
+
+  async updateEventStatus(
+    eventId: IEvent["id"],
+    requestedStatus: IEvent["status"],
+  ) {
+    return api
+      .put(`/events/${eventId}/status`, {
+        status: requestedStatus.toUpperCase(),
+      })
+      .then((result) => {
+        return {
+          success: true,
+          data: result.data,
+        };
+      })
+      .catch((error) => {
+        return {
+          success: false,
+          data: error.message,
+        };
+      });
+  }
 }
 
 export default new EventsService();

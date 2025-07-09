@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { IRole } from "@/types/roles.types";
@@ -13,6 +12,7 @@ import { showErrorToastWithTimeout } from "@/utils/toast";
 export default function RolePage({ params }: any) {
   const resolvedParams = React.use(params) as { id: string };
   const roleId = resolvedParams.id;
+
   const intl = useIntl();
   const [roleData, setRoleData] = useState<IRole>();
   const [loading, setLoading] = useState(true);

@@ -72,14 +72,7 @@ const ActionsModal = ({ game }: { game: IGameSession }) => {
             />
           ) : (
             actions.map((action) => (
-              <Action
-                key={action.id}
-                action={action}
-                afterActionPerformed={() => {
-                  setIsModalOpen(false);
-                }}
-                game={game}
-              />
+              <Action key={action.id} action={action} game={game} />
             ))
           )}
         </ModalBody>

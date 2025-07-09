@@ -49,8 +49,6 @@ class CrudService<E, G extends IGetDTO, P extends IPostDTO> {
   async save(entity: E): Promise<Response<E>> {
     const postDto = this.convertEntityToPostDto(entity);
 
-    console.log(postDto);
-
     return api
       .post(this.baseUrl, postDto)
       .then(

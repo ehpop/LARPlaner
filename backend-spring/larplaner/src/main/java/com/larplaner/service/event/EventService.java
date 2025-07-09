@@ -1,5 +1,6 @@
 package com.larplaner.service.event;
 
+import com.larplaner.model.event.EventStatusEnum;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,4 +19,7 @@ public interface EventService {
   EventResponseDTO updateEvent(UUID id, EventUpdateRequestDTO eventDTO);
 
   void deleteEvent(UUID id);
+
+  EventResponseDTO updateEventStatus(UUID id, EventStatusEnum newStatus);
+
 }

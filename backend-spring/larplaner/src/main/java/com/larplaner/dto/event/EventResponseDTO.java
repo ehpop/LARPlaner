@@ -1,13 +1,9 @@
 package com.larplaner.dto.event;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-
 import com.larplaner.dto.BaseResponseDTO;
 import com.larplaner.dto.event.assignedRole.AssignedRoleResponseDTO;
-import com.larplaner.dto.game.GameSessionResponseDTO;
-import com.larplaner.dto.scenario.ScenarioResponseDTO;
-
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -27,6 +23,6 @@ public class EventResponseDTO extends BaseResponseDTO {
   private String status;
   private ZonedDateTime date;
   private UUID scenarioId;
-  private GameSessionResponseDTO gameSession;
+  private UUID gameSessionId;
   private List<AssignedRoleResponseDTO> assignedRoles;
 }

@@ -1,10 +1,10 @@
 package com.larplaner.api.game.controller;
 
 import com.larplaner.api.game.GameSessionController;
-import com.larplaner.dto.game.GameSessionRequestDTO;
 import com.larplaner.dto.game.GameSessionResponseDTO;
-import com.larplaner.dto.game.UpdateGameSessionRequestDTO;
+import com.larplaner.dto.game.action.GameActionRequestDTO;
 import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
+import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
 import com.larplaner.service.game.GameSessionService;
 import java.util.List;
 import java.util.UUID;
@@ -31,23 +31,6 @@ public class GameSessionControllerImpl implements GameSessionController {
     GameSessionResponseDTO gameSession = gameSessionService.getGameSessionById(id);
     return gameSession != null
         ? ResponseEntity.ok(gameSession)
-        : ResponseEntity.notFound().build();
-  }
-
-  @Override
-  public ResponseEntity<GameSessionResponseDTO> createGameSession(
-      GameSessionRequestDTO gameSessionDTO) {
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(gameSessionService.createGameSession(gameSessionDTO));
-  }
-
-  @Override
-  public ResponseEntity<GameSessionResponseDTO> updateGameSession(UUID id,
-      UpdateGameSessionRequestDTO updateGameSessionRequestDTO) {
-    GameSessionResponseDTO updatedGameSession = gameSessionService.updateGameSession(id,
-        updateGameSessionRequestDTO);
-    return updatedGameSession != null
-        ? ResponseEntity.ok(updatedGameSession)
         : ResponseEntity.notFound().build();
   }
 
@@ -87,5 +70,20 @@ public class GameSessionControllerImpl implements GameSessionController {
       GameActionLogResponseDTO gameActionLogDTO) {
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(gameSessionService.createGameHistory(gameActionLogDTO));
+  }
+
+  @Override
+  public ResponseEntity<GameActionLogResponseDTO> performActionInGameSession(UUID id,
+      GameActionRequestDTO actionRequestDTO) {
+    return ResponseEntity.ok(
+        gameSessionService.performAction(id, actionRequestDTO)
+    );
+  }
+
+  @Override
+  public ResponseEntity<GameSessionResponseDTO> updateGameSessionRoleState(UUID gameSessionRoleId, UpdateGameRoleStateRequestDTO requestDTO) {
+    return ResponseEntity.ok(
+        gameSessionService.updateRoleState(gameSessionRoleId, requestDTO)
+    );
   }
 }

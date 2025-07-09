@@ -5,7 +5,6 @@ import { ITag } from "@/types/tags.types";
 export type IGameSession = {
   id: string; // Unique session ID
   eventId: IEvent["id"]; // Reference to the planned event
-  status: "active" | "paused" | "ended"; // Current session status
   startTime: string; // ISO timestamp when the session started
   endTime: string | null; // ISO timestamp when the session ended (null if ongoing)
   assignedRoles: IGameRoleState[]; // Current role states
@@ -17,6 +16,7 @@ export type IGameSessionGetDTO = IGameSession;
 export type IGameSessionPostDTO = IGameSession;
 
 export type IGameRoleState = {
+  id: string;
   scenarioRoleId: IScenarioRole["id"]; // The role in the scenario
   assignedEmail: string; // Player assigned to this role
   assignedUserID: string; // User ID of the player
@@ -27,7 +27,6 @@ export type IGameRoleState = {
 export type IGameItemState = {
   scenarioItemId: IScenarioItem["id"]; // The item from the scenario
   currentHolderRoleId: IScenarioRole["id"] | null; // Who holds this item, if any
-  activeTags: ITag[]; // Conditions/statuses applied to the item
   actionHistory: IGameActionLog[]; // Log of actions taken on the item
 };
 
@@ -45,7 +44,6 @@ export type IGameActionLog = {
 };
 
 export type IGameActionRequest = {
-  sessionId: IGameSession["id"];
   performerRoleId: IScenarioRole["id"];
   actionId: IAction["id"];
   targetItemId?: IScenarioItem["id"];

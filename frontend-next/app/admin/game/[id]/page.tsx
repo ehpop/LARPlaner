@@ -8,18 +8,16 @@ import React from "react";
 import useGame from "@/hooks/use-game";
 import LoadingOverlay from "@/components/general/loading-overlay";
 import { IGameSession } from "@/types/game.types";
-import useEvent from "@/hooks/use-event";
+import useEvent from "@/hooks/event/use-event";
 import AdminGameHistory from "@/components/game/admin/admin-game-history";
-import ManageCharacters from "@/components/game/admin/manage-characters";
+import ManageCharacters from "@/components/game/admin/manage-characters/manage-characters";
 
 const ActiveAdminGamePage = ({ params }: any) => {
   const resolvedParams = React.use(params) as { id: string };
   const gameId = resolvedParams.id;
 
   const intl = useIntl();
-  const { game, loading } = useGame({
-    id: gameId,
-  });
+  const { game, loading } = useGame(gameId);
 
   const allDataLoaded = game && !loading;
 
@@ -94,7 +92,7 @@ const ActiveAdminGameDisplay = ({ game }: { game: IGameSession }) => {
                   id="events.id.active.status"
                 />
               </p>
-              <p className="text-success">{game.status}</p>
+              <p className="text-success">{event.status}</p>
             </div>
           </div>
         </CardHeader>

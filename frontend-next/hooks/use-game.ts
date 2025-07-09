@@ -6,12 +6,13 @@ import { IGameSession } from "@/types/game.types";
 import gameService from "@/services/game.service";
 import { showErrorMessage } from "@/hooks/utils";
 
-const useGame = ({ id }: { id: string }) => {
+const useGame = (id: IGameSession["id"]) => {
   const intl = useIntl();
   const auth = useAuth();
 
   const [game, setGame] = useState<IGameSession | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadGameData = async () => {
@@ -22,6 +23,8 @@ const useGame = ({ id }: { id: string }) => {
       const gameResponse = await gameService.getById(id);
 
       if (!gameResponse.success) {
+        setError(gameResponse.data);
+
         return showErrorMessage(gameResponse.data);
       }
 
@@ -30,6 +33,13 @@ const useGame = ({ id }: { id: string }) => {
       const { eventId } = gameResponse.data;
 
       if (!eventId) {
+        setError(
+          intl.formatMessage({
+            id: "hooks.useGame.error.noEvent",
+            defaultMessage: "Game has no event assigned.",
+          }),
+        );
+
         return showErrorMessage(
           intl.formatMessage({
             id: "hooks.useGame.error.noEvent",
@@ -39,14 +49,18 @@ const useGame = ({ id }: { id: string }) => {
       }
     };
 
+    if (!id) {
+      setGame(null);
+
+      return;
+    }
+
     loadGameData().finally(() => {
-      if (!auth.loading) {
-        setLoading(false);
-      }
+      setLoading(false);
     });
   }, [id, auth.user]);
 
-  return { game, loading };
+  return { game, loading, error, setGame };
 };
 
 export default useGame;

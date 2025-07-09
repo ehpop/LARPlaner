@@ -4,6 +4,7 @@ import com.larplaner.dto.game.roleState.GameRoleStateResponseDTO;
 import com.larplaner.mapper.game.action.GameActionLogMapper;
 import com.larplaner.mapper.tag.TagMapper;
 import com.larplaner.model.game.GameRoleState;
+import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,28 +20,30 @@ public class GameRoleStateMapper {
 
     return GameRoleStateResponseDTO.builder()
         .id(gameRoleState.getId())
+        .gameSessionId(gameRoleState.getGameSession().getId())
         .scenarioRoleId(gameRoleState.getScenarioRole().getId())
         .assignedEmail(gameRoleState.getAssignedEmail())
         .assignedUserID(gameRoleState.getAssignedUserID())
-        .activeTags(gameRoleState.getActiveTags().stream()
-            .map(tagMapper::toDTO)
-            .collect(Collectors.toList()))
-        .actionHistory(gameRoleState.getActionHistory().stream()
-            .map(gameActionLogMapper::toDTO)
-            .collect(Collectors.toList()))
+        .activeTags(gameRoleState.getActiveTags() == null ? List.of()
+            : gameRoleState.getActiveTags().stream()
+                .map(tagMapper::toDTO)
+                .collect(Collectors.toList()))
+        .actionHistory(gameRoleState.getActionHistory() == null ? List.of()
+            : gameRoleState.getActionHistory().stream()
+                .map(gameActionLogMapper::toDTO)
+                .collect(Collectors.toList()))
         .build();
   }
 
   public GameRoleState toEntity(GameRoleStateResponseDTO dto) {
-    GameRoleState entity = GameRoleState.builder()
+
+    return GameRoleState.builder()
         .id(dto.getId())
         .assignedEmail(dto.getAssignedEmail())
         .assignedUserID(dto.getAssignedUserID())
         .activeTags(
             dto.getActiveTags() != null ? dto.getActiveTags().stream().map(tagMapper::toEntity)
-                .collect(java.util.stream.Collectors.toList()) : null)
+                .collect(Collectors.toList()) : null)
         .build();
-
-    return entity;
   }
 }

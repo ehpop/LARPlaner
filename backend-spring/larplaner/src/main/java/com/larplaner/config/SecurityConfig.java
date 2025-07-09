@@ -34,13 +34,6 @@ public class SecurityConfig {
             .requestMatchers("/swagger-ui/**").permitAll()
             .requestMatchers("/v3/api-docs/**").permitAll()
             .requestMatchers("/swagger-ui.html").permitAll()
-            // API endpoints
-            .requestMatchers(HttpMethod.POST, "/api/scenarios").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/events").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/roles").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/game").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/tags").permitAll()
-            // For development, you might want to allow GET requests too
             .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
             .requestMatchers(HttpMethod.PUT, "/api/**").permitAll()
             .requestMatchers(HttpMethod.DELETE, "/api/**").permitAll()

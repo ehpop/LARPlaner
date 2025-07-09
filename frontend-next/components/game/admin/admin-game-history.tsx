@@ -97,6 +97,7 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
 
   return (
     <Table
+      isStriped
       aria-label={intl.formatMessage({
         id: "admin.admin-game-history.game.action.history.table",
         defaultMessage: "Game Action History Table",
@@ -108,8 +109,8 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
       <TableBody
         emptyContent={
           <FormattedMessage
-            defaultMessage="No actions available."
-            id="game.actionsModal.noActions"
+            defaultMessage="No history available."
+            id="game.actionsModal.noHistory"
           />
         }
         items={rows}

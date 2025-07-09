@@ -1,23 +1,21 @@
 package com.larplaner.service.tag.impl;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import com.larplaner.dto.tag.TagRequestDTO;
 import com.larplaner.dto.tag.TagResponseDTO;
 import com.larplaner.dto.tag.UpdateTagRequestDTO;
+import com.larplaner.exception.EntityCouldNotBeAdded;
 import com.larplaner.mapper.tag.TagMapper;
 import com.larplaner.model.tag.Tag;
 import com.larplaner.repository.tag.TagRepository;
 import com.larplaner.service.tag.TagService;
-
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +52,16 @@ public class TagServiceImpl implements TagService {
   @Override
   public List<TagResponseDTO> createTags(List<TagRequestDTO> tagRequestDTOList) {
     var tags = tagRequestDTOList.stream().map(tagMapper::toEntity).toList();
+
+    var existingTagsWithSameValues = tagRepository.findByValueInIgnoreCase(
+        tags.stream().map(Tag::getValue).collect(Collectors.toSet()));
+
+    if(!existingTagsWithSameValues.isEmpty()) {
+      throw new EntityCouldNotBeAdded("Tags already exist with name(s): " +
+          existingTagsWithSameValues.stream()
+          .map(Tag::getValue)
+          .collect(Collectors.joining(",")));
+    }
 
     return tagRepository.saveAll(tags).stream().map(tagMapper::toDTO).toList();
   }

@@ -1,15 +1,12 @@
 package com.larplaner.dto.game.action;
 
-import com.larplaner.dto.BaseResponseDTO;
+import java.util.UUID;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class GameActionRequestDTO extends BaseResponseDTO {
+public class GameActionRequestDTO {
 
-  private String sessionId;
-  private String performerRoleId;
-  private String actionId;
-  private String targetItemId;
+  private UUID performerRoleId;
+  private UUID actionId;
+  private UUID targetItemId;
 }

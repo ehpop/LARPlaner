@@ -1,3 +1,4 @@
+// components/general/loading-overlay.tsx
 import React from "react";
 import { Spinner } from "@heroui/react";
 
@@ -13,7 +14,9 @@ const LoadingOverlay = ({
   return (
     <div className="relative w-full">
       <div
-        className={`transition-all duration-300 ${isLoading ? "opacity-50 blur-sm" : ""}`}
+        className={`transition-all duration-300 ${
+          isLoading ? "opacity-50 blur-sm" : "opacity-100 blur-0"
+        }`}
       >
         {children}
       </div>

@@ -13,14 +13,16 @@ export const Event = ({ event }: EventProps) => {
       <Card key={event.id} className="mx-3" shadow="sm">
         <div className="relative w-full aspect-w-16 aspect-h-9">
           <CardBody className="p-0 h-full">
-            <Image
-              alt={event.name}
-              className="object-cover h-full w-full"
-              fallbackSrc="/images/event-fallback.png"
-              radius="lg"
-              shadow="sm"
-              src={event.img}
-            />
+            {event.img && (
+              <Image
+                alt={event.name}
+                className="object-cover h-full w-full"
+                fallbackSrc="/images/event-fallback.png"
+                radius="lg"
+                shadow="sm"
+                src={event.img}
+              />
+            )}
           </CardBody>
         </div>
         <CardFooter className="text-small justify-between">

@@ -2,48 +2,54 @@
 
 import { useIntl } from "react-intl";
 
-import { eventsList as list } from "@/services/mock/mock-data";
 import EventsDisplay from "@/components/events/events-display";
 import { useAuth } from "@/providers/firebase-provider";
+import useAllEvents from "@/hooks/event/use-all-events";
+import LoadingOverlay from "@/components/general/loading-overlay";
 
 const EventsPage = () => {
   const intl = useIntl();
   const auth = useAuth();
 
-  const userEvents = list.filter(
-    (event) =>
-      event.assignedRoles.findIndex(
-        (assignedRole) => assignedRole.assignedEmail === auth.user?.email,
-      ) !== -1,
+  const { events: userEvents, loading } = useAllEvents(
+    auth.user?.email || undefined,
   );
 
   return (
-    <div className="space-y-5">
-      <EventsDisplay
-        eventStatus="active"
-        list={userEvents.filter((event) => event.status === "active")}
-        title={intl.formatMessage({
-          id: "events.page.display.title.active",
-          defaultMessage: "Active events",
-        })}
-      />
-      <EventsDisplay
-        eventStatus="upcoming"
-        list={userEvents.filter((event) => event.status === "upcoming")}
-        title={intl.formatMessage({
-          id: "events.page.display.title.upcoming",
-          defaultMessage: "Upcoming events",
-        })}
-      />
-      <EventsDisplay
-        eventStatus="historic"
-        list={userEvents.filter((event) => event.status === "historic")}
-        title={intl.formatMessage({
-          id: "events.page.display.title.historic",
-          defaultMessage: "Historic events",
-        })}
-      />
-    </div>
+    <LoadingOverlay
+      isLoading={loading}
+      label={intl.formatMessage({
+        id: "user.events.page.loading",
+        defaultMessage: "Loading user events...",
+      })}
+    >
+      <div className="space-y-5">
+        <EventsDisplay
+          eventStatus="active"
+          title={intl.formatMessage({
+            id: "events.page.display.title.active",
+            defaultMessage: "Active events",
+          })}
+          userEvents={userEvents}
+        />
+        <EventsDisplay
+          eventStatus="upcoming"
+          title={intl.formatMessage({
+            id: "events.page.display.title.upcoming",
+            defaultMessage: "Upcoming events",
+          })}
+          userEvents={userEvents}
+        />
+        <EventsDisplay
+          eventStatus="historic"
+          title={intl.formatMessage({
+            id: "events.page.display.title.historic",
+            defaultMessage: "Historic events",
+          })}
+          userEvents={userEvents}
+        />
+      </div>
+    </LoadingOverlay>
   );
 };
 

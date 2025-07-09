@@ -10,6 +10,7 @@ import React, {
 
 import { ITag } from "@/types/tags.types";
 import { showErrorToastWithTimeout } from "@/utils/toast";
+import tagsService from "@/services/tags.service";
 
 interface ITagsContext {
   allTags: ITag[];
@@ -32,12 +33,14 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllTags = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch("http://localhost:8080/api/tags");
+        const response = await tagsService.getAll();
 
-        if (!response.ok) {
+        if (!response.success) {
           showErrorToastWithTimeout("Something went wrong");
+
+          return;
         }
-        const data: ITag[] = await response.json();
+        const data = response.data;
 
         setAllTags(data);
       } finally {

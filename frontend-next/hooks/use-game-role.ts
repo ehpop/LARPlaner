@@ -6,7 +6,7 @@ import { IGameRoleState, IGameSession } from "@/types/game.types";
 import { IRole } from "@/types/roles.types";
 import { IScenarioRole } from "@/types/scenario.types";
 import useGame from "@/hooks/use-game";
-import useEvent from "@/hooks/use-event";
+import useEvent from "@/hooks/event/use-event";
 import { showErrorMessage } from "@/hooks/utils";
 import rolesService from "@/services/roles.service";
 
@@ -23,7 +23,7 @@ const useGameRole = ({
   const intl = useIntl();
   const auth = useAuth();
 
-  const { game } = useGame({ id: gameId });
+  const { game } = useGame(gameId);
   const { event, scenario, loading } = useEvent(eventId || "");
 
   const [role, setRole] = useState<IRole | null>(null);

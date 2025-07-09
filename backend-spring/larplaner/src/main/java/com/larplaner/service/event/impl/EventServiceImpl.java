@@ -6,15 +6,21 @@ import com.larplaner.dto.event.EventUpdateRequestDTO;
 import com.larplaner.dto.event.assignedRole.AssignedRoleUpdateRequestDTO;
 import com.larplaner.exception.EntityCouldNotBeAdded;
 import com.larplaner.exception.EntityCouldNotBeDeleted;
+import com.larplaner.exception.event.status.EventStatusCouldNotBeChanged;
 import com.larplaner.mapper.event.AssignedRoleMapper;
 import com.larplaner.mapper.event.EventMapper;
 import com.larplaner.model.BaseEntity;
 import com.larplaner.model.event.AssignedRole;
 import com.larplaner.model.event.Event;
+import com.larplaner.model.event.EventStatusEnum;
 import com.larplaner.repository.event.EventRepository;
 import com.larplaner.repository.game.GameSessionRepository;
 import com.larplaner.service.event.EventService;
+import com.larplaner.service.firebase.UserLookupService;
+import com.larplaner.service.game.impl.GameSessionServiceImpl;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,10 +38,15 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public class EventServiceImpl implements EventService {
 
+  private final UserLookupService userLookupService;
+  @PersistenceContext
+  private EntityManager entityManager;
+
   private final EventRepository eventRepository;
   private final EventMapper eventMapper;
   private final AssignedRoleMapper assignedRoleMapper;
   private final GameSessionRepository gameSessionRepository;
+  private final GameSessionServiceImpl gameSessionService;
 
   @Override
   public List<EventResponseDTO> getAllEvents() {
@@ -89,6 +100,83 @@ public class EventServiceImpl implements EventService {
       throw new EntityCouldNotBeDeleted(
           "Event could not be deleted because it is referenced in game: " + game.getId());
     }
+  }
+
+  @Override
+  public EventResponseDTO updateEventStatus(UUID id, EventStatusEnum newStatus) {
+    var event = eventRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+    var transitionedEvent = transitionEventStatus(newStatus, event);
+
+    return eventMapper.toDTO(transitionedEvent);
+  }
+
+  private Event transitionEventStatus(EventStatusEnum newStatus, Event event) {
+    if (event.getStatus().equals(newStatus)) {
+      throw new EventStatusCouldNotBeChanged(
+          "Event Status is already: " + event.getStatus().name());
+    }
+
+    switch (event.getStatus()) {
+      case HISTORIC -> {
+        return updateEventStatusFromHistoric(event, newStatus);
+      }
+      case ACTIVE -> {
+        return updateEventStatusFromActive(event, newStatus);
+      }
+      case UPCOMING -> {
+        return updateEventStatusFromUpcoming(event, newStatus);
+      }
+      default -> throw new IllegalStateException(
+          "There is no logic for changing EventStatus from : " + event.getStatus().name());
+    }
+  }
+
+  private Event updateEventStatusFromHistoric(Event event, EventStatusEnum newStatus) {
+    throw new EventStatusCouldNotBeChanged("Cannot change event status from historic");
+  }
+
+  private Event updateEventStatusFromActive(Event event, EventStatusEnum newStatus) {
+    if (!EventStatusEnum.HISTORIC.equals(newStatus)) {
+      throw new EventStatusCouldNotBeChanged(
+          "Cannot change event status from active to " + newStatus.name().toLowerCase());
+    }
+
+    event.setStatus(EventStatusEnum.HISTORIC);
+    return eventRepository.save(event);
+  }
+
+  private Event updateEventStatusFromUpcoming(Event event, EventStatusEnum newStatus) {
+    if (!EventStatusEnum.ACTIVE.equals(newStatus)) {
+      throw new EventStatusCouldNotBeChanged(
+          "Cannot change event status from upcoming to " + newStatus.name().toLowerCase());
+    }
+
+    //TODO: ENABLE THIS CHECK
+//    checkIfAllEmailsAreValidInEvent(event);
+    
+    gameSessionService.createGameSession(event);
+
+    event.setStatus(EventStatusEnum.ACTIVE);
+    return eventRepository.save(event);
+  }
+
+  private void checkIfAllEmailsAreValidInEvent(Event event) {
+    List<String> assignedEmails = event.getEmailsAssignedToEvent();
+    if (assignedEmails.size() != event.getAssignedRoles().size()) {
+      throw new EventStatusCouldNotBeChanged(
+          "Please assign all email roles before you change status to active");
+    }
+
+    var userIDs = userLookupService.getUserIDsByEmails(assignedEmails);
+    userIDs.keySet().forEach(email -> {
+      if (userIDs.get(email).isEmpty()) {
+        throw new EventStatusCouldNotBeChanged(String.format(
+            "Email %s doesn't have existing account in app yet. "
+                + "Please create account or assign email with existing account to this role.",
+            email));
+      }
+    });
   }
 
   private void updateAssignedRoles(Event event, EventUpdateRequestDTO eventDTO) {

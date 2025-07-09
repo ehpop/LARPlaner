@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.larplaner.service.role.RoleService;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +35,6 @@ import com.larplaner.api.common.BaseTestClass;
 import com.larplaner.dto.role.RoleRequestDTO;
 import com.larplaner.dto.role.RoleResponseDTO;
 import com.larplaner.dto.tag.TagResponseDTO;
-import com.larplaner.service.role.RoleService;
 
 @WebMvcTest(RoleControllerImpl.class) // Assuming RoleControllerImpl is your controller
 public class RoleControllerTest extends BaseTestClass {

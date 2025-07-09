@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.larplaner.service.tag.TagService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +32,6 @@ import com.larplaner.api.common.BaseTestClass;
 import com.larplaner.dto.tag.TagRequestDTO;
 import com.larplaner.dto.tag.TagResponseDTO;
 import com.larplaner.dto.tag.UpdateTagRequestDTO;
-import com.larplaner.service.tag.TagService;
 
 import jakarta.persistence.EntityNotFoundException;
 

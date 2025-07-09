@@ -1,14 +1,15 @@
 package com.larplaner.api.game;
 
-import com.larplaner.dto.game.GameSessionRequestDTO;
 import com.larplaner.dto.game.GameSessionResponseDTO;
-import com.larplaner.dto.game.UpdateGameSessionRequestDTO;
+import com.larplaner.dto.game.action.GameActionRequestDTO;
 import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
+import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
@@ -37,26 +38,6 @@ public interface GameSessionController {
   @GetMapping("/{id}")
   ResponseEntity<GameSessionResponseDTO> getGameSessionById(
       @Parameter(description = "ID of the game session to retrieve") @PathVariable UUID id);
-
-  @Operation(summary = "Create a new game session")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "Game session created successfully"),
-      @ApiResponse(responseCode = "400", description = "Invalid input")
-  })
-  @PostMapping
-  ResponseEntity<GameSessionResponseDTO> createGameSession(
-      @Parameter(description = "Game session to create") @RequestBody GameSessionRequestDTO gameSessionDTO);
-
-  @Operation(summary = "Update an existing game session")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Game session updated successfully"),
-      @ApiResponse(responseCode = "404", description = "Game session not found"),
-      @ApiResponse(responseCode = "400", description = "Invalid input")
-  })
-  @PutMapping("/{id}")
-  ResponseEntity<GameSessionResponseDTO> updateGameSession(
-      @Parameter(description = "ID of the game session to update") @PathVariable UUID id,
-      @Parameter(description = "Updated game session data") @RequestBody UpdateGameSessionRequestDTO updateGameSessionRequestDTO);
 
   @Operation(summary = "Delete a game session")
   @ApiResponses(value = {
@@ -110,4 +91,28 @@ public interface GameSessionController {
   @PostMapping("/history")
   ResponseEntity<GameActionLogResponseDTO> createGameHistory(
       @Parameter(description = "Game history entry to create") @RequestBody GameActionLogResponseDTO gameActionLogDTO);
+
+  @Operation(summary = "Try to perform action")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successfully processed action request"),
+      @ApiResponse(responseCode = "404", description = "Game session not found")
+  })
+  @PostMapping("/{id}/perform-action")
+  ResponseEntity<GameActionLogResponseDTO> performActionInGameSession(
+      @Parameter(description = "ID of the game session in which to perform action") @PathVariable UUID id,
+      @RequestBody @Valid
+      GameActionRequestDTO actionRequestDTO);
+
+  @Operation(summary = "Update the state/details of a specific scenario role within a game session")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successfully updated game session role state"),
+      @ApiResponse(responseCode = "400", description = "Invalid request payload or data validation failed"),
+      @ApiResponse(responseCode = "404", description = "Game session or scenario role not found")
+  })
+  @PutMapping("/roles/{gameSessionRoleId}/state")
+  ResponseEntity<GameSessionResponseDTO> updateGameSessionRoleState(
+      @Parameter(description = "ID of the scenario role whose state is to be updated")
+      @PathVariable UUID gameSessionRoleId,
+      @RequestBody @Valid
+      UpdateGameRoleStateRequestDTO requestDTO);
 }

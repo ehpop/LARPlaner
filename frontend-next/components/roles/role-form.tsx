@@ -129,6 +129,11 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
             <Input
               {...field}
               isRequired
+              description={intl.formatMessage({
+                defaultMessage:
+                  "Name of this role that will be used in scenario",
+                id: "role.display.name.description",
+              })}
               errorMessage={errors.name?.message}
               isDisabled={!isNewRole && !isBeingEdited}
               isInvalid={!!errors.name}
@@ -160,16 +165,19 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
               {...field}
               isRequired
               description={intl.formatMessage({
-                id: "events.id.page.description.description",
+                id: "role.id.page.description.description",
+                defaultMessage: "Base description of this role",
               })}
               errorMessage={errors.description?.message}
               isDisabled={!isNewRole && !isBeingEdited}
               isInvalid={!!errors.description}
               label={intl.formatMessage({
-                id: "events.id.page.description.label",
+                id: "role.id.page.description.label",
+                defaultMessage: "Role description",
               })}
               placeholder={intl.formatMessage({
                 id: "role.display.description.placeholder",
+                defaultMessage: "Enter role description",
               })}
               size="lg"
               variant="underlined"

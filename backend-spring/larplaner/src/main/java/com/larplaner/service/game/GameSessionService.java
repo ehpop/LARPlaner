@@ -1,12 +1,12 @@
 package com.larplaner.service.game;
 
+import com.larplaner.dto.game.GameSessionResponseDTO;
+import com.larplaner.dto.game.action.GameActionRequestDTO;
+import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
+import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
+import com.larplaner.model.event.Event;
 import java.util.List;
 import java.util.UUID;
-
-import com.larplaner.dto.game.GameSessionRequestDTO;
-import com.larplaner.dto.game.GameSessionResponseDTO;
-import com.larplaner.dto.game.UpdateGameSessionRequestDTO;
-import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
 
 public interface GameSessionService {
 
@@ -14,10 +14,7 @@ public interface GameSessionService {
 
   GameSessionResponseDTO getGameSessionById(UUID id);
 
-  GameSessionResponseDTO createGameSession(GameSessionRequestDTO gameSessionDTO);
-
-  GameSessionResponseDTO updateGameSession(UUID id,
-      UpdateGameSessionRequestDTO updateGameSessionRequestDTO);
+  GameSessionResponseDTO createGameSession(Event event);
 
   void deleteGameSession(UUID id);
 
@@ -30,4 +27,9 @@ public interface GameSessionService {
   List<GameActionLogResponseDTO> getGameHistoryByUserIdAndGameId(String userId, UUID gameId);
 
   GameActionLogResponseDTO createGameHistory(GameActionLogResponseDTO gameActionLogDTO);
+
+  GameActionLogResponseDTO performAction(UUID id, GameActionRequestDTO actionRequestDTO);
+
+  GameSessionResponseDTO updateRoleState(UUID roleStateID,
+      UpdateGameRoleStateRequestDTO requestDTO);
 }

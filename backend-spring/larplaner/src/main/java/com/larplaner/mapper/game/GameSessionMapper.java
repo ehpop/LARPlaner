@@ -1,7 +1,6 @@
 package com.larplaner.mapper.game;
 
 import com.larplaner.dto.game.GameSessionResponseDTO;
-import com.larplaner.dto.game.UpdateGameSessionRequestDTO;
 import com.larplaner.mapper.game.action.GameActionLogMapper;
 import com.larplaner.mapper.game.item.GameItemStateMapper;
 import com.larplaner.mapper.game.role.GameRoleStateMapper;
@@ -25,7 +24,7 @@ public class GameSessionMapper {
 
     GameSessionResponseDTO dto = new GameSessionResponseDTO();
     dto.setId(gameSession.getId());
-    dto.setStatus(gameSession.getStatus());
+    dto.setEventId(gameSession.getEvent().getId());
     dto.setStartTime(gameSession.getStartTime());
     dto.setEndTime(gameSession.getEndTime());
 
@@ -53,7 +52,6 @@ public class GameSessionMapper {
   public GameSession toEntity(GameSessionResponseDTO dto) {
     GameSession entity = GameSession.builder()
         .id(dto.getId())
-        .status(dto.getStatus())
         .startTime(dto.getStartTime())
         .endTime(dto.getEndTime())
         .assignedRoles(dto.getAssignedRoles() != null ? dto.getAssignedRoles().stream()
@@ -67,9 +65,4 @@ public class GameSessionMapper {
     return entity;
   }
 
-  public void updateEntityFromDTO(UpdateGameSessionRequestDTO dto, GameSession entity) {
-    if (dto.getStatus() != null) {
-      entity.setStatus(dto.getStatus());
-    }
-  }
 }

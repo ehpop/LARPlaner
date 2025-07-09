@@ -1,4 +1,4 @@
-import { FormattedMessage } from "react-intl";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 import React, { useState } from "react";
 import { Button } from "@heroui/button";
 import {
@@ -14,7 +14,7 @@ import {
 import {
   Control,
   Controller,
-  FieldPath,
+  ControllerRenderProps,
   useFieldArray,
   useWatch,
 } from "react-hook-form";
@@ -22,8 +22,134 @@ import {
 import { IAction, IScenario } from "@/types/scenario.types";
 import InputTagsWithTable from "@/components/input-tags-with-table";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
+import { ITag } from "@/types/tags.types";
+
+// Centralized message definitions for react-intl
+const messages = defineMessages({
+  // ActionForm
+  actionNameLabel: {
+    id: "scenario.action-form.actionNameLabel",
+    defaultMessage: "Action name",
+  },
+  actionNameRequired: {
+    id: "scenario.action-form.actionNameRequired",
+    defaultMessage: "Action name is required",
+  },
+  actionDescriptionLabel: {
+    id: "scenario.action-form.actionDescriptionLabel",
+    defaultMessage: "Action description",
+  },
+  messageOnSuccessLabel: {
+    id: "scenario.action-form.messageOnSuccessLabel",
+    defaultMessage: "Message on success",
+  },
+  messageOnFailureLabel: {
+    id: "scenario.action-form.messageOnFailureLabel",
+    defaultMessage: "Message on failure",
+  },
+  requiredTagsToDisplayLabel: {
+    id: "scenario.action-form.requiredTagsToDisplayLabel",
+    defaultMessage: "Required tags to display",
+  },
+  requiredTagsToSucceedLabel: {
+    id: "scenario.action-form.requiredTagsToSucceedLabel",
+    defaultMessage: "Required tags to succeed",
+  },
+  tagsToApplyOnSuccessLabel: {
+    id: "scenario.action-form.tagsToApplyOnSuccessLabel",
+    defaultMessage: "Tags to apply on success",
+  },
+  tagsToApplyOnFailureLabel: {
+    id: "scenario.action-form.tagsToApplyOnFailureLabel",
+    defaultMessage: "Tags to apply on failure",
+  },
+  tagsToRemoveOnSuccessLabel: {
+    id: "scenario.action-form.tagsToRemoveOnSuccessLabel",
+    defaultMessage: "Tags to remove on success",
+  },
+  tagsToRemoveOnFailureLabel: {
+    id: "scenario.action-form.tagsToRemoveOnFailureLabel",
+    defaultMessage: "Tags to remove on failure",
+  },
+  cancelButton: { id: "common.cancelButton", defaultMessage: "Cancel" },
+  saveButton: { id: "common.saveButton", defaultMessage: "Save" },
+  closeButton: { id: "common.closeButton", defaultMessage: "Close" },
+  closeEditorPrompt: {
+    id: "scenario.action-form.closeEditorPrompt",
+    defaultMessage:
+      "Are you sure you want to close? Your changes will be kept but not saved until the entire scenario is saved.",
+  },
+  closeEditorTitle: {
+    id: "scenario.action-form.closeEditorTitle",
+    defaultMessage: "Close Action Editor",
+  },
+  // ActionRow
+  nameLabel: { id: "scenario.action-row.nameLabel", defaultMessage: "Name" },
+  removeButton: { id: "common.removeButton", defaultMessage: "Remove" },
+  detailsButton: { id: "common.detailsButton", defaultMessage: "Details" },
+  removeActionPrompt: {
+    id: "scenario.action-row.removeActionPrompt",
+    defaultMessage:
+      'Are you sure you want to remove the action "{actionName}"?',
+  },
+  removeActionTitle: {
+    id: "scenario.action-row.removeActionTitle",
+    defaultMessage: "Remove action",
+  },
+  // ActionsListForm
+  addAction: {
+    id: "scenario.actions-list.addAction",
+    defaultMessage: "Add action",
+  },
+  actionDetailsTitle: {
+    id: "scenario.actions-list.actionDetailsTitle",
+    defaultMessage: "Action Details",
+  },
+});
 
 type TActionListBasePath = `actions` | `items.${number}.actions`;
+
+/**
+ * Utility type to extract only the keys from IAction that correspond to ITag[] fields.
+ * This creates a union of string literals: "requiredTagsToDisplay" | "requiredTagsToSucceed" | ...
+ */
+type ActionTagFieldName = NonNullable<
+  {
+    [K in keyof IAction]: IAction[K] extends ITag[] ? K : never;
+  }[keyof IAction]
+>;
+
+/**
+ * A precise FieldPath type for react-hook-form that only allows paths to the tag array fields
+ * within an action, whether it's a top-level action or nested in an item.
+ */
+type ActionTagFieldPath =
+  | `actions.${number}.${ActionTagFieldName}`
+  | `items.${number}.actions.${number}.${ActionTagFieldName}`;
+
+interface ActionTagInputGroupProps {
+  field: ControllerRenderProps<IScenario, ActionTagFieldPath>;
+  inputLabel: string;
+  isBeingEdited: boolean;
+}
+
+const ActionTagInputGroup = ({
+  field,
+  inputLabel,
+  isBeingEdited,
+}: ActionTagInputGroupProps) => {
+  return (
+    <div className="border-1 p-3">
+      <h2 className="text-lg text-center mb-2">{inputLabel}</h2>
+      <InputTagsWithTable
+        addedTags={field.value || []}
+        inputLabel={inputLabel}
+        isDisabled={!isBeingEdited}
+        setAddedTags={field.onChange}
+      />
+    </div>
+  );
+};
 
 const ActionForm = ({
   control,
@@ -38,6 +164,7 @@ const ActionForm = ({
   isBeingEdited: boolean;
   onClose: () => void;
 }) => {
+  const intl = useIntl();
   const {
     isOpen: isCancelOpen,
     onOpen: onOpenCancel,
@@ -51,31 +178,64 @@ const ActionForm = ({
     onOpenChangeCancel();
   };
 
-  const createName = <T extends FieldPath<IAction>>(
+  // This generic function correctly infers the return type
+  const createName = <T extends keyof IAction>(
     fieldName: T,
   ): `${TActionListBasePath}.${number}.${T}` => {
     return `${basePath}.${actionIndex}.${fieldName}`;
   };
 
+  // Type the array with the specific field names and their corresponding labels
+  const tagFields: { name: ActionTagFieldName; label: string }[] = [
+    {
+      name: "requiredTagsToDisplay",
+      label: intl.formatMessage(messages.requiredTagsToDisplayLabel),
+    },
+    {
+      name: "requiredTagsToSucceed",
+      label: intl.formatMessage(messages.requiredTagsToSucceedLabel),
+    },
+    {
+      name: "tagsToApplyOnSuccess",
+      label: intl.formatMessage(messages.tagsToApplyOnSuccessLabel),
+    },
+    {
+      name: "tagsToApplyOnFailure",
+      label: intl.formatMessage(messages.tagsToApplyOnFailureLabel),
+    },
+    {
+      name: "tagsToRemoveOnSuccess",
+      label: intl.formatMessage(messages.tagsToRemoveOnSuccessLabel),
+    },
+    {
+      name: "tagsToRemoveOnFailure",
+      label: intl.formatMessage(messages.tagsToRemoveOnFailureLabel),
+    },
+  ];
+
   return (
     <>
       <ModalBody>
         <div className="w-full flex flex-col space-y-3 border-1 p-3">
+          {/* Other fields remain the same */}
           <Controller
             control={control}
             name={createName("name")}
             render={({ field, fieldState }) => (
               <Input
                 {...field}
+                isRequired
                 className="w-1/2"
                 errorMessage={fieldState.error?.message}
                 isDisabled={!isBeingEdited}
                 isInvalid={!!fieldState.error}
-                label="Action name"
+                label={intl.formatMessage(messages.actionNameLabel)}
                 variant="underlined"
               />
             )}
-            rules={{ required: "Action name is required" }}
+            rules={{
+              required: intl.formatMessage(messages.actionNameRequired),
+            }}
           />
           <Controller
             control={control}
@@ -83,8 +243,9 @@ const ActionForm = ({
             render={({ field }) => (
               <Textarea
                 {...field}
+                isRequired
                 isDisabled={!isBeingEdited}
-                label="Action description"
+                label={intl.formatMessage(messages.actionDescriptionLabel)}
                 variant="underlined"
               />
             )}
@@ -95,8 +256,9 @@ const ActionForm = ({
             render={({ field }) => (
               <Textarea
                 {...field}
+                isRequired
                 isDisabled={!isBeingEdited}
-                label="Message on success"
+                label={intl.formatMessage(messages.messageOnSuccessLabel)}
                 variant="underlined"
               />
             )}
@@ -106,86 +268,30 @@ const ActionForm = ({
             name={createName("messageOnFailure")}
             render={({ field }) => (
               <Textarea
+                isRequired
                 {...field}
                 isDisabled={!isBeingEdited}
-                label="Message on failure"
+                label={intl.formatMessage(messages.messageOnFailureLabel)}
                 variant="underlined"
               />
             )}
           />
+
           <div className="grid sm:grid-cols-2 grid-cols-1 gap-2">
-            <Controller
-              control={control}
-              name={createName("requiredTagsToDisplay")}
-              render={({ field }) => (
-                <InputTagsWithTable
-                  addedTags={field.value || []}
-                  inputLabel="Required tags to display"
-                  isDisabled={!isBeingEdited}
-                  setAddedTags={field.onChange}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name={createName("requiredTagsToSucceed")}
-              render={({ field }) => (
-                <InputTagsWithTable
-                  addedTags={field.value || []}
-                  inputLabel="Required tags to succeed"
-                  isDisabled={!isBeingEdited}
-                  setAddedTags={field.onChange}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name={createName("tagsToApplyOnSuccess")}
-              render={({ field }) => (
-                <InputTagsWithTable
-                  addedTags={field.value || []}
-                  inputLabel="Tags to apply on success"
-                  isDisabled={!isBeingEdited}
-                  setAddedTags={field.onChange}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name={createName("tagsToApplyOnFailure")}
-              render={({ field }) => (
-                <InputTagsWithTable
-                  addedTags={field.value || []}
-                  inputLabel="Tags to apply on failure"
-                  isDisabled={!isBeingEdited}
-                  setAddedTags={field.onChange}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name={createName("tagsToRemoveOnSuccess")}
-              render={({ field }) => (
-                <InputTagsWithTable
-                  addedTags={field.value || []}
-                  inputLabel="Tags to remove on success"
-                  isDisabled={!isBeingEdited}
-                  setAddedTags={field.onChange}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name={createName("tagsToRemoveOnFailure")}
-              render={({ field }) => (
-                <InputTagsWithTable
-                  addedTags={field.value || []}
-                  inputLabel="Tags to remove on failure"
-                  isDisabled={!isBeingEdited}
-                  setAddedTags={field.onChange}
-                />
-              )}
-            />
+            {tagFields.map((tagField) => (
+              <Controller
+                key={tagField.name}
+                control={control}
+                name={createName(tagField.name)}
+                render={({ field }) => (
+                  <ActionTagInputGroup
+                    field={field}
+                    inputLabel={tagField.label}
+                    isBeingEdited={isBeingEdited}
+                  />
+                )}
+              />
+            ))}
           </div>
         </div>
       </ModalBody>
@@ -194,15 +300,15 @@ const ActionForm = ({
           {isBeingEdited ? (
             <>
               <Button color="danger" variant="bordered" onPress={handleCancel}>
-                Cancel
+                {intl.formatMessage(messages.cancelButton)}
               </Button>
               <Button color="success" variant="solid" onPress={handleSave}>
-                Save
+                {intl.formatMessage(messages.saveButton)}
               </Button>
             </>
           ) : (
             <Button color="danger" variant="bordered" onPress={onClose}>
-              Close
+              {intl.formatMessage(messages.closeButton)}
             </Button>
           )}
         </div>
@@ -210,14 +316,15 @@ const ActionForm = ({
       <ConfirmActionModal
         handleOnConfirm={handleConfirmCancel}
         isOpen={isCancelOpen}
-        prompt="Are you sure you want to close? Your changes will be kept but not saved until the entire scenario is saved."
-        title="Close Action Editor"
+        prompt={intl.formatMessage(messages.closeEditorPrompt)}
+        title={intl.formatMessage(messages.closeEditorTitle)}
         onOpenChange={onOpenChangeCancel}
       />
     </>
   );
 };
 
+// ...rest of the file (ActionRow, ActionsListForm) remains the same
 const ActionRow = ({
   control,
   basePath,
@@ -233,6 +340,7 @@ const ActionRow = ({
   onActionDetailsPressed: (index: number) => void;
   isBeingEdited: boolean;
 }) => {
+  const intl = useIntl();
   const {
     isOpen: isRemoveOpen,
     onOpen: onOpenRemove,
@@ -248,7 +356,7 @@ const ActionRow = ({
     <div className="w-full flex flex-row justify-between items-baseline border-1 p-3">
       <Input
         isDisabled
-        label="Name"
+        label={intl.formatMessage(messages.nameLabel)}
         size="sm"
         value={actionName || ""}
         variant="underlined"
@@ -261,7 +369,7 @@ const ActionRow = ({
             variant="bordered"
             onPress={onOpenRemove}
           >
-            Remove
+            {intl.formatMessage(messages.removeButton)}
           </Button>
         )}
         <Button
@@ -269,14 +377,16 @@ const ActionRow = ({
           size="sm"
           onPress={() => onActionDetailsPressed(actionIndex)}
         >
-          Details
+          {intl.formatMessage(messages.detailsButton)}
         </Button>
       </div>
       <ConfirmActionModal
         handleOnConfirm={() => handleRemove(actionIndex)}
         isOpen={isRemoveOpen}
-        prompt={`Are you sure you want to remove the action "${actionName}"?`}
-        title="Remove action"
+        prompt={intl.formatMessage(messages.removeActionPrompt, {
+          actionName: actionName || "",
+        })}
+        title={intl.formatMessage(messages.removeActionTitle)}
         onOpenChange={onOpenChangeRemove}
       />
     </div>
@@ -294,6 +404,7 @@ function ActionsListForm({
   basePath,
   isBeingEdited,
 }: ActionsListFormProps) {
+  const intl = useIntl();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [editingActionIndex, setEditingActionIndex] = useState<number | null>(
     null,
@@ -357,7 +468,7 @@ function ActionsListForm({
       {isBeingEdited && (
         <div className="w-full flex justify-center pt-3">
           <Button color="success" size="md" onPress={handleAddAction}>
-            Add action
+            {intl.formatMessage(messages.addAction)}
           </Button>
         </div>
       )}
@@ -372,7 +483,7 @@ function ActionsListForm({
       >
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
-            Action Details
+            {intl.formatMessage(messages.actionDetailsTitle)}
           </ModalHeader>
           {editingActionIndex !== null && (
             <ActionForm
