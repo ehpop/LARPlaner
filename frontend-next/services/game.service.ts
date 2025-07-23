@@ -14,18 +14,18 @@ import {
 import { api } from "@/services/axios";
 import { Response } from "@/types/axios.types";
 import { ITag } from "@/types/tags.types";
+import { IScenarioActionGetDTO, IScenarioItem } from "@/types/scenario.types";
 
 class GameSessionService extends CrudService<
   IGameSession,
   IGameSessionGetDTO,
   IGameSessionPostDTO
 > {
-  async getGameHistoryByGameIdAndUserId(
+  async getUserGameHistoryByGameId(
     gameId: IGameSession["id"],
-    userId: string,
   ): Promise<Response<IGameActionLog[]>> {
     return api
-      .get(`/game/history/userId/${userId}/gameId/${gameId}`)
+      .get(`/game/history/user/gameId/${gameId}`)
       .then((result) => {
         return {
           success: true,
@@ -110,6 +110,45 @@ class GameSessionService extends CrudService<
   ): Promise<Response<IGameSession>> {
     return api
       .put(`/game/roles/${roleStateId}/state`, roleStateRequest)
+      .then((result) => {
+        return {
+          success: true,
+          data: result.data,
+        };
+      })
+      .catch((error) => {
+        return {
+          success: false,
+          data: error.message,
+        };
+      });
+  }
+
+  async getAvailableActionsForUser(
+    gameSessionRoleId: IGameRoleState["id"],
+  ): Promise<Response<IScenarioActionGetDTO[]>> {
+    return api
+      .get(`/game/roles/${gameSessionRoleId}/availableActions`)
+      .then((result) => {
+        return {
+          success: true,
+          data: result.data,
+        };
+      })
+      .catch((error) => {
+        return {
+          success: false,
+          data: error.message,
+        };
+      });
+  }
+
+  async getAvailableItemActionsForUser(
+    gameSessionRoleId: IGameRoleState["id"],
+    itemId: IScenarioItem["id"],
+  ): Promise<Response<IScenarioActionGetDTO[]>> {
+    return api
+      .get(`/game/roles/${gameSessionRoleId}/items/${itemId}/availableActions`)
       .then((result) => {
         return {
           success: true,

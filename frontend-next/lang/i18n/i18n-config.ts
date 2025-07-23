@@ -11,7 +11,7 @@ export interface ILocale {
 }
 
 export const locales: { [key: string]: ILocale } = {
-  "en-US": {
+  en: {
     name: "English",
     messages: enMessages,
   },

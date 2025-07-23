@@ -24,15 +24,13 @@ const UserGameHistory = ({ game }: { game: IGameSession }) => {
   useEffect(() => {
     if (!isModalOpen || !auth.user?.email) return;
 
-    gameService
-      .getGameHistoryByGameIdAndUserId(game.id, auth.user?.uid)
-      .then((response) => {
-        if (response.success) {
-          setGameHistory(response.data);
-        } else {
-          setError(response.data);
-        }
-      });
+    gameService.getUserGameHistoryByGameId(game.id).then((response) => {
+      if (response.success) {
+        setGameHistory(response.data);
+      } else {
+        setError(response.data);
+      }
+    });
   }, [isModalOpen]);
 
   const UserGameHistoryModalElement = (

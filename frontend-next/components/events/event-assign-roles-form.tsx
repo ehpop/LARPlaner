@@ -1,12 +1,14 @@
 import { Autocomplete, AutocompleteItem, Input, Spinner } from "@heroui/react";
-import { Control, Controller, useFieldArray } from "react-hook-form";
+import { Control, Controller, useFieldArray, useWatch } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
+import { useMemo } from "react";
 
 import useRole from "@/hooks/roles/use-role";
-import { userEmails } from "@/services/mock/mock-data";
 import { IEvent } from "@/types/event.types";
 import { IScenario, IScenarioRole } from "@/types/scenario.types";
 import { isValidEmail } from "@/utils/validation";
+import useAllUserEmails from "@/hooks/admin/use-all-user-emails";
+import LoadingOverlay from "@/components/common/loading-overlay";
 
 interface RoleAssignmentEntryProps {
   control: Control<IEvent>;
@@ -14,6 +16,7 @@ interface RoleAssignmentEntryProps {
   scenarioRole: IScenarioRole;
   isBeingEdited: boolean;
   assignedEmails: string[];
+  allUserEmails: string[];
 }
 
 function RoleAssignmentEntry({
@@ -22,6 +25,7 @@ function RoleAssignmentEntry({
   scenarioRole,
   isBeingEdited,
   assignedEmails,
+  allUserEmails,
 }: RoleAssignmentEntryProps) {
   const intl = useIntl();
   const { role, loading } = useRole(scenarioRole.roleId as string);
@@ -67,7 +71,12 @@ function RoleAssignmentEntry({
           <Autocomplete
             allowsCustomValue
             className="max-w-xs"
-            defaultItems={userEmails}
+            defaultItems={allUserEmails.map((email) => {
+              return {
+                label: email,
+                value: email,
+              };
+            })}
             disabledKeys={assignedEmails.filter(
               (email) => email !== field.value,
             )}
@@ -122,14 +131,23 @@ const EventAssignRolesForm = ({
   scenario,
   isBeingEdited,
 }: EventAssignRolesFormProps) => {
+  const { emails, isLoading: loadingEmails } = useAllUserEmails();
+
   const { fields } = useFieldArray({
     control,
     name: "assignedRoles",
   });
 
-  const assignedEmails = fields
-    .map((field) => field.assignedEmail)
-    .filter(Boolean);
+  const watchedRoles = useWatch({
+    control,
+    name: "assignedRoles",
+    defaultValue: [],
+  });
+
+  const assignedEmails = useMemo(
+    () => watchedRoles.map((role) => role.assignedEmail).filter(Boolean),
+    [watchedRoles],
+  );
 
   if (!scenario || !scenario.id) {
     return (
@@ -158,24 +176,27 @@ const EventAssignRolesForm = ({
   }
 
   return (
-    <div className="w-full flex flex-col space-y-3">
-      {scenario.roles.map((scenarioRole, index) => {
-        const field = fields[index];
+    <LoadingOverlay isLoading={loadingEmails}>
+      <div className="w-full flex flex-col space-y-3">
+        {scenario.roles.map((scenarioRole, index) => {
+          const field = fields[index];
 
-        if (!field) return null;
+          if (!field) return null;
 
-        return (
-          <RoleAssignmentEntry
-            key={field.id}
-            assignedEmails={assignedEmails}
-            control={control}
-            index={index}
-            isBeingEdited={isBeingEdited}
-            scenarioRole={scenarioRole}
-          />
-        );
-      })}
-    </div>
+          return (
+            <RoleAssignmentEntry
+              key={field.id}
+              allUserEmails={emails}
+              assignedEmails={assignedEmails}
+              control={control}
+              index={index}
+              isBeingEdited={isBeingEdited}
+              scenarioRole={scenarioRole}
+            />
+          );
+        })}
+      </div>
+    </LoadingOverlay>
   );
 };
 

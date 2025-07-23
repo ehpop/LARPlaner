@@ -43,13 +43,13 @@ export default function FirebaseProvider({ children }: any) {
     return () => unsubscribe();
   }, []);
 
-  const handleLogIn = (
+  const handleLogIn = async (
     authProvider: AuthProvider,
     email?: string,
     password?: string,
   ) => {
-    const signInWithAuthProvider = (authProvider: AuthProvider) => {
-      signInWithPopup(auth, authProvider)
+    const signInWithAuthProvider = async (authProvider: AuthProvider) => {
+      return signInWithPopup(auth, authProvider)
         .then((_result) => {
           router.push("/user/profile");
         })
@@ -66,23 +66,32 @@ export default function FirebaseProvider({ children }: any) {
         });
     };
 
-    const signInUserWithEmail = (email: string, password: string) => {
-      signInWithEmailAndPassword(auth, email, password)
+    const signInUserWithEmail = async (email: string, password: string) => {
+      return signInWithEmailAndPassword(auth, email, password)
         .then((_userCredential) => {
           router.push("/user/profile");
         })
-        .catch((_error) => {});
+        .catch((error) => {
+          if (error.code === "auth/invalid-credential") {
+            throw new Error(
+              intl.formatMessage({
+                id: "login.error.auth-invalid-credentials",
+                defaultMessage: "Invalid email or password",
+              }),
+            );
+          }
+        });
     };
 
     if (authProvider === emailAuthProvider && email && password) {
-      signInUserWithEmail(email, password);
+      return signInUserWithEmail(email, password);
     }
 
     if (
       authProvider === googleAuthProvider ||
       authProvider === githubAuthProvider
     ) {
-      signInWithAuthProvider(authProvider);
+      return signInWithAuthProvider(authProvider);
     }
   };
 

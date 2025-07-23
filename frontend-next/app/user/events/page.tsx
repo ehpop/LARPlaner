@@ -5,7 +5,7 @@ import { useIntl } from "react-intl";
 import EventsDisplay from "@/components/events/events-display";
 import { useAuth } from "@/providers/firebase-provider";
 import useAllEvents from "@/hooks/event/use-all-events";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 
 const EventsPage = () => {
   const intl = useIntl();

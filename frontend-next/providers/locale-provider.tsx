@@ -1,13 +1,32 @@
-"use client";
-
+import { ReactNode, useEffect, useState } from "react";
 import { IntlProvider } from "react-intl";
-import React, { useState } from "react";
 
-import { defaultLocale, locales } from "@/lang/i18n/i18n-config";
-import { LocaleContext } from "@/context/locale-context";
+import { locales } from "@/lang/i18n/i18n-config";
+import { LocaleContext } from "@/context/locale-context"; // Your existing context file
 
-export default function LocaleProvider({ children }: any) {
-  const [locale, setLocale] = useState<string>(defaultLocale);
+const defaultLocale = "en";
+const supportedLocales = new Set(Object.keys(locales));
+
+export const LocaleProvider = ({ children }: { children: ReactNode }) => {
+  const [locale, setLocale] = useState(defaultLocale);
+
+  useEffect(() => {
+    const storedLocale = localStorage.getItem("locale");
+
+    if (storedLocale && supportedLocales.has(storedLocale)) {
+      setLocale(storedLocale);
+    } else {
+      const browserLocale = navigator.language.split("-")[0]; // 'en-US' -> 'en'
+
+      if (supportedLocales.has(browserLocale)) {
+        setLocale(browserLocale);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("locale", locale);
+  }, [locale]);
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale }}>
@@ -20,4 +39,4 @@ export default function LocaleProvider({ children }: any) {
       </IntlProvider>
     </LocaleContext.Provider>
   );
-}
+};

@@ -6,7 +6,7 @@ import { useIntl } from "react-intl";
 import { IRole } from "@/types/roles.types";
 import RolesService from "@/services/roles.service";
 import RoleForm from "@/components/roles/role-form";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import { showErrorToastWithTimeout } from "@/utils/toast";
 
 export default function RolePage({ params }: any) {

@@ -442,7 +442,7 @@ export const mockGameRoleStates: IGameRoleState[] = possibleScenarioRoles.map(
     assignedUserID:
       index === 0 ? "n5CR0S93LMYmFAQObo0pVoXgFg33" : `user-${index}`,
     actionHistory: [] as IGameActionLog[],
-    activeTags:
+    appliedTags:
       index === 0
         ? [
             {

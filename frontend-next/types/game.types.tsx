@@ -1,6 +1,6 @@
 import { IEvent } from "@/types/event.types";
 import { IAction, IScenarioItem, IScenarioRole } from "@/types/scenario.types";
-import { ITag } from "@/types/tags.types";
+import { IAppliedTag, ITag } from "@/types/tags.types";
 
 export type IGameSession = {
   id: string; // Unique session ID
@@ -20,7 +20,7 @@ export type IGameRoleState = {
   scenarioRoleId: IScenarioRole["id"]; // The role in the scenario
   assignedEmail: string; // Player assigned to this role
   assignedUserID: string; // User ID of the player
-  activeTags: ITag[]; // Tags representing buffs, conditions, or status
+  appliedTags: IAppliedTag[]; // Tags representing buffs, conditions, or status
   actionHistory: IGameActionLog[]; // Actions performed by this role
 };
 

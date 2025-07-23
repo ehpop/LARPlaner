@@ -20,13 +20,12 @@ import {
 } from "react-hook-form";
 
 import { IAction, IScenario } from "@/types/scenario.types";
-import InputTagsWithTable from "@/components/input-tags-with-table";
+import InputTagsWithTable from "@/components/tags/input-tags-with-table";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { ITag } from "@/types/tags.types";
+import HidableSection from "@/components/common/hidable-section";
 
-// Centralized message definitions for react-intl
 const messages = defineMessages({
-  // ActionForm
   actionNameLabel: {
     id: "scenario.action-form.actionNameLabel",
     defaultMessage: "Action name",
@@ -54,6 +53,14 @@ const messages = defineMessages({
   requiredTagsToSucceedLabel: {
     id: "scenario.action-form.requiredTagsToSucceedLabel",
     defaultMessage: "Required tags to succeed",
+  },
+  forbiddenTagsToDisplayLabel: {
+    id: "scenario.action-form.forbiddenTagsToDisplayLabel",
+    defaultMessage: "Forbidden tags to display",
+  },
+  forbiddenTagsToSucceedLabel: {
+    id: "scenario.action-form.forbiddenTagsToSucceedLabel",
+    defaultMessage: "Forbidden tags to succeed",
   },
   tagsToApplyOnSuccessLabel: {
     id: "scenario.action-form.tagsToApplyOnSuccessLabel",
@@ -140,12 +147,16 @@ const ActionTagInputGroup = ({
 }: ActionTagInputGroupProps) => {
   return (
     <div className="border-1 p-3">
-      <h2 className="text-lg text-center mb-2">{inputLabel}</h2>
-      <InputTagsWithTable
-        addedTags={field.value || []}
-        inputLabel={inputLabel}
-        isDisabled={!isBeingEdited}
-        setAddedTags={field.onChange}
+      <HidableSection
+        section={
+          <InputTagsWithTable
+            addedTags={field.value || []}
+            inputLabel={inputLabel}
+            isDisabled={!isBeingEdited}
+            setAddedTags={field.onChange}
+          />
+        }
+        titleElement={<h2 className="text-lg mb-2">{inputLabel}</h2>}
       />
     </div>
   );
@@ -178,14 +189,12 @@ const ActionForm = ({
     onOpenChangeCancel();
   };
 
-  // This generic function correctly infers the return type
   const createName = <T extends keyof IAction>(
     fieldName: T,
   ): `${TActionListBasePath}.${number}.${T}` => {
     return `${basePath}.${actionIndex}.${fieldName}`;
   };
 
-  // Type the array with the specific field names and their corresponding labels
   const tagFields: { name: ActionTagFieldName; label: string }[] = [
     {
       name: "requiredTagsToDisplay",
@@ -194,6 +203,14 @@ const ActionForm = ({
     {
       name: "requiredTagsToSucceed",
       label: intl.formatMessage(messages.requiredTagsToSucceedLabel),
+    },
+    {
+      name: "forbiddenTagsToDisplay",
+      label: intl.formatMessage(messages.forbiddenTagsToDisplayLabel),
+    },
+    {
+      name: "forbiddenTagsToSucceed",
+      label: intl.formatMessage(messages.forbiddenTagsToSucceedLabel),
     },
     {
       name: "tagsToApplyOnSuccess",
@@ -217,7 +234,6 @@ const ActionForm = ({
     <>
       <ModalBody>
         <div className="w-full flex flex-col space-y-3 border-1 p-3">
-          {/* Other fields remain the same */}
           <Controller
             control={control}
             name={createName("name")}
@@ -324,7 +340,6 @@ const ActionForm = ({
   );
 };
 
-// ...rest of the file (ActionRow, ActionsListForm) remains the same
 const ActionRow = ({
   control,
   basePath,
@@ -423,6 +438,8 @@ function ActionsListForm({
       messageOnFailure: "",
       requiredTagsToDisplay: [],
       requiredTagsToSucceed: [],
+      forbiddenTagsToDisplay: [],
+      forbiddenTagsToSucceed: [],
       tagsToApplyOnSuccess: [],
       tagsToApplyOnFailure: [],
       tagsToRemoveOnSuccess: [],

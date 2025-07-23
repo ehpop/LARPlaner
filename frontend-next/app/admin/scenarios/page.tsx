@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import ScenariosService from "@/services/scenarios.service";
 import { IScenario } from "@/types/scenario.types";
 import ScenariosDisplayAdmin from "@/components/scenarios/scenarios-display-admin";

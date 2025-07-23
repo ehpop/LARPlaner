@@ -1,54 +1,28 @@
 "use client";
 
-import { FormattedMessage, useIntl } from "react-intl";
 import React from "react";
+import { FormattedMessage } from "react-intl";
+import { Card, CardBody, CardHeader } from "@heroui/react";
 
-import useUserEventData from "@/hooks/use-user-data";
-import LoadingOverlay from "@/components/general/loading-overlay";
 import { IEvent } from "@/types/event.types";
 import { IScenario, IScenarioRole } from "@/types/scenario.types";
 import { IRole } from "@/types/roles.types";
+import UserEventPageWrapper from "@/components/events/wrapper/user-event-page-wrapper";
 
 const HistoricEventPage = ({ params }: any) => {
-  const resolvedParams = React.use(params) as { id: string };
-  const eventId = resolvedParams.id;
-
-  const intl = useIntl();
-  const { scenario, loading, event, userScenarioRole, userRole } =
-    useUserEventData({ id: eventId });
-
-  const allDataLoaded = event && scenario && userScenarioRole && userRole;
-
   return (
-    <div className="w-full min-h-screen flex justify-center">
-      <LoadingOverlay
-        isLoading={loading}
-        label={intl.formatMessage({
-          defaultMessage: "Loading historic event...",
-          id: "events.historic.page.display.loading",
-        })}
-      >
-        {allDataLoaded ? (
-          <HistoricEventDisplay
-            event={event}
-            scenario={scenario}
-            userRole={userRole}
-            userScenarioRole={userScenarioRole}
-          />
-        ) : (
-          <div className="w-full flex justify-center">
-            <FormattedMessage
-              defaultMessage="Cannot load event data or user is not assigned to this event."
-              id="events.historic.page.display.cannotLoad"
-            />
-          </div>
-        )}
-      </LoadingOverlay>
-    </div>
+    <UserEventPageWrapper expectedStatus="historic" params={params}>
+      {({ event, scenario, userRole, userScenarioRole }) => (
+        <HistoricEventDisplay
+          event={event}
+          scenario={scenario}
+          userRole={userRole}
+          userScenarioRole={userScenarioRole}
+        />
+      )}
+    </UserEventPageWrapper>
   );
 };
-
-export default HistoricEventPage;
 
 const HistoricEventDisplay = ({
   event,
@@ -61,22 +35,58 @@ const HistoricEventDisplay = ({
   userScenarioRole: IScenarioRole;
   userRole: IRole;
 }) => {
-  const intl = useIntl();
-
   return (
-    <div className="w-full flex-col justify-center">
-      <p>
-        {intl.formatMessage({
-          id: "historic.page.historic.event.page",
-          defaultMessage: "Historic event page",
-        })}
-      </p>
-      <div className="flex-col space-y-5 border-1 p-3">
-        <h1>{event.name}</h1>
-        <p>{scenario.name}</p>
-        <p>{userRole.name}</p>
-        <p>{userScenarioRole.descriptionForOwner}</p>
-      </div>
+    <div className="w-full flex flex-col items-center space-y-6 p-6">
+      <Card className="w-full max-w-2xl shadow-lg">
+        <CardHeader>
+          <div className="w-full flex flex-row items-center justify-between">
+            <p className="text-2xl font-bold">
+              <FormattedMessage
+                defaultMessage="Event: {eventName}"
+                id="events.historic.title"
+                values={{ eventName: event.name }}
+              />
+            </p>
+            <div className="flex flex-row space-x-1 items-center">
+              <p>
+                <FormattedMessage
+                  defaultMessage="Status: "
+                  id="events.historic.statusLabel"
+                />
+              </p>
+              <p className="font-semibold text-gray-500">{event.status}</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardBody className="space-y-5 text-center">
+          <p className="text-lg">
+            <FormattedMessage
+              defaultMessage="Scenario: {scenarioName}"
+              id="events.historic.scenarioName"
+              values={{ scenarioName: scenario.name }}
+            />
+          </p>
+
+          <div className="p-4 rounded-lg">
+            <p className="text-lg font-semibold mb-2">
+              <FormattedMessage
+                defaultMessage="Your Role Was: {roleName}"
+                id="events.historic.roleName"
+                values={{ roleName: userRole.name }}
+              />
+            </p>
+            <p className="text-md italic">
+              <FormattedMessage
+                defaultMessage="Your final description was: {description}"
+                id="events.historic.roleDescription"
+                values={{ description: userScenarioRole.descriptionForOwner }}
+              />
+            </p>
+          </div>
+        </CardBody>
+      </Card>
     </div>
   );
 };
+
+export default HistoricEventPage;

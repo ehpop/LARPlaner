@@ -15,7 +15,7 @@ import { Input, Select, SelectItem } from "@heroui/react";
 
 import { useAuth } from "@/providers/firebase-provider";
 import { db } from "@/config/firebase";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import ChatWindow, { IChat } from "@/components/events/chat/chat-window";
 
 const ActiveEventAdminChatsPage = ({ params }: any) => {

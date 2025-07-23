@@ -9,14 +9,14 @@ import {
   ModalHeader,
 } from "@heroui/react";
 
-import InputTagsWithTable from "@/components/input-tags-with-table";
 import gameService from "@/services/game.service";
 import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
-import { ITag } from "@/types/tags.types";
+import { IAppliedTag } from "@/types/tags.types";
 import { IGameRoleState, IGameSession } from "@/types/game.types";
+import InputAppliedTagsWithTable from "@/components/tags/input-applied-tags-with-table";
 
 interface EditRoleTagsModalProps {
   isOpen: boolean;
@@ -32,20 +32,23 @@ export const EditRoleTagsModal = ({
   role,
 }: EditRoleTagsModalProps) => {
   const intl = useIntl();
-  const [editingTags, setEditingTags] = useState<ITag[]>(role.activeTags);
+  const [editingTags, setEditingTags] = useState<IAppliedTag[]>(
+    role.appliedTags,
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setEditingTags(role.activeTags);
+      role.appliedTags.map((appliedTag) => appliedTag.tag);
     }
   }, [role, isOpen]);
 
   const handleSave = async () => {
     setIsSaving(true);
+
     try {
       const response = await gameService.updateGameSessionRoleState(role.id, {
-        activeTags: editingTags.map((t) => t.id),
+        activeTags: editingTags.map((t) => t.tag.id),
       });
 
       if (response.success) {
@@ -91,13 +94,10 @@ export const EditRoleTagsModal = ({
               />
             </ModalHeader>
             <ModalBody>
-              <InputTagsWithTable
-                addedTags={editingTags}
-                inputLabel={intl.formatMessage({
-                  defaultMessage: "Select tag from existing",
-                  id: "input-with-chips.addTag",
-                })}
-                setAddedTags={setEditingTags}
+              <InputAppliedTagsWithTable
+                appliedTags={editingTags}
+                setAppliedTags={setEditingTags}
+                userRoleState={role}
               />
             </ModalBody>
             <ModalFooter>

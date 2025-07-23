@@ -6,7 +6,7 @@ import React from "react";
 import { useAuth } from "@/providers/firebase-provider";
 import Chat from "@/components/events/chat/chat";
 import useUserEventData from "@/hooks/use-user-data";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 
 const ActiveEventChatPage = ({ params }: any) => {
   const resolvedParams = React.use(params) as { id: string };

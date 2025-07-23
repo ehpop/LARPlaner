@@ -85,7 +85,7 @@ export const RolesTable = ({ game, event, onGameUpdate }: RolesTableProps) => {
           {(role) => (
             <TableRow key={role.scenarioRoleId}>
               <TableCell>{role.scenarioRoleId}</TableCell>
-              <TableCell>{role.activeTags.length}</TableCell>
+              <TableCell>{role.appliedTags.length}</TableCell>
               <TableCell>{role.assignedEmail ?? "N/A"}</TableCell>
               <TableCell>
                 <Dropdown>

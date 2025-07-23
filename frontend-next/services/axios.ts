@@ -1,20 +1,29 @@
 import axios from "axios";
 
-const mockApiBaseUrl = "http://localhost:3000";
-const ApiBaseUrl = "http://localhost:8080/api";
+import { auth } from "@/config/firebase";
 
-//TODO Fix
+const apiBaseUrl = "https://localhost:8443/api";
+
 export const api = axios.create({
-  // baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || mockApiBaseUrl,
-  baseURL: ApiBaseUrl,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || apiBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// if (
-//   process.env.NODE_ENV !== "production" ||
-//   process.env.NEXT_PUBLIC_USE_MOCK_API === "true"
-// ) {
-//   setupMock(api);
-// }
+api.interceptors.request.use(
+  async (config) => {
+    const user = auth.currentUser;
+
+    if (user) {
+      const token = await user.getIdToken();
+
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);

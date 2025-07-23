@@ -90,6 +90,8 @@ export type IAction = {
   messageOnFailure: string;
   requiredTagsToDisplay: ITag[];
   requiredTagsToSucceed: ITag[];
+  forbiddenTagsToDisplay: ITag[];
+  forbiddenTagsToSucceed: ITag[];
   tagsToApplyOnSuccess: ITag[];
   tagsToApplyOnFailure: ITag[];
   tagsToRemoveOnSuccess: ITag[];
@@ -103,6 +105,8 @@ export type IActionPostDTO = {
   messageOnFailure: string;
   requiredTagsToDisplay: ITag["id"][];
   requiredTagsToSucceed: ITag["id"][];
+  forbiddenTagsToDisplay: ITag["id"][];
+  forbiddenTagsToSucceed: ITag["id"][];
   tagsToApplyOnSuccess: ITag["id"][];
   tagsToApplyOnFailure: ITag["id"][];
   tagsToRemoveOnSuccess: ITag["id"][];
@@ -117,6 +121,8 @@ export type IActionGetDTO = {
   messageOnFailure: string;
   requiredTagsToDisplay: ITagGetDTO[];
   requiredTagsToSucceed: ITagGetDTO[];
+  forbiddenTagsToDisplay: ITagGetDTO[];
+  forbiddenTagsToSucceed: ITagGetDTO[];
   tagsToApplyOnSuccess: ITagGetDTO[];
   tagsToApplyOnFailure: ITagGetDTO[];
   tagsToRemoveOnSuccess: ITagGetDTO[];

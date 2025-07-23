@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 
 import EventsService from "@/services/events.service";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import { IEvent } from "@/types/event.types";
 import EventsDisplayAdmin from "@/components/events/events-display-admin";
 
@@ -55,10 +55,7 @@ function EventsPage() {
   return (
     <div className="space-y-5">
       <LoadingOverlay isLoading={loading} label={"Loading active events..."}>
-        <EventsDisplayAdmin
-          eventsList={eventsData}
-          setEventsData={setEventsData}
-        />
+        <EventsDisplayAdmin eventsList={eventsData} />
       </LoadingOverlay>
     </div>
   );

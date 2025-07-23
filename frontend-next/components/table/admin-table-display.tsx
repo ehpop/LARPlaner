@@ -8,6 +8,7 @@ import {
 } from "@heroui/react";
 import { useIntl } from "react-intl";
 import { SortDescriptor } from "@react-types/shared";
+import { ReactNode } from "react";
 
 type Column = {
   key: string;
@@ -26,7 +27,7 @@ export const AdminTableDisplay = ({
   columns: Column[];
   rows: any[];
   onRowClick: (row: any) => void;
-  topContent?: React.ReactNode;
+  topContent?: ReactNode;
   sortDescriptor: SortDescriptor | null;
   onSortChange: (descriptor: SortDescriptor) => void;
 }) => {

@@ -16,7 +16,7 @@ import { IScenarioAction, IScenarioItemAction } from "@/types/scenario.types";
 import { IGameSession } from "@/types/game.types";
 import { useAuth } from "@/providers/firebase-provider";
 import gameService from "@/services/game.service";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import { showErrorToastWithTimeout } from "@/utils/toast";
 
 const Action = ({

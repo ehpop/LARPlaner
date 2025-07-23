@@ -176,6 +176,7 @@ export const Navbar = () => {
       defaultSelectedKeys={[locale]}
       size="md"
       value={locale}
+      variant="bordered"
       onChange={(event) => setLocale(event.target.value)}
     >
       {Object.keys(locales).map((key) => (
@@ -189,7 +190,7 @@ export const Navbar = () => {
   );
 
   const localeAndAccount = (
-    <div className="hidden lg:flex space-x-1">
+    <div className="hidden lg:flex space-x-2">
       <NavbarItem>{languageSelect}</NavbarItem>
       <NavbarItem>{accountElement}</NavbarItem>
     </div>

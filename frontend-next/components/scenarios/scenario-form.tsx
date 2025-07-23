@@ -6,7 +6,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import ActionsListForm from "@/components/scenarios/actions-list-form";
 import ScenarioItemsForm from "@/components/scenarios/scenario-items-form";
 import { ScenarioRolesForm } from "@/components/scenarios/scenario-roles-form";
@@ -20,6 +20,7 @@ import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
+import HidableSection from "@/components/common/hidable-section";
 
 export default function ScenarioForm({
   initialScenario,
@@ -44,9 +45,6 @@ export default function ScenarioForm({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isBeingEdited, setIsBeingEdited] = useState(isNewScenario);
-  const [showItemsSection, setShowItemsSection] = useState(true);
-  const [showRolesSection, setShowRolesSection] = useState(true);
-  const [showActionsSection, setShowActionsSection] = useState(true);
 
   const watchedScenarioName = watch("name");
 
@@ -205,77 +203,62 @@ export default function ScenarioForm({
           />
 
           <div className="w-full border-1 p-3 space-y-3">
-            <div className="w-full flex flex-row justify-between">
-              <p className="text-xl">
-                <FormattedMessage
-                  defaultMessage="Roles in scenario"
-                  id="scenarios.new.page.rolesInScenario"
+            <HidableSection
+              section={
+                <ScenarioRolesForm
+                  availableRoles={allRoles}
+                  control={control}
+                  isBeingEdited={isBeingEdited}
                 />
-              </p>
-              <Button
-                size="sm"
-                variant="bordered"
-                onPress={() => setShowRolesSection(!showRolesSection)}
-              >
-                {showRolesSection ? "-" : "+"}
-              </Button>
-            </div>
-            {showRolesSection && (
-              <ScenarioRolesForm
-                availableRoles={allRoles}
-                control={control}
-                isBeingEdited={isBeingEdited}
-              />
-            )}
+              }
+              titleElement={
+                <p className="text-xl">
+                  <FormattedMessage
+                    defaultMessage="Roles in scenario"
+                    id="scenarios.new.page.rolesInScenario"
+                  />
+                </p>
+              }
+            />
           </div>
 
           <div className="w-full border-1 p-3 space-y-3">
-            <div className="w-full flex flex-row justify-between">
-              <p className="text-xl">
-                <FormattedMessage
-                  defaultMessage="Items in scenario"
-                  id="scenarios.new.page.itemsInScenario"
+            <HidableSection
+              section={
+                <ScenarioItemsForm
+                  control={control}
+                  isBeingEdited={isBeingEdited}
                 />
-              </p>
-              <Button
-                size="sm"
-                variant="bordered"
-                onPress={() => setShowItemsSection(!showItemsSection)}
-              >
-                {showItemsSection ? "-" : "+"}
-              </Button>
-            </div>
-            {showItemsSection && (
-              <ScenarioItemsForm
-                control={control}
-                isBeingEdited={isBeingEdited}
-              />
-            )}
+              }
+              titleElement={
+                <p className="text-xl">
+                  <FormattedMessage
+                    defaultMessage="Items in scenario"
+                    id="scenarios.new.page.itemsInScenario"
+                  />
+                </p>
+              }
+            />
           </div>
 
           <div className="w-full border-1 p-3 space-y-3">
-            <div className="w-full flex flex-row justify-between">
-              <p className="text-xl">
-                <FormattedMessage
-                  defaultMessage="Actions in scenario"
-                  id="scenarios.new.page.actionsInScenario"
+            <HidableSection
+              section={
+                <ActionsListForm
+                  basePath={`actions`}
+                  control={control}
+                  isBeingEdited={isBeingEdited}
                 />
-              </p>
-              <Button
-                size="sm"
-                variant="bordered"
-                onPress={() => setShowActionsSection(!showActionsSection)}
-              >
-                {showActionsSection ? "-" : "+"}
-              </Button>
-            </div>
-            {showActionsSection && (
-              <ActionsListForm
-                basePath={`actions`}
-                control={control}
-                isBeingEdited={isBeingEdited}
-              />
-            )}
+              }
+              titleElement={
+                <p className="text-xl">
+                  <FormattedMessage
+                    defaultMessage="Actions in scenario"
+                    id="scenarios.new.page.actionsInScenario"
+                  />
+                </p>
+              }
+            />
           </div>
 
           {isNewScenario ? (

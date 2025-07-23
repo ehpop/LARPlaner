@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Button, Card, Input, Link, Spinner } from "@heroui/react";
 import Image from "next/image";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -12,7 +12,8 @@ import {
   githubAuthProvider,
   googleAuthProvider,
 } from "@/config/firebase";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
+import { getErrorMessage } from "@/utils/error";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,22 +40,19 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      handleLogIn(emailAuthProvider, email, password);
+      await handleLogIn(emailAuthProvider, email, password);
     } catch (error) {
-      setError(
-        intl.formatMessage({
-          id: "login.error",
-          defaultMessage: "Invalid email or password",
-        }),
-      );
+      setError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
   };
 
-  if (auth.user) {
-    router.push("/");
-  }
+  useEffect(() => {
+    if (auth.user) {
+      router.push("/");
+    }
+  }, [auth.user]);
 
   return (
     <LoadingOverlay
@@ -69,12 +67,6 @@ export default function LoginPage() {
           <p className="text-center text-3xl font-bold text-gray-900 dark:text-white">
             <FormattedMessage defaultMessage="Login" id="login.title" />
           </p>
-          {error && (
-            <div className="bg-red-100 text-red-600 p-3 rounded-md text-center">
-              {error}
-            </div>
-          )}
-
           <form className="space-y-4" onSubmit={handleSubmit}>
             <Input
               fullWidth
@@ -106,6 +98,11 @@ export default function LoginPage() {
               value={password}
               onChange={handlePasswordChange}
             />
+            {error && (
+              <div className="text-danger p-3 rounded-md text-center">
+                {error}
+              </div>
+            )}
             <Button
               className="w-full"
               color="primary"
@@ -115,7 +112,7 @@ export default function LoginPage() {
               onPress={() => handleLogIn(emailAuthProvider)}
             >
               {loading ? (
-                <Spinner color="primary" />
+                <Spinner color="default" />
               ) : (
                 <FormattedMessage defaultMessage="Login" id="login.login" />
               )}

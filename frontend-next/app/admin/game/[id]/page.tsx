@@ -6,7 +6,7 @@ import { CardBody, CardHeader } from "@heroui/card";
 import React from "react";
 
 import useGame from "@/hooks/use-game";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import { IGameSession } from "@/types/game.types";
 import useEvent from "@/hooks/event/use-event";
 import AdminGameHistory from "@/components/game/admin/admin-game-history";

@@ -23,7 +23,7 @@ import { Button } from "@heroui/button";
 import { db } from "@/config/firebase";
 import Message, { IMessage } from "@/components/events/chat/messages";
 import { useAuth } from "@/providers/firebase-provider";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import { IChat } from "@/components/events/chat/chat-window";
 import FormTextarea from "@/components/forms/form-textarea";
 

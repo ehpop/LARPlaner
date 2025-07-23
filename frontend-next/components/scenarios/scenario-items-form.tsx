@@ -1,12 +1,12 @@
 import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
-import { useState } from "react";
 import { Control, Controller, useFieldArray, useWatch } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { QrModal } from "@/components/general/qr-modal";
+import { QrModal } from "@/components/common/qr-modal";
 import ActionsListForm from "@/components/scenarios/actions-list-form";
 import { emptyScenarioItem } from "@/services/mock/mock-data";
 import { IScenario } from "@/types/scenario.types";
+import HidableSection from "@/components/common/hidable-section";
 
 interface ItemFormProps {
   control: Control<IScenario>;
@@ -23,8 +23,6 @@ interface ScenarioItemsFormProps {
 const ItemForm = ({ control, index, remove, isBeingEdited }: ItemFormProps) => {
   const intl = useIntl();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [showItem, setShowItem] = useState(true);
-  const [showItemActions, setShowItemActions] = useState(true);
 
   const itemData = useWatch({
     control,
@@ -33,92 +31,108 @@ const ItemForm = ({ control, index, remove, isBeingEdited }: ItemFormProps) => {
 
   return (
     <div className="w-full flex flex-col border-1 space-y-3 p-3 dark:bg-custom-dark-gradient bg-custom-light-gradient">
-      <div className="w-full flex flex-row justify-between items-baseline">
-        <Controller
-          control={control}
-          name={`items.${index}.name`}
-          render={({ field, fieldState }) => (
-            <Input
-              {...field}
-              isRequired
-              className="w-1/2"
-              errorMessage={fieldState.error?.message}
-              isDisabled={!isBeingEdited}
-              isInvalid={!!fieldState.error}
-              label={intl.formatMessage({
-                defaultMessage: "Item name",
-                id: "scenarios.new.page.itemName",
-              })}
-              placeholder={intl.formatMessage({
-                defaultMessage: "Enter item name",
-                id: "scenarios.new.page.itemNamePlaceholder",
-              })}
-              size="sm"
-              variant="underlined"
-            />
-          )}
-          rules={{
-            required: intl.formatMessage({
-              defaultMessage: "Name is required",
-              id: "scenarios.new.page.itemName.required",
-            }),
-          }}
-        />
-        <div className="flex flex-row lg:space-x-2 space-x-1">
-          {isBeingEdited && (
+      <HidableSection
+        additionalButtons={
+          <>
+            {isBeingEdited && (
+              <Button
+                color="danger"
+                size="sm"
+                variant="bordered"
+                onPress={() => remove(index)}
+              >
+                <FormattedMessage
+                  defaultMessage="Remove"
+                  id="scenarios.new.page.removeItemButton"
+                />
+              </Button>
+            )}
             <Button
-              color="danger"
+              color="primary"
+              isDisabled={!itemData?.name || !itemData?.id}
               size="sm"
               variant="bordered"
-              onPress={() => remove(index)}
+              onPress={onOpen}
             >
               <FormattedMessage
-                defaultMessage="Remove"
-                id="scenarios.new.page.removeItemButton"
+                defaultMessage="QR Code"
+                id="scenarios.new.page.qrCodeButton"
               />
             </Button>
-          )}
-          <Button
-            color="primary"
-            isDisabled={!itemData?.name || !itemData?.id}
-            size="sm"
-            variant="bordered"
-            onPress={onOpen}
-          >
-            <FormattedMessage
-              defaultMessage="QR Code"
-              id="scenarios.new.page.qrCodeButton"
+          </>
+        }
+        section={
+          <div className="space-y-3">
+            <Controller
+              control={control}
+              name={`items.${index}.description`}
+              render={({ field, fieldState }) => (
+                <Textarea
+                  {...field}
+                  isRequired
+                  className="w-full"
+                  errorMessage={fieldState.error?.message}
+                  isDisabled={!isBeingEdited}
+                  isInvalid={!!fieldState.error}
+                  label={intl.formatMessage({
+                    defaultMessage: "Item description",
+                    id: "scenarios.new.page.itemDescription",
+                  })}
+                  placeholder={intl.formatMessage({
+                    defaultMessage: "Enter item description",
+                    id: "scenarios.new.page.insertItemDescription",
+                  })}
+                  size="sm"
+                  variant="underlined"
+                />
+              )}
+              rules={{
+                required: intl.formatMessage({
+                  defaultMessage: "Description is required",
+                  id: "scenarios.new.page.itemDescription.required",
+                }),
+              }}
             />
-          </Button>
-          <Button
-            size="sm"
-            variant="bordered"
-            onPress={() => setShowItem(!showItem)}
-          >
-            {showItem ? "-" : "+"}
-          </Button>
-        </div>
-      </div>
-      {showItem && (
-        <div className="space-y-3">
+            <div className="w-full border-1 p-3 space-y-3">
+              <HidableSection
+                section={
+                  <ActionsListForm
+                    basePath={`items.${index}.actions`}
+                    control={control}
+                    isBeingEdited={isBeingEdited}
+                  />
+                }
+                titleElement={
+                  <p className="text-xl">
+                    <FormattedMessage
+                      defaultMessage="Actions in item:"
+                      id="scenarios.new.page.itemActions"
+                    />
+                  </p>
+                }
+              />
+            </div>
+          </div>
+        }
+        titleElement={
           <Controller
             control={control}
-            name={`items.${index}.description`}
+            name={`items.${index}.name`}
             render={({ field, fieldState }) => (
-              <Textarea
+              <Input
                 {...field}
                 isRequired
-                className="w-full"
+                className="w-1/2"
                 errorMessage={fieldState.error?.message}
                 isDisabled={!isBeingEdited}
                 isInvalid={!!fieldState.error}
                 label={intl.formatMessage({
-                  defaultMessage: "Item description",
-                  id: "scenarios.new.page.itemDescription",
+                  defaultMessage: "Item name",
+                  id: "scenarios.new.page.itemName",
                 })}
                 placeholder={intl.formatMessage({
-                  defaultMessage: "Enter item description",
-                  id: "scenarios.new.page.insertItemDescription",
+                  defaultMessage: "Enter item name",
+                  id: "scenarios.new.page.itemNamePlaceholder",
                 })}
                 size="sm"
                 variant="underlined"
@@ -126,37 +140,13 @@ const ItemForm = ({ control, index, remove, isBeingEdited }: ItemFormProps) => {
             )}
             rules={{
               required: intl.formatMessage({
-                defaultMessage: "Description is required",
-                id: "scenarios.new.page.itemDescription.required",
+                defaultMessage: "Name is required",
+                id: "scenarios.new.page.itemName.required",
               }),
             }}
           />
-          <div className="w-full border-1 p-3 space-y-3">
-            <div className="w-full flex flex-row justify-between">
-              <p className="text-xl">
-                <FormattedMessage
-                  defaultMessage="Actions in item:"
-                  id="scenarios.new.page.itemActions"
-                />
-              </p>
-              <Button
-                size="sm"
-                variant="bordered"
-                onPress={() => setShowItemActions(!showItemActions)}
-              >
-                {showItemActions ? "-" : "+"}
-              </Button>
-            </div>
-            {showItemActions && (
-              <ActionsListForm
-                basePath={`items.${index}.actions`}
-                control={control}
-                isBeingEdited={isBeingEdited}
-              />
-            )}
-          </div>
-        </div>
-      )}
+        }
+      />
       <QrModal
         isOpen={isOpen}
         modalTitle={

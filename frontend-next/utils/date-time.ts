@@ -1,4 +1,12 @@
-import { fromDate, ZonedDateTime } from "@internationalized/date";
+import {
+  fromDate,
+  getLocalTimeZone,
+  parseAbsolute,
+  parseZonedDateTime,
+  ZonedDateTime,
+} from "@internationalized/date";
+
+import { IAppliedTag } from "@/types/tags.types";
 
 export const setTimeOnDate = (
   date: ZonedDateTime,
@@ -78,4 +86,38 @@ export const getDateAndTime = (date: Date): string => {
     " " +
     date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   );
+};
+
+/**
+ * Checks if an applied tag has expired based on its application time and expiration duration.
+ * @param appliedTag The applied tag to check.
+ * @param currentTime The current time to compare against.
+ * @returns {boolean} True if the tag has expired, false otherwise.
+ */
+export const isTagExpired = (
+  appliedTag: IAppliedTag,
+  currentTime: ZonedDateTime,
+): boolean => {
+  const { tag, appliedToUserAt } = appliedTag;
+
+  //TODO: Fix this shit
+  const appliedToUser =
+    typeof appliedToUserAt.add !== "function"
+      ? parseAbsolute(
+          appliedToUserAt.toString().replace(/(\.\d{3})\d+/, "$1"),
+          getLocalTimeZone(),
+        )
+      : parseZonedDateTime(
+          appliedToUserAt.toString().replace(/(\.\d{3})\d+/, "$1"),
+        );
+
+  if (!tag.expiresAfterMinutes || tag.expiresAfterMinutes <= 0) {
+    return false;
+  }
+
+  const expirationTime = appliedToUser.add({
+    minutes: tag.expiresAfterMinutes,
+  });
+
+  return expirationTime.compare(currentTime) <= 0;
 };

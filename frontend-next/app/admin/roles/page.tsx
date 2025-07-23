@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 
 import RolesService from "@/services/roles.service";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import { IRole } from "@/types/roles.types";
 import RolesDisplayAdmin from "@/components/roles/roles-display-admin";
 

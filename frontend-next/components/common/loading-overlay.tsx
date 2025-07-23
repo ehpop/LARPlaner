@@ -1,4 +1,3 @@
-// components/general/loading-overlay.tsx
 import React from "react";
 import { Spinner } from "@heroui/react";
 

@@ -23,7 +23,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import EventAssignRolesForm from "@/components/events/event-assign-roles-form";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import eventsService from "@/services/events.service";
 import { emptyEvent } from "@/services/mock/mock-data";
 import scenariosService from "@/services/scenarios.service";
@@ -34,6 +34,7 @@ import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
+import HidableSection from "@/components/common/hidable-section";
 
 export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const intl = useIntl();
@@ -44,7 +45,6 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
     IScenario | undefined
   >(undefined);
   const [isBeingEdited, setIsBeingEdited] = useState(isNewEvent);
-  const [showAssignRoles, setShowAssignRoles] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -354,28 +354,23 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
         </div>
 
         <div className="w-full flex flex-col p-3 border-1">
-          <div className="w-full flex flex-row justify-between">
-            <p className="text-xl">
-              {intl.formatMessage({
-                defaultMessage: "Assign roles",
-                id: "events.page.display.assignRoles",
-              })}
-            </p>
-            <Button
-              size="sm"
-              variant="bordered"
-              onPress={() => setShowAssignRoles(!showAssignRoles)}
-            >
-              {showAssignRoles ? "-" : "+"}
-            </Button>
-          </div>
-          {showAssignRoles && (
-            <EventAssignRolesForm
-              control={control}
-              isBeingEdited={isBeingEdited}
-              scenario={selectedScenario}
-            />
-          )}
+          <HidableSection
+            section={
+              <EventAssignRolesForm
+                control={control}
+                isBeingEdited={isBeingEdited}
+                scenario={selectedScenario}
+              />
+            }
+            titleElement={
+              <p className="text-xl">
+                <FormattedMessage
+                  defaultMessage="Assign roles"
+                  id="events.page.display.assignRoles"
+                />
+              </p>
+            }
+          />
         </div>
 
         {isNewEvent ? (

@@ -6,8 +6,8 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
-import LoadingOverlay from "@/components/general/loading-overlay";
-import InputTagsWithTable from "@/components/input-tags-with-table";
+import LoadingOverlay from "@/components/common/loading-overlay";
+import InputTagsWithTable from "@/components/tags/input-tags-with-table";
 import { TagsProvider } from "@/providers/tags-provider";
 import { emptyRole } from "@/services/mock/mock-data";
 import rolesService from "@/services/roles.service";

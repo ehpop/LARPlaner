@@ -14,10 +14,12 @@ import { FormattedMessage } from "react-intl";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { CardBody, CardHeader } from "@heroui/card";
 
-import { IGameSession } from "@/types/game.types";
-import { IScenario, IScenarioItemAction } from "@/types/scenario.types";
+import { IGameRoleState, IGameSession } from "@/types/game.types";
+import { IScenario } from "@/types/scenario.types";
 import { useAuth } from "@/providers/firebase-provider";
 import Action from "@/components/game/user/action";
+import { useAvailableItemActions } from "@/hooks/game/use-available-item-actions";
+import LoadingOverlay from "@/components/common/loading-overlay";
 
 const QrItemScanner = ({
   game,
@@ -28,12 +30,16 @@ const QrItemScanner = ({
 }) => {
   const auth = useAuth();
 
+  const userRoleState = game.assignedRoles.find(
+    (userRole) => userRole.assignedUserID === auth.user?.uid,
+  );
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(true);
   const [scannedData, setScannedData] = useState<string>("");
 
   useEffect(() => {
-    if (!isModalOpen || !isScanning) return;
+    if (!userRoleState || !isModalOpen || !isScanning) return;
 
     const scanner = new Html5QrcodeScanner(
       "reader",
@@ -56,84 +62,6 @@ const QrItemScanner = ({
     };
   }, [isModalOpen, isScanning]);
 
-  const createScenarioItemFromScannedData = () => {
-    const scenarioItem = scenario?.items.find(
-      (item) => item.id === scannedData,
-    );
-
-    if (!scenarioItem) {
-      return (
-        <Card>
-          <CardHeader>
-            <FormattedMessage
-              defaultMessage="Item not found"
-              id="scanner.itemNotFound"
-            />
-          </CardHeader>
-          <CardBody>
-            <FormattedMessage
-              defaultMessage="The scanned item was not found in the scenario."
-              id="scanner.itemNotFoundDescription"
-            />
-          </CardBody>
-        </Card>
-      );
-    }
-
-    let itemActionsElement = null;
-
-    if (scenarioItem.actions.length > 0) {
-      const userTags = game?.assignedRoles.find(
-        (role) => role.assignedEmail === auth.user?.email,
-      )?.activeTags;
-
-      const doesUserHaveEveryRequiredTag = (action: IScenarioItemAction) => {
-        return action.requiredTagsToDisplay.every((tag) =>
-          userTags?.some((userTag) => userTag.id === tag.id),
-        );
-      };
-
-      const itemActions = scenarioItem.actions
-        .filter((action) => doesUserHaveEveryRequiredTag(action))
-        .map((action) => (
-          <Action key={action.id} action={action} game={game} />
-        ));
-
-      itemActionsElement = (
-        <div className="flex flex-col space-y-1">
-          {itemActions.length === 0 ? (
-            <FormattedMessage
-              defaultMessage="No actions available"
-              id="scanner.noActionsAvailable"
-            />
-          ) : (
-            itemActions
-          )}
-        </div>
-      );
-    }
-
-    return (
-      <Card key={scenarioItem.id}>
-        <CardHeader>
-          <p>{scenarioItem.name}</p>
-        </CardHeader>
-        <CardBody>
-          <div className="flex flex-col space-y-2">
-            <p>{scenarioItem.description}</p>
-            <p className="text-xs">
-              <FormattedMessage
-                defaultMessage="Actions available for this item:"
-                id="scanner.actionsAvailable"
-              />
-            </p>
-            {itemActionsElement}
-          </div>
-        </CardBody>
-      </Card>
-    );
-  };
-
   const ScannedDataElement = (
     <div className="p-3 rounded-md">
       <p className="mb-2">
@@ -143,7 +71,21 @@ const QrItemScanner = ({
           values={{ scannedData }}
         />
       </p>
-      <div>{createScenarioItemFromScannedData()}</div>
+      {!userRoleState ? (
+        <FormattedMessage
+          defaultMessage="User role was not found"
+          id="scanner.userRoleState.error"
+        />
+      ) : (
+        scannedData && (
+          <ScannedItemCard
+            game={game}
+            scannedData={scannedData}
+            scenario={scenario}
+            userRoleState={userRoleState}
+          />
+        )
+      )}
     </div>
   );
 
@@ -221,3 +163,83 @@ const QrItemScanner = ({
 };
 
 export default QrItemScanner;
+
+export const ScannedItemCard = ({
+  scannedData,
+  game,
+  scenario,
+  userRoleState,
+}: {
+  scannedData: string;
+  game: IGameSession;
+  scenario: IScenario;
+  userRoleState: IGameRoleState;
+}) => {
+  const scenarioItem = scenario?.items.find((item) => item.id === scannedData);
+
+  const {
+    actions: itemActions,
+    isLoading,
+    error,
+    refetch,
+  } = useAvailableItemActions(userRoleState?.id, scenarioItem?.id);
+
+  if (!scenarioItem) {
+    return (
+      <Card>
+        <CardHeader>
+          <FormattedMessage
+            defaultMessage="Item not found"
+            id="scanner.itemNotFound"
+          />
+        </CardHeader>
+        <CardBody>
+          <FormattedMessage
+            defaultMessage="The scanned item was not found in the scenario."
+            id="scanner.itemNotFoundDescription"
+          />
+        </CardBody>
+      </Card>
+    );
+  }
+
+  return (
+    <Card key={scenarioItem.id}>
+      <CardHeader>
+        <p>{scenarioItem.name}</p>
+      </CardHeader>
+      <CardBody>
+        <div className="flex flex-col space-y-2">
+          <p>{scenarioItem.description}</p>
+          <p className="text-xs">
+            <FormattedMessage
+              defaultMessage="Actions available for this item:"
+              id="scanner.actionsAvailable"
+            />
+          </p>
+          {error && <p style={{ color: "red" }}>Error: {error}</p>}
+
+          <LoadingOverlay isLoading={isLoading}>
+            <div className="flex flex-col space-y-1">
+              {itemActions.length > 0 ? (
+                itemActions.map((action) => (
+                  <Action
+                    key={action.id}
+                    action={action}
+                    afterActionPerformed={() => refetch()}
+                    game={game}
+                  />
+                ))
+              ) : (
+                <FormattedMessage
+                  defaultMessage="No actions available for you."
+                  id="scanner.noActionsAvailable"
+                />
+              )}
+            </div>
+          </LoadingOverlay>
+        </div>
+      </CardBody>
+    </Card>
+  );
+};

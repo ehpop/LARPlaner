@@ -6,7 +6,7 @@ import { useIntl } from "react-intl";
 import EventForm from "@/components/events/event-form";
 import eventsService from "@/services/events.service";
 import { IEvent } from "@/types/event.types";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import { showErrorToastWithTimeout } from "@/utils/toast";
 
 export default function EventPage({ params }: any) {

@@ -1,34 +1,17 @@
 import { Button } from "@heroui/button";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useRouter } from "next/navigation";
-import React, { Dispatch, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Input } from "@heroui/input";
 import { SortDescriptor } from "@react-types/shared";
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from "@heroui/react";
 
 import { IEvent } from "@/types/event.types";
 import { getDateAndTime } from "@/utils/date-time";
 import { usePagination } from "@/hooks/use-pagination";
 import { AdminTableDisplay } from "@/components/table/admin-table-display";
 import PaginationControl from "@/components/table/pagination-control";
-import eventsService from "@/services/events.service";
-import {
-  showErrorToastWithTimeout,
-  showSuccessToastWithTimeout,
-} from "@/utils/toast";
 
-const EventsDisplayAdmin = ({
-  eventsList,
-  setEventsData,
-}: {
-  eventsList: IEvent[];
-  setEventsData: Dispatch<IEvent[]>;
-}) => {
+const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
   const intl = useIntl();
   const itemsPerPage = 10;
   const router = useRouter();
@@ -143,33 +126,6 @@ const EventsDisplayAdmin = ({
     },
   ];
 
-  async function handleActivateEvent(event: IEvent) {
-    await changeEventStatus(event, "active");
-  }
-
-  async function handleArchiveEvent(event: IEvent) {
-    await changeEventStatus(event, "historic");
-  }
-
-  async function changeEventStatus(event: IEvent, status: IEvent["status"]) {
-    eventsService
-      .updateEventStatus(event.id, status)
-      .then((res) => {
-        if (res.success) {
-          showSuccessToastWithTimeout(
-            intl.formatMessage({
-              id: "components.events.events-display-admin.successfully-transitioned",
-              defaultMessage: "Event status changed to: " + status,
-            }),
-            //TODO: refresh event
-          );
-        } else {
-          showErrorToastWithTimeout(res.data);
-        }
-      })
-      .catch((error) => showErrorToastWithTimeout(error));
-  }
-
   const rows = currentList.map((event: IEvent) => ({
     id: event.id,
     name: event.name,
@@ -178,75 +134,13 @@ const EventsDisplayAdmin = ({
     status: event.status,
     assignedRoles: getHowManyRolesAssigned(event),
     actions: (
-      <Dropdown>
-        <DropdownTrigger>
-          <Button>
-            <FormattedMessage
-              defaultMessage="Actions"
-              id="components.events.events-display-admin.action-menu-trigger"
-            />
-          </Button>
-        </DropdownTrigger>
-        <DropdownMenu
-          onAction={(key) => {
-            switch (key) {
-              case "edit":
-                handleEditClick(event);
-
-                return;
-              case "activate":
-                handleActivateEvent(event);
-
-                return;
-              case "archive":
-                handleArchiveEvent(event);
-
-                return;
-            }
-          }}
-        >
-          <DropdownItem
-            key="edit"
-            textValue={intl.formatMessage({
-              id: "components.events.events-display-admin.edit-action",
-              defaultMessage: "Edit",
-            })}
-          >
-            <FormattedMessage
-              defaultMessage="Edit"
-              id="events.page.display.edit"
-            />
-          </DropdownItem>
-          <DropdownItem
-            key="activate"
-            textValue={intl.formatMessage({
-              id: "components.events.events-display-admin.activate-action",
-              defaultMessage: "Activate",
-            })}
-          >
-            <p className="text-success">
-              <FormattedMessage
-                defaultMessage="Acivate"
-                id="events.page.display.activate"
-              />
-            </p>
-          </DropdownItem>
-          <DropdownItem
-            key="archive"
-            textValue={intl.formatMessage({
-              id: "components.events.events-display-admin.archive-action",
-              defaultMessage: "Archive",
-            })}
-          >
-            <p className="text-danger">
-              <FormattedMessage
-                defaultMessage="Archive"
-                id="events.page.display.archive"
-              />
-            </p>
-          </DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
+      <Button
+        size="sm"
+        variant="bordered"
+        onPress={() => handleEditClick(event)}
+      >
+        <FormattedMessage defaultMessage="Edit" id="events.page.display.edit" />
+      </Button>
     ),
   }));
 

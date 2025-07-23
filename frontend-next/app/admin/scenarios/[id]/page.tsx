@@ -5,7 +5,7 @@ import { useIntl } from "react-intl";
 
 import ScenarioForm from "@/components/scenarios/scenario-form";
 import { IScenario } from "@/types/scenario.types";
-import LoadingOverlay from "@/components/general/loading-overlay";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import ScenariosService from "@/services/scenarios.service";
 
 export default function ScenarioDisplayPage({ params }: any) {

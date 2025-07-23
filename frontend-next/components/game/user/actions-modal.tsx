@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Button,
   Modal,
@@ -11,43 +11,39 @@ import { FormattedMessage } from "react-intl";
 
 import { IGameSession } from "@/types/game.types";
 import useUserEventData from "@/hooks/use-user-data";
-import { IScenarioAction } from "@/types/scenario.types";
 import Action from "@/components/game/user/action";
 import { useAuth } from "@/providers/firebase-provider";
+import { useAvailableActions } from "@/hooks/game/use-available-actions";
+import LoadingOverlay from "@/components/common/loading-overlay";
 
 const ActionsModal = ({ game }: { game: IGameSession }) => {
   const auth = useAuth();
-  const { event, scenario, userRole, userScenarioRole, loading } =
-    useUserEventData({ id: game.eventId || "" });
+  const userRoleState = game.assignedRoles.find(
+    (userRole) => userRole.assignedUserID === auth.user?.uid,
+  );
+  const {
+    event,
+    scenario,
+    userRole,
+    userScenarioRole,
+    loading: isLoadingUserData,
+  } = useUserEventData({ id: game.eventId || "" });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [actions, setActions] = useState<IScenarioAction[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (!isModalOpen || !event || !scenario || !userRole || !userScenarioRole)
-      return;
-
-    const loadActions = async () => {
-      const userTags = game?.assignedRoles.find(
-        (role) => role.assignedEmail === auth.user?.email,
-      )?.activeTags;
-
-      const doesUserHaveEveryRequiredTag = (action: IScenarioAction) => {
-        return action.requiredTagsToDisplay.every((tag) =>
-          userTags?.some((userTag) => userTag.id === tag.id),
-        );
-      };
-
-      const actionsToDisplay = scenario.actions.filter((action) =>
-        doesUserHaveEveryRequiredTag(action),
-      );
-
-      setActions(actionsToDisplay);
-    };
-
-    loadActions().finally(() => setIsLoading(false));
-  }, [isModalOpen, loading]);
+  const {
+    actions,
+    isLoading: isLoadingActions,
+    error,
+    refetch,
+  } = useAvailableActions({
+    isModalOpen,
+    event,
+    scenario,
+    userRole,
+    userScenarioRole,
+    userRoleState,
+  });
 
   const ActionsModalElement = (
     <Modal
@@ -65,16 +61,24 @@ const ActionsModal = ({ game }: { game: IGameSession }) => {
           />
         </ModalHeader>
         <ModalBody>
-          {actions.length === 0 ? (
-            <FormattedMessage
-              defaultMessage="No actions available."
-              id="game.actionsModal.noActions"
-            />
-          ) : (
-            actions.map((action) => (
-              <Action key={action.id} action={action} game={game} />
-            ))
-          )}
+          <LoadingOverlay isLoading={isLoadingActions}>
+            {error && <p>error</p>}
+            {!error && actions.length === 0 ? (
+              <FormattedMessage
+                defaultMessage="No actions available."
+                id="game.actionsModal.noActions"
+              />
+            ) : (
+              actions.map((action) => (
+                <Action
+                  key={action.id}
+                  action={action}
+                  afterActionPerformed={() => refetch()}
+                  game={game}
+                />
+              ))
+            )}
+          </LoadingOverlay>
         </ModalBody>
         <ModalFooter>
           <Button
@@ -95,7 +99,7 @@ const ActionsModal = ({ game }: { game: IGameSession }) => {
   return (
     <>
       <Button
-        disabled={isLoading}
+        disabled={isLoadingUserData}
         variant="bordered"
         onPress={() => setIsModalOpen(true)}
       >
