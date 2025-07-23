@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -33,6 +34,22 @@ public class GlobalRestExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGenericException(
       Exception ex, HttpServletRequest request) {
+
+    log.error("An unexpected error occurred: {}", ex.getMessage(), ex);
+
+    ErrorResponse errorResponse = new ErrorResponse(
+        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        "Internal Server Error",
+        "An unexpected error occurred. Please try again later or contact administrator.",
+        request.getRequestURI()
+    );
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<ErrorResponse> handleGenericRuntimeException(
+      RuntimeException ex, HttpServletRequest request) {
 
     log.error("An unexpected error occurred: {}", ex.getMessage(), ex);
 
@@ -118,6 +135,21 @@ public class GlobalRestExceptionHandler {
     ErrorResponse errorResponse = new ErrorResponse(
         HttpStatus.BAD_REQUEST.value(),
         "Bad Request",
+        ex.getMessage(),
+        request.getRequestURI()
+    );
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ErrorResponse> handleEventStatusCouldNotBeChanged(
+      AccessDeniedException ex, HttpServletRequest request) {
+
+    log.warn("AccessDeniedException: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = new ErrorResponse(
+        HttpStatus.FORBIDDEN.value(),
+        "Access denied",
         ex.getMessage(),
         request.getRequestURI()
     );

@@ -10,6 +10,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,11 +22,13 @@ public class TagControllerImpl implements TagController {
   private final TagService tagService;
 
   @Override
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public ResponseEntity<List<TagResponseDTO>> getAllTags(String searchTerm) {
     return ResponseEntity.ok(tagService.getAllTags(searchTerm));
   }
 
   @Override
+  @PreAuthorize("hasAuthority('ROLE_USER')")
   public ResponseEntity<TagResponseDTO> getTagById(UUID id) {
     TagResponseDTO tag = tagService.getTagById(id);
     return tag != null
@@ -34,12 +37,14 @@ public class TagControllerImpl implements TagController {
   }
 
   @Override
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public ResponseEntity<List<TagResponseDTO>> createTags(List<TagRequestDTO> tagRequestDTOList) {
     List<TagResponseDTO> createdTags = tagService.createTags(tagRequestDTOList);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdTags);
   }
 
   @Override
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public ResponseEntity<TagResponseDTO> updateTag(UUID id,
       UpdateTagRequestDTO updateTagRequestDTO) {
     TagResponseDTO updatedTag = tagService.updateTag(id, updateTagRequestDTO);
@@ -49,6 +54,7 @@ public class TagControllerImpl implements TagController {
   }
 
   @Override
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public ResponseEntity<Void> deleteTag(UUID id) {
     tagService.deleteTag(id);
     return ResponseEntity.noContent().build();

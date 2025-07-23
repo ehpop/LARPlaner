@@ -11,6 +11,8 @@ import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
@@ -47,4 +49,9 @@ public class GameSession extends BaseEntity {
   @OneToMany(mappedBy = "gameSession", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   @Default
   private List<GameActionLog> actions = new ArrayList<>();
+
+  public Set<String> getUserIdsAssignedToGameSession() {
+    return assignedRoles.stream().map(GameRoleState::getAssignedUserID).collect(Collectors.toSet());
+  }
+
 }

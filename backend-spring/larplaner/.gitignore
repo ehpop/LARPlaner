@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+### H2 DB ###
+/data/
+*.mv.db
+*.trace.db
+/src/main/resources/dev.env
+
+### ENV files ###
+*.env
+

@@ -10,9 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Builder.Default;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,13 +43,25 @@ public class Action extends BaseEntity {
   @Column(length = 1024)
   private String messageOnFailure;
 
+  /** An object must have ALL of these tags to be displayed. */
   @ManyToMany
   @Default
   private List<Tag> requiredTagsToDisplay = new ArrayList<>();
 
+  /** An object must have NONE of these tags to be displayed. */
+  @ManyToMany
+  @Default
+  private List<Tag> forbiddenTagsToDisplay = new ArrayList<>();
+
+  /** An object must have ALL of these tags to succeed. */
   @ManyToMany
   @Default
   private List<Tag> requiredTagsToSucceed = new ArrayList<>();
+
+  /** An object must have NONE of these tags to succeed. */
+  @ManyToMany
+  @Default
+  private List<Tag> forbiddenTagsToSucceed = new ArrayList<>();
 
   @ManyToMany
   @Default

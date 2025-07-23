@@ -16,6 +16,8 @@ import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
@@ -74,11 +76,11 @@ public class Event extends BaseEntity {
     assignedRole.setEvent(this);
   }
 
-  public List<String> getEmailsAssignedToEvent() {
+  public Set<String> getEmailsAssignedToEvent() {
     return this.assignedRoles.stream()
         .map(AssignedRole::getAssignedEmail)
         .filter(StringUtils::hasText)
-        .toList();
+        .collect(Collectors.toSet());
   }
 
 }

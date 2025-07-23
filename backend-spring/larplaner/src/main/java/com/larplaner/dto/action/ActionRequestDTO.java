@@ -22,6 +22,8 @@ public class ActionRequestDTO extends BaseRequestDTO {
 
   private List<UUID> requiredTagsToDisplay;
   private List<UUID> requiredTagsToSucceed;
+  private List<UUID> forbiddenTagsToDisplay;
+  private List<UUID> forbiddenTagsToSucceed;
   private List<UUID> tagsToApplyOnSuccess;
   private List<UUID> tagsToApplyOnFailure;
   private List<UUID> tagsToRemoveOnSuccess;

@@ -10,6 +10,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,11 +22,14 @@ public class ScenarioControllerImpl implements ScenarioController {
   private final ScenarioService scenarioService;
 
   @Override
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public ResponseEntity<List<ScenarioResponseDTO>> getAllScenarios() {
     return ResponseEntity.ok(scenarioService.getAllScenarios());
   }
 
+  //TODO: We probably should return different scenario for user and admin
   @Override
+  @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToScenario(#id)")
   public ResponseEntity<ScenarioResponseDTO> getScenarioById(UUID id) {
     ScenarioResponseDTO scenario = scenarioService.getScenarioById(id);
     return scenario != null
@@ -34,6 +38,7 @@ public class ScenarioControllerImpl implements ScenarioController {
   }
 
   @Override
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public ResponseEntity<ScenarioResponseDTO> createScenario(ScenarioRequestDTO scenarioDTO) {
     var createdScenario = scenarioService.createScenario(scenarioDTO);
 
@@ -42,6 +47,7 @@ public class ScenarioControllerImpl implements ScenarioController {
   }
 
   @Override
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public ResponseEntity<ScenarioResponseDTO> updateScenario(UUID id,
       UpdateScenarioRequestDTO scenarioDTO) {
     ScenarioResponseDTO updatedScenario = scenarioService.updateScenario(id, scenarioDTO);
@@ -51,6 +57,7 @@ public class ScenarioControllerImpl implements ScenarioController {
   }
 
   @Override
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public ResponseEntity<Void> deleteScenario(UUID id) {
     scenarioService.deleteScenario(id);
     return ResponseEntity.noContent().build();

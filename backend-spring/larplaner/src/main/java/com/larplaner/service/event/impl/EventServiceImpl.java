@@ -16,11 +16,12 @@ import com.larplaner.model.event.EventStatusEnum;
 import com.larplaner.repository.event.EventRepository;
 import com.larplaner.repository.game.GameSessionRepository;
 import com.larplaner.service.event.EventService;
-import com.larplaner.service.firebase.UserLookupService;
+import com.larplaner.service.admin.firebase.UserLookupService;
 import com.larplaner.service.game.impl.GameSessionServiceImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -143,6 +144,11 @@ public class EventServiceImpl implements EventService {
     }
 
     event.setStatus(EventStatusEnum.HISTORIC);
+
+    //TODO: This is archiving game session for now, in the future more complex
+    // operation might be required and this should be moved to game session service
+    event.getGameSession().setEndTime(ZonedDateTime.now());
+
     return eventRepository.save(event);
   }
 
@@ -154,7 +160,7 @@ public class EventServiceImpl implements EventService {
 
     //TODO: ENABLE THIS CHECK
 //    checkIfAllEmailsAreValidInEvent(event);
-    
+
     gameSessionService.createGameSession(event);
 
     event.setStatus(EventStatusEnum.ACTIVE);
@@ -162,7 +168,7 @@ public class EventServiceImpl implements EventService {
   }
 
   private void checkIfAllEmailsAreValidInEvent(Event event) {
-    List<String> assignedEmails = event.getEmailsAssignedToEvent();
+    Set<String> assignedEmails = event.getEmailsAssignedToEvent();
     if (assignedEmails.size() != event.getAssignedRoles().size()) {
       throw new EventStatusCouldNotBeChanged(
           "Please assign all email roles before you change status to active");

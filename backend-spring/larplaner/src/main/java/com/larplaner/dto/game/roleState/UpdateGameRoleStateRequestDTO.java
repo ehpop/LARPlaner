@@ -1,8 +1,10 @@
 package com.larplaner.dto.game.roleState;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -12,6 +14,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateGameRoleStateRequestDTO {
 
-  private List<UUID> activeTags;
+  @Default
+  private List<UUID> activeTags = new ArrayList<>();
 
 }

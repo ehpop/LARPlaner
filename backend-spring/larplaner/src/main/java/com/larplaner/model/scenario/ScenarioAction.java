@@ -42,6 +42,8 @@ public class ScenarioAction extends Action {
       this.setMessageOnFailure(baseAction.getMessageOnFailure());
       this.setRequiredTagsToDisplay(baseAction.getRequiredTagsToDisplay());
       this.setRequiredTagsToSucceed(baseAction.getRequiredTagsToSucceed());
+      this.setForbiddenTagsToDisplay(baseAction.getForbiddenTagsToDisplay());
+      this.setForbiddenTagsToSucceed(baseAction.getForbiddenTagsToSucceed());
       this.setTagsToApplyOnSuccess(baseAction.getTagsToApplyOnSuccess());
       this.setTagsToApplyOnFailure(baseAction.getTagsToApplyOnFailure());
       this.setTagsToRemoveOnSuccess(baseAction.getTagsToRemoveOnSuccess());

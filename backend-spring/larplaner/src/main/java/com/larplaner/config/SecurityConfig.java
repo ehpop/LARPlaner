@@ -2,52 +2,59 @@ package com.larplaner.config;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
+import com.larplaner.security.FirebaseTokenFilter;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @Slf4j
 public class SecurityConfig {
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    log.info("This main config should be used");
+  public FirebaseTokenFilter firebaseTokenFilter() {
+    return new FirebaseTokenFilter();
+  }
 
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
+        // Disable CSRF for stateless APIs
+        .csrf(AbstractHttpConfigurer::disable)
+        // Configure CORS
         .cors(customizer -> customizer.configurationSource(corsConfigurationSource()))
+        // Make session management stateless
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         // Apply authorization rules
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers(toH2Console()).permitAll() // Allow H2 console access
-            // Swagger UI endpoints
-            .requestMatchers("/swagger-ui/**").permitAll()
-            .requestMatchers("/v3/api-docs/**").permitAll()
-            .requestMatchers("/swagger-ui.html").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
-            .requestMatchers(HttpMethod.PUT, "/api/**").permitAll()
-            .requestMatchers(HttpMethod.DELETE, "/api/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-            .anyRequest().authenticated())
+            // --- Public endpoints ---
+            .requestMatchers(toH2Console()).permitAll()
+            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+
+            // --- API Authorization Rules ---
+            .requestMatchers( "/api/**").authenticated()
+
+            // Fallback: any other request must be authenticated
+            .anyRequest().authenticated()
+        )
         // Allow frames for H2 console
         .headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin))
-        // Disable CSRF
-        .csrf(csrf -> csrf
-                .ignoringRequestMatchers(toH2Console())
-                .ignoringRequestMatchers("/swagger-ui/**", "/v3/api-docs/**")
-                .ignoringRequestMatchers("/api/**") // Disable CSRF for all API
-            // endpoints during development
-        );
+        .addFilterBefore(firebaseTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

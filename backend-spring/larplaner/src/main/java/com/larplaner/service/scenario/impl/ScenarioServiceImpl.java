@@ -124,8 +124,8 @@ public class ScenarioServiceImpl implements ScenarioService {
   }
 
   /**
-   * Converts a userEvents of ScenarioRoleDTOs to a userEvents of ScenarioRole entities. Assumes ScenarioMapper
-   * has a method to map ScenarioRoleDTO to ScenarioRole.
+   * Converts a userEvents of ScenarioRoleDTOs to a userEvents of ScenarioRole entities. Assumes
+   * ScenarioMapper has a method to map ScenarioRoleDTO to ScenarioRole.
    *
    * @param roleDTOs List of ScenarioRoleDTOs or null.
    */
@@ -156,9 +156,9 @@ public class ScenarioServiceImpl implements ScenarioService {
   }
 
   /**
-   * Converts a userEvents of ScenarioItemDTOs to a userEvents of ScenarioItem entities. Assumes ScenarioMapper
-   * has a method to map ScenarioItemDTO to ScenarioItem. May need enhancement later for nested item
-   * actions.
+   * Converts a userEvents of ScenarioItemDTOs to a userEvents of ScenarioItem entities. Assumes
+   * ScenarioMapper has a method to map ScenarioItemDTO to ScenarioItem. May need enhancement later
+   * for nested item actions.
    *
    * @param itemDTOs List of ScenarioItemDTOs or null.
    */

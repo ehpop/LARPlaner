@@ -25,6 +25,8 @@ public class UpdateScenarioItemActionRequestDTO extends ScenarioItemActionReques
         .messageOnFailure(actionDto.getMessageOnFailure())
         .requiredTagsToDisplay(actionDto.getRequiredTagsToDisplay())
         .requiredTagsToSucceed(actionDto.getRequiredTagsToSucceed())
+        .forbiddenTagsToDisplay(actionDto.getForbiddenTagsToDisplay())
+        .forbiddenTagsToSucceed(actionDto.getForbiddenTagsToSucceed())
         .tagsToApplyOnSuccess(actionDto.getTagsToApplyOnSuccess())
         .tagsToApplyOnFailure(actionDto.getTagsToApplyOnFailure())
         .tagsToRemoveOnSuccess(actionDto.getTagsToRemoveOnSuccess())

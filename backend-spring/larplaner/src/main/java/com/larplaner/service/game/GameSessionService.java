@@ -4,6 +4,8 @@ import com.larplaner.dto.game.GameSessionResponseDTO;
 import com.larplaner.dto.game.action.GameActionRequestDTO;
 import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
 import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
+import com.larplaner.dto.scenario.action.ScenarioActionResponseDTO;
+import com.larplaner.dto.scenario.itemAction.ScenarioItemActionResponseDTO;
 import com.larplaner.model.event.Event;
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +26,9 @@ public interface GameSessionService {
 
   List<GameActionLogResponseDTO> getGameHistoryByGameId(UUID gameId);
 
-  List<GameActionLogResponseDTO> getGameHistoryByUserIdAndGameId(String userId, UUID gameId);
+  List<GameActionLogResponseDTO> getUserGameHistoryByGameId(String userId, UUID gameId);
+
+  List<GameActionLogResponseDTO> getUserGameHistoryByGameId(UUID gameId);
 
   GameActionLogResponseDTO createGameHistory(GameActionLogResponseDTO gameActionLogDTO);
 
@@ -32,4 +36,9 @@ public interface GameSessionService {
 
   GameSessionResponseDTO updateRoleState(UUID roleStateID,
       UpdateGameRoleStateRequestDTO requestDTO);
+
+  List<ScenarioActionResponseDTO> getAvailableActionsForUser(UUID gameSessionRoleId);
+
+  List<ScenarioItemActionResponseDTO> getAvailableItemActionsForUser(UUID gameSessionRoleId,
+      UUID itemId);
 }

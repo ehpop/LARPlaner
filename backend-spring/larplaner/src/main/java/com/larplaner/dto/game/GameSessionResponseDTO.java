@@ -5,13 +5,17 @@ import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
 import com.larplaner.dto.game.itemState.GameItemStateResponseDTO;
 import com.larplaner.dto.game.roleState.GameRoleStateResponseDTO;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@SuperBuilder
 public class GameSessionResponseDTO extends BaseResponseDTO {
 
   private UUID eventId;
@@ -19,7 +23,12 @@ public class GameSessionResponseDTO extends BaseResponseDTO {
   private ZonedDateTime startTime;
   private ZonedDateTime endTime;
 
-  private List<GameRoleStateResponseDTO> assignedRoles;
-  private List<GameItemStateResponseDTO> items;
-  private List<GameActionLogResponseDTO> actions;
+  @Default
+  private List<GameRoleStateResponseDTO> assignedRoles = new ArrayList<>();
+
+  @Default
+  private List<GameItemStateResponseDTO> items = new ArrayList<>();
+
+  @Default
+  private List<GameActionLogResponseDTO> actions = new ArrayList<>();
 }

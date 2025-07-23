@@ -2,12 +2,12 @@ package com.larplaner.mapper.action;
 
 import com.larplaner.dto.action.ActionRequestDTO;
 import com.larplaner.dto.action.ActionResponseDTO;
-import com.larplaner.dto.action.UpdateActionRequestDTO;
 import com.larplaner.mapper.common.MapperHelper;
 import com.larplaner.mapper.tag.TagMapper;
 import com.larplaner.model.action.Action;
 import com.larplaner.model.tag.Tag;
 import com.larplaner.service.tag.helper.TagHelper;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -40,6 +40,10 @@ public class ActionMapper {
             MapperHelper.mapTagsToDTOs(action.getRequiredTagsToDisplay(), tagMapper))
         .requiredTagsToSucceed(
             MapperHelper.mapTagsToDTOs(action.getRequiredTagsToSucceed(), tagMapper))
+        .forbiddenTagsToDisplay(
+            MapperHelper.mapTagsToDTOs(action.getForbiddenTagsToDisplay(), tagMapper))
+        .forbiddenTagsToSucceed(
+            MapperHelper.mapTagsToDTOs(action.getForbiddenTagsToSucceed(), tagMapper))
         .tagsToApplyOnSuccess(
             MapperHelper.mapTagsToDTOs(action.getTagsToApplyOnSuccess(), tagMapper))
         .tagsToApplyOnFailure(
@@ -67,7 +71,8 @@ public class ActionMapper {
         .messageOnFailure(dto.getMessageOnFailure())
         .requiredTagsToDisplay(tagHelper.processTags(dto.getRequiredTagsToDisplay()))
         .requiredTagsToSucceed(tagHelper.processTags(dto.getRequiredTagsToSucceed()))
-        .tagsToApplyOnSuccess(tagHelper.processTags(dto.getTagsToApplyOnSuccess()))
+        .forbiddenTagsToDisplay(tagHelper.processTags(dto.getForbiddenTagsToDisplay()))
+        .forbiddenTagsToSucceed(tagHelper.processTags(dto.getForbiddenTagsToSucceed()))
         .tagsToApplyOnFailure(tagHelper.processTags(dto.getTagsToApplyOnFailure()))
         .tagsToRemoveOnSuccess(tagHelper.processTags(dto.getTagsToRemoveOnSuccess()))
         .tagsToRemoveOnFailure(tagHelper.processTags(dto.getTagsToRemoveOnFailure()))
@@ -95,12 +100,14 @@ public class ActionMapper {
     if (dto.getMessageOnFailure() != null) {
       entity.setMessageOnFailure(dto.getMessageOnFailure());
     }
+    updateIfNotEmpty(dto::getRequiredTagsToDisplay, entity::setRequiredTagsToDisplay);
+    updateIfNotEmpty(dto::getRequiredTagsToSucceed, entity::setRequiredTagsToSucceed);
+    updateIfNotEmpty(dto::getForbiddenTagsToDisplay, entity::setForbiddenTagsToDisplay);
+    updateIfNotEmpty(dto::getForbiddenTagsToSucceed, entity::setForbiddenTagsToSucceed);
     updateIfNotEmpty(dto::getTagsToApplyOnFailure, entity::setTagsToApplyOnFailure);
     updateIfNotEmpty(dto::getTagsToApplyOnSuccess, entity::setTagsToApplyOnSuccess);
     updateIfNotEmpty(dto::getTagsToRemoveOnSuccess, entity::setTagsToRemoveOnSuccess);
     updateIfNotEmpty(dto::getTagsToRemoveOnFailure, entity::setTagsToRemoveOnFailure);
-    updateIfNotEmpty(dto::getRequiredTagsToSucceed, entity::setRequiredTagsToSucceed);
-    updateIfNotEmpty(dto::getRequiredTagsToDisplay, entity::setRequiredTagsToDisplay);
 
   }
 
@@ -108,6 +115,7 @@ public class ActionMapper {
       Supplier<List<UUID>> idSupplier,
       Consumer<List<Tag>> entityConsumer) {
     if (idSupplier.get() == null || idSupplier.get().isEmpty()) {
+      entityConsumer.accept(new ArrayList<>());
       return;
     }
 

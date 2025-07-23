@@ -1,5 +1,6 @@
 package com.larplaner.repository.event;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,4 +13,6 @@ import com.larplaner.model.event.Event;
 public interface EventRepository extends JpaRepository<Event, UUID> {
 
   Optional<Event> findByScenarioId(UUID id);
+
+  List<Event> findAllByAssignedRoles_AssignedEmail(String email);
 }

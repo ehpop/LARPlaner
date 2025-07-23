@@ -3,6 +3,7 @@ package com.larplaner.service.tag.helper;
 import com.larplaner.mapper.tag.TagMapper;
 import com.larplaner.model.tag.Tag;
 import com.larplaner.repository.tag.TagRepository;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +20,7 @@ public class TagHelper {
 
   public List<Tag> processTags(List<UUID> tagIds) {
     if (tagIds == null || tagIds.isEmpty()) {
-      return Collections.emptyList();
+      return new ArrayList<>();
     }
 
     return tagRepository.findAllById(tagIds);

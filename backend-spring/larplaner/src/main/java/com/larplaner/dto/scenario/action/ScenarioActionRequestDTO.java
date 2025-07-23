@@ -27,6 +27,8 @@ public class ScenarioActionRequestDTO extends ActionRequestDTO {
     this.setMessageOnFailure(actionDto.getMessageOnFailure());
     this.setRequiredTagsToDisplay(actionDto.getRequiredTagsToDisplay());
     this.setRequiredTagsToSucceed(actionDto.getRequiredTagsToSucceed());
+    this.setForbiddenTagsToDisplay(actionDto.getForbiddenTagsToDisplay());
+    this.setForbiddenTagsToSucceed(actionDto.getForbiddenTagsToSucceed());
     this.setTagsToApplyOnSuccess(actionDto.getTagsToApplyOnSuccess());
     this.setTagsToApplyOnFailure(actionDto.getTagsToApplyOnFailure());
     this.setTagsToRemoveOnSuccess(actionDto.getTagsToRemoveOnSuccess());

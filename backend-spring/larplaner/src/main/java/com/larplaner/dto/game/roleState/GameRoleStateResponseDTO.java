@@ -2,6 +2,7 @@ package com.larplaner.dto.game.roleState;
 
 import com.larplaner.dto.BaseResponseDTO;
 import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
+import com.larplaner.dto.tag.AppliedTagResponseDTO;
 import com.larplaner.dto.tag.TagResponseDTO;
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +22,6 @@ public class GameRoleStateResponseDTO extends BaseResponseDTO {
   private UUID scenarioRoleId;
   private String assignedEmail;
   private String assignedUserID;
-  private List<TagResponseDTO> activeTags;
+  private List<AppliedTagResponseDTO> appliedTags;
   private List<GameActionLogResponseDTO> actionHistory;
 }
