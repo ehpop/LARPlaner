@@ -28,7 +28,7 @@ public class EventMapper {
         .name(event.getName())
         .description(event.getDescription())
         .img(event.getImg())
-        .status(event.getStatus().name().toLowerCase())
+        .status(event.getStatus().toString())
         .date(event.getDate())
         .scenarioId(event.getScenario().getId())
         .gameSessionId(event.getGameSession() != null ? event.getGameSession().getId() : null)

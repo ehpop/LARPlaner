@@ -6,6 +6,7 @@ import com.larplaner.dto.event.EventUpdateRequestDTO;
 import com.larplaner.dto.event.assignedRole.AssignedRoleUpdateRequestDTO;
 import com.larplaner.exception.EntityCouldNotBeAdded;
 import com.larplaner.exception.EntityCouldNotBeDeleted;
+import com.larplaner.exception.EntityCouldNotBeEdited;
 import com.larplaner.exception.event.status.EventStatusCouldNotBeChanged;
 import com.larplaner.mapper.event.AssignedRoleMapper;
 import com.larplaner.mapper.event.EventMapper;
@@ -81,10 +82,13 @@ public class EventServiceImpl implements EventService {
     }
 
     Event event = eventRepository.getReferenceById(id);
+
+    if(!EventStatusEnum.UPCOMING.equals(event.getStatus())){
+      throw new EntityCouldNotBeEdited("Event can not be edited because it isn't in status: " + EventStatusEnum.UPCOMING);
+    }
+
     eventMapper.updateEntityFromDTO(eventDTO, event);
-
     updateAssignedRoles(event, eventDTO);
-
     return eventMapper.toDTO(eventRepository.save(event));
   }
 
