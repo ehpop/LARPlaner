@@ -33,7 +33,7 @@ export const useTag = TagsHooks.useGetById;
 export const useCreateTag = TagsHooks.useCreate;
 export const useUpdateTag = TagsHooks.useUpdate;
 export const useDeleteTag = TagsHooks.useDelete;
-export const TagsQueryKeys = TagsHooks.queryKeys;
+export const tagsQueryKeys = TagsHooks.queryKeys;
 
 export const useCreateAllTags = (): UseMutationResult<
   ITag[],
@@ -53,7 +53,7 @@ export const useCreateAllTags = (): UseMutationResult<
       return data.map((dto) => convertGetDtoToTag(dto));
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: TagsQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: tagsQueryKeys.all });
     },
   });
 };

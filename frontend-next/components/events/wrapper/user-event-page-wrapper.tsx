@@ -6,11 +6,9 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import useUserEventData from "@/hooks/use-user-data";
 import LoadingOverlay from "@/components/common/loading-overlay";
-import { IEvent } from "@/types/event.types";
+import { IEvent, IEventStatus } from "@/types/event.types";
 import { IScenario, IScenarioRole } from "@/types/scenario.types";
 import { IRole } from "@/types/roles.types";
-
-type EventStatus = "upcoming" | "active" | "historic";
 
 interface UserEventData {
   event: IEvent;
@@ -21,7 +19,7 @@ interface UserEventData {
 
 interface UserEventPageWrapperProps {
   params: any;
-  expectedStatus: EventStatus;
+  expectedStatus: IEventStatus;
   children: (data: UserEventData) => React.ReactNode;
 }
 
@@ -37,7 +35,7 @@ const UserEventPageWrapper = ({
   const intl = useIntl();
 
   const { event, scenario, userRole, userScenarioRole, loading } =
-    useUserEventData({ id: eventId });
+    useUserEventData(eventId);
 
   const allDataLoaded = event && scenario && userRole && userScenarioRole;
 

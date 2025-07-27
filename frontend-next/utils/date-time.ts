@@ -8,6 +8,8 @@ import {
 
 import { IAppliedTag } from "@/types/tags.types";
 
+export const MINUTE = 1000 * 60;
+
 export const setTimeOnDate = (
   date: ZonedDateTime,
   time: string,

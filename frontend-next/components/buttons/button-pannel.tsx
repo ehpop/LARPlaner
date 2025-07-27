@@ -5,6 +5,7 @@ export const ButtonPanel = ({
   isBeingEdited,
   isSaveButtonTypeSubmit,
   isSaveDisabled,
+  isEditDisabled = false,
   onEditClicked,
   onCancelEditClicked,
   onDeleteClicked,
@@ -12,6 +13,7 @@ export const ButtonPanel = ({
   isBeingEdited: boolean;
   isSaveButtonTypeSubmit: boolean;
   isSaveDisabled: boolean;
+  isEditDisabled?: boolean;
   onEditClicked: () => void;
   onCancelEditClicked: () => void;
   onDeleteClicked: () => void;
@@ -42,7 +44,12 @@ export const ButtonPanel = ({
       >
         <FormattedMessage defaultMessage="Delete" id="role.display.delete" />
       </Button>
-      <Button color="warning" size="lg" onPress={() => onEditClicked()}>
+      <Button
+        color="warning"
+        isDisabled={isEditDisabled}
+        size="lg"
+        onPress={() => onEditClicked()}
+      >
         <FormattedMessage defaultMessage="Edit" id="role.display.edit" />
       </Button>
     </div>

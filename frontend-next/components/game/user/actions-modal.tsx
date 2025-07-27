@@ -27,7 +27,7 @@ const ActionsModal = ({ game }: { game: IGameSession }) => {
     userRole,
     userScenarioRole,
     loading: isLoadingUserData,
-  } = useUserEventData({ id: game.eventId || "" });
+  } = useUserEventData(game.eventId);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 

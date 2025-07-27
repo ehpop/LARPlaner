@@ -1,53 +1,22 @@
-import { useCallback, useEffect, useState } from "react";
-
 import { IGameRoleState } from "@/types/game.types";
-import { IAction, IScenarioItem } from "@/types/scenario.types";
-import gameService from "@/services/game.service";
+import { IScenarioItem } from "@/types/scenario.types";
+import { useAvailableItemActionsForUser } from "@/services/game/useGames";
 
 export const useAvailableItemActions = (
-  userId: IGameRoleState["id"],
-  itemId: IScenarioItem["id"],
+  userId: IGameRoleState["id"] | undefined,
+  itemId: IScenarioItem["id"] | undefined,
 ) => {
-  const [actions, setActions] = useState<IAction[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchItemActions = useCallback(async () => {
-    if (!userId || !itemId) {
-      setActions([]);
-
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await gameService.getAvailableItemActionsForUser(
-        userId,
-        itemId,
-      );
-
-      if (res.success) {
-        setActions(res.data);
-      } else {
-        setError(res.data || "Failed to fetch item actions.");
-      }
-    } catch (err) {
-      setError(err as string);
-      setActions([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userId, itemId]);
-
-  useEffect(() => {
-    fetchItemActions();
-  }, [fetchItemActions]);
-
-  return {
-    actions,
+  const {
+    data: actions,
     isLoading,
     error,
-    refetch: fetchItemActions,
+    refetch,
+  } = useAvailableItemActionsForUser(userId, itemId);
+
+  return {
+    actions: actions || [],
+    isLoading,
+    error: error ? error.message : null,
+    refetch,
   };
 };

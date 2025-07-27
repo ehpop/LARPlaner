@@ -4,9 +4,9 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { QrModal } from "@/components/common/qr-modal";
 import ActionsListForm from "@/components/scenarios/actions-list-form";
-import { emptyScenarioItem } from "@/services/mock/mock-data";
 import { IScenario } from "@/types/scenario.types";
 import HidableSection from "@/components/common/hidable-section";
+import { emptyScenarioItem } from "@/types/initial-types";
 
 interface ItemFormProps {
   control: Control<IScenario>;

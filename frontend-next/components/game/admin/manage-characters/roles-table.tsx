@@ -24,10 +24,9 @@ import { IEvent } from "@/types/event.types";
 interface RolesTableProps {
   game: IGameSession;
   event: IEvent;
-  onGameUpdate: (updatedGame: IGameSession) => void;
 }
 
-export const RolesTable = ({ game, event, onGameUpdate }: RolesTableProps) => {
+export const RolesTable = ({ game, event }: RolesTableProps) => {
   const intl = useIntl();
   const router = useRouter();
 
@@ -36,8 +35,7 @@ export const RolesTable = ({ game, event, onGameUpdate }: RolesTableProps) => {
   const handleEdit = (role: IGameRoleState) => setRoleToEdit(role);
   const handleCloseModal = () => setRoleToEdit(null);
 
-  const handleSaveSuccess = (updatedGame: IGameSession) => {
-    onGameUpdate(updatedGame);
+  const handleSaveSuccess = () => {
     handleCloseModal();
   };
 
@@ -107,12 +105,23 @@ export const RolesTable = ({ game, event, onGameUpdate }: RolesTableProps) => {
                         );
                     }}
                   >
-                    <DropdownSection title="Role Actions">
+                    <DropdownSection
+                      title={intl.formatMessage({
+                        id: "rolesTable.actions.title",
+                        defaultMessage: "Role Actions",
+                      })}
+                    >
                       <DropdownItem key="role-tags">
-                        Edit Role Tags
+                        <FormattedMessage
+                          defaultMessage="Edit Role Tags"
+                          id="rolesTable.actions.editTags"
+                        />
                       </DropdownItem>
                       <DropdownItem key="message-player">
-                        Message Player
+                        <FormattedMessage
+                          defaultMessage="Message Player"
+                          id="rolesTable.actions.messagePlayer"
+                        />
                       </DropdownItem>
                     </DropdownSection>
                   </DropdownMenu>

@@ -16,7 +16,7 @@ const ActiveEventChatPage = ({ params }: any) => {
   const intl = useIntl();
   const chatId = `${eventId}-${auth.user?.uid}`;
 
-  const { loading, userRole } = useUserEventData({ id: eventId });
+  const { loading, userRole } = useUserEventData(eventId);
 
   return (
     <LoadingOverlay

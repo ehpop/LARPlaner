@@ -2,17 +2,18 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import useEvent from "@/hooks/event/use-event";
+import useEventAndScenario from "@/hooks/event/use-event";
 import LoadingOverlay from "@/components/common/loading-overlay";
-import { IEvent } from "@/types/event.types";
-import { IScenario } from "@/types/scenario.types";
-
-type EventStatus = "upcoming" | "active" | "historic";
+import { IEventPersisted, IEventStatus } from "@/types/event.types";
+import { IScenarioPersisted } from "@/types/scenario.types";
 
 interface EventPageWrapperProps {
   params: any;
-  expectedStatus: EventStatus;
-  children: (data: { event: IEvent; scenario: IScenario }) => React.ReactNode;
+  expectedStatus: IEventStatus;
+  children: (data: {
+    event: IEventPersisted;
+    scenario: IScenarioPersisted;
+  }) => React.ReactNode;
 }
 
 const EventPageWrapper = ({
@@ -25,9 +26,9 @@ const EventPageWrapper = ({
 
   const router = useRouter();
   const intl = useIntl();
-  const { event, scenario, loading } = useEvent(eventId);
+  const { event, scenario, loading } = useEventAndScenario(eventId);
 
-  const isDataReady = event && scenario;
+  const isDataReady = event && scenario && !loading;
   const isStatusCorrect = isDataReady && event.status === expectedStatus;
 
   useEffect(() => {
@@ -41,8 +42,8 @@ const EventPageWrapper = ({
       <LoadingOverlay
         isLoading={loading}
         label={intl.formatMessage({
-          id: "events.page.loading",
-          defaultMessage: "Loading event...",
+          id: "events.page.wrapper.error",
+          defaultMessage: "Loading event and scenario...",
         })}
       >
         {isStatusCorrect ? (

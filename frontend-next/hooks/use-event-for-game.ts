@@ -1,104 +1,25 @@
-import { useEffect, useState } from "react";
-import { useIntl } from "react-intl";
-
-import { showErrorMessage } from "@/hooks/utils";
-import eventsService from "@/services/events.service";
-import scenariosService from "@/services/scenarios.service";
-import { IEvent } from "@/types/event.types";
-import { IScenario } from "@/types/scenario.types";
+import { useEventForGameId } from "@/services/events/useEvents";
+import useEventAndScenario from "@/hooks/event/use-event";
 
 /**
  * Hook for getting event and scenario data for a specific game session
  */
 const useEventForGame = ({ gameId }: { gameId: string }) => {
-  const intl = useIntl();
-  const [event, setEvent] = useState<IEvent | null>(null);
-  const [scenario, setScenario] = useState<IScenario | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: eventData,
+    isLoading: isEventLoading,
+    error: eventError,
+  } = useEventForGameId(gameId);
 
-  useEffect(() => {
-    const loadEventData = async () => {
-      if (!gameId) {
-        setError(
-          intl.formatMessage({
-            id: "hooks.useEventForGame.error.noGameId",
-            defaultMessage: "No game ID provided.",
-          }),
-        );
-        setLoading(false);
+  const {
+    event,
+    scenario,
+    loading: isEventAndScenarioLoading,
+  } = useEventAndScenario(eventData?.id);
 
-        return;
-      }
+  const loading = isEventLoading || isEventAndScenarioLoading;
 
-      try {
-        const response = await eventsService.getByGameId(gameId);
-
-        if (!response.success) {
-          const errorMessage = intl.formatMessage({
-            id: "hooks.useEventForGame.error.failedToLoadEventData",
-            defaultMessage: "Failed to load event data",
-          });
-
-          setError(errorMessage);
-          showErrorMessage(errorMessage);
-
-          return;
-        }
-
-        setEvent(response.data);
-
-        const scenarioId = response.data.scenarioId;
-
-        if (!scenarioId) {
-          const errorMessage = intl.formatMessage({
-            id: "hooks.useEventForGame.error.failedToLoadScenarioData",
-            defaultMessage: "Failed to load scenario data",
-          });
-
-          setError(errorMessage);
-          showErrorMessage(errorMessage);
-
-          return;
-        }
-
-        const scenarioResponse = await scenariosService.getById(
-          scenarioId as string,
-        );
-
-        if (!scenarioResponse.success) {
-          const errorMessage = intl.formatMessage({
-            id: "hooks.useEventForGame.error.failedToLoadScenarioData",
-            defaultMessage: "Failed to load scenario data",
-          });
-
-          setError(errorMessage);
-          showErrorMessage(errorMessage);
-        }
-
-        setScenario(scenarioResponse.data as IScenario);
-      } catch (err) {
-        const errorMessage = intl.formatMessage({
-          id: "hooks.useEventForGame.error.failedToLoadEventData",
-          defaultMessage: "Failed to load event data",
-        });
-
-        setError(errorMessage);
-        showErrorMessage(
-          err instanceof Error
-            ? err.message
-            : intl.formatMessage({
-                id: "hooks.use-event-for-game.failed.to.load.event.data",
-                defaultMessage: "Failed to load event data",
-              }),
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadEventData().then(() => {});
-  }, [gameId, intl]);
+  const error = eventError ? eventError.message : null;
 
   return { event, scenario, loading, error };
 };

@@ -12,8 +12,8 @@ import {
 
 import { IGameSession } from "@/types/game.types";
 import { IEvent } from "@/types/event.types";
-import useGame from "@/hooks/use-game";
 import { RolesTable } from "@/components/game/admin/manage-characters/roles-table";
+import { useGameSession } from "@/services/game/useGames";
 
 const ManageCharacters = ({
   gameId,
@@ -23,7 +23,7 @@ const ManageCharacters = ({
   event: IEvent;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { game, loading, error, setGame } = useGame(gameId);
+  const { data: game, isLoading, isError, error } = useGameSession(gameId);
 
   return (
     <>
@@ -52,22 +52,18 @@ const ManageCharacters = ({
                 />
               </ModalHeader>
               <ModalBody>
-                {loading && <Spinner label="Loading game data..." />}
-                {error && !loading && (
+                {isLoading && <Spinner label="isLoading game data..." />}
+                {isError && !isLoading && (
                   <p className="text-danger">
                     <FormattedMessage
                       defaultMessage="Error: {error}"
                       id="game.manageCharacters.error"
-                      values={{ error }}
+                      values={{ error: error?.message }}
                     />
                   </p>
                 )}
-                {!loading && !error && game && (
-                  <RolesTable
-                    event={event}
-                    game={game}
-                    onGameUpdate={setGame}
-                  />
+                {!isLoading && !error && game && (
+                  <RolesTable event={event} game={game} />
                 )}
               </ModalBody>
               <ModalFooter>

@@ -15,19 +15,20 @@ import { CardBody, CardHeader } from "@heroui/card";
 import React from "react";
 import { useRouter } from "next/navigation";
 
-import { IEvent } from "@/types/event.types";
-import { IScenario } from "@/types/scenario.types";
+import { IEvent, IEventPersisted } from "@/types/event.types";
+import { IScenario, IScenarioPersisted } from "@/types/scenario.types";
 import { IRole } from "@/types/roles.types";
-import eventsService from "@/services/events.service";
 import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
 import DownloadAllItemsQrCodes from "@/components/scenarios/download-all-items-qr-codes";
 import EventPageWrapper from "@/components/events/wrapper/event-page-wrapper";
-import useAllRoles from "@/hooks/roles/use-all-roles";
-import useAllUserEmails from "@/hooks/admin/use-all-user-emails";
 import LoadingOverlay from "@/components/common/loading-overlay";
+import { useRoles } from "@/services/roles/useRoles";
+import { useUpdateEventStatus } from "@/services/events/useEvents";
+import { useAllUserEmails } from "@/services/admin/useUsers";
+import { getErrorMessage } from "@/utils/error";
 
 const UpcomingEventAdminPage = ({ params }: any) => {
   return (
@@ -43,20 +44,21 @@ const UpcomingEventContent = ({
   event,
   scenario,
 }: {
-  event: IEvent;
-  scenario: IScenario;
+  event: IEventPersisted;
+  scenario: IScenarioPersisted;
 }) => {
   const intl = useIntl();
   const router = useRouter();
 
-  const { roles, loading: loadingRoles } = useAllRoles();
-  const { emails, isLoading: loadingEmails } = useAllUserEmails();
+  const { data: roles, isLoading: loadingRoles, isError, error } = useRoles();
+  const updateEventStatus = useUpdateEventStatus();
+  const { data: emails, isLoading: loadingEmails } = useAllUserEmails();
 
   const handleStartEvent = () => {
-    eventsService
-      .updateEventStatus(event.id, "active")
-      .then((res) => {
-        if (res.success) {
+    updateEventStatus.mutate(
+      { id: event.id, status: "active" },
+      {
+        onSuccess: () => {
           showSuccessToastWithTimeout(
             intl.formatMessage({
               id: "components.events.events-display-admin.successfully-transitioned-to-active",
@@ -64,24 +66,35 @@ const UpcomingEventContent = ({
             }),
           );
           router.push(`/admin/events/${event.id}/active`);
-        } else {
-          showErrorToastWithTimeout(res.data);
-        }
-      })
-      .catch((error) => showErrorToastWithTimeout(error));
+        },
+        onError: (error) => {
+          showErrorToastWithTimeout(getErrorMessage(error));
+        },
+      },
+    );
   };
 
   const emailSet: Set<string> = new Set(emails);
 
+  if (isError) {
+    return (
+      <div className="w-full flex justify-center">
+        <p className="text-danger">{error?.message}</p>
+      </div>
+    );
+  }
+
   return (
     <LoadingOverlay isLoading={loadingRoles || loadingEmails}>
-      <UpcomingEventAdminDisplay
-        emails={emailSet}
-        event={event}
-        roles={roles}
-        scenario={scenario}
-        onStartEvent={handleStartEvent}
-      />
+      {roles && (
+        <UpcomingEventAdminDisplay
+          emails={emailSet}
+          event={event}
+          roles={roles}
+          scenario={scenario}
+          onStartEvent={handleStartEvent}
+        />
+      )}
     </LoadingOverlay>
   );
 };

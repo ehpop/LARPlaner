@@ -16,7 +16,7 @@ import {
   ZonedDateTime,
 } from "@internationalized/date";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -24,10 +24,7 @@ import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import EventAssignRolesForm from "@/components/events/event-assign-roles-form";
 import LoadingOverlay from "@/components/common/loading-overlay";
-import { emptyEvent } from "@/services/mock/mock-data";
-import scenariosService from "@/services/scenarios.service";
 import { IEvent, IEventPersisted } from "@/types/event.types";
-import { IScenario } from "@/types/scenario.types";
 import { isValidEventDate, setTimeOnDate } from "@/utils/date-time";
 import {
   showErrorToastWithTimeout,
@@ -39,18 +36,30 @@ import {
   useDeleteEvent,
   useUpdateEvent,
 } from "@/services/events/useEvents";
+import { useScenarios } from "@/services/scenarios/useScenarios";
+import { emptyEvent } from "@/types/initial-types";
+import { getErrorMessage } from "@/utils/error";
 
 export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const intl = useIntl();
   const router = useRouter();
   const isNewEvent = !initialEvent;
 
-  const [selectedScenario, setSelectedScenario] = useState<
-    IScenario | undefined
-  >(undefined);
+  const {
+    data: allScenarios,
+    isLoading,
+    isError: isErrorScenarios,
+    error: errorScenarios,
+  } = useScenarios();
+  const createEventMutation = useCreateEvent();
+  const updateEventMutation = useUpdateEvent();
+  const deleteEventMutation = useDeleteEvent();
+
+  const isSaving =
+    createEventMutation.isPending || updateEventMutation.isPending;
+  const isDeleting = deleteEventMutation.isPending;
+
   const [isBeingEdited, setIsBeingEdited] = useState(isNewEvent);
-  const [isLoading, setIsLoading] = useState(true);
-  const [allScenarios, setAllScenarios] = useState<IScenario[]>([]);
   const [lastSavedEvent, setLastSavedEvent] = useState(initialEvent);
 
   const {
@@ -67,44 +76,21 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const watchedName = watch("name");
   const watchedScenarioId = watch("scenarioId");
 
-  const createEventMutation = useCreateEvent();
-  const updateEventMutation = useUpdateEvent();
-  const deleteEventMutation = useDeleteEvent();
-
-  const isSaving =
-    createEventMutation.isPending || updateEventMutation.isPending;
-  const isDeleting = deleteEventMutation.isPending;
-
-  useEffect(() => {
-    setIsLoading(true);
-    scenariosService
-      .getAll()
-      .then((res) => {
-        if (res.success) {
-          setAllScenarios(res.data);
-          if (watchedScenarioId) {
-            const foundScenario = res.data.find(
-              (s) => s.id === watchedScenarioId,
-            );
-
-            setSelectedScenario(foundScenario);
-          }
-        }
-      })
-      .catch((error) => showErrorToastWithTimeout(error))
-      .finally(() => setIsLoading(false));
-  }, []);
+  const selectedScenario = useMemo(() => {
+    return allScenarios?.find((scenario) => scenario.id === watchedScenarioId);
+  }, [allScenarios, watchedScenarioId]);
 
   const onSubmit = (data: IEvent) => {
     if (isNewEvent) {
-      //TODO: Assert that data has scenarioID
+      //TODO: If we create event, types inside scenario should not be required to be persisted yet
+      // @ts-ignore
       createEventMutation.mutate(data, {
         onSuccess: () => {
           showSuccessToastWithTimeout("Event created successfully");
           router.push("/admin/events");
         },
         onError: (error) => {
-          showErrorToastWithTimeout(error.message);
+          showErrorToastWithTimeout(getErrorMessage(error));
         },
       });
     } else {
@@ -116,7 +102,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
           setLastSavedEvent(updatedEvent);
         },
         onError: (error) => {
-          showErrorToastWithTimeout(error.message);
+          showErrorToastWithTimeout(getErrorMessage(error));
         },
       });
     }
@@ -133,10 +119,10 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
     deleteEventMutation.mutate(lastSavedEvent.id, {
       onSuccess: () => {
         showSuccessToastWithTimeout("Event deleted successfully");
-        router.push("/admin/roles");
+        router.push("/admin/events");
       },
       onError: (error) => {
-        showErrorToastWithTimeout(error.message);
+        showErrorToastWithTimeout(getErrorMessage(error));
       },
     });
   };
@@ -151,6 +137,14 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
     isOpen: isOpenCancel,
     onOpenChange: onOpenChangeCancel,
   } = useDisclosure();
+
+  if (isErrorScenarios || !allScenarios) {
+    return (
+      <div className="w-full flex justify-center">
+        <p className="text-danger">{errorScenarios?.message}</p>
+      </div>
+    );
+  }
 
   const form = (
     <form
@@ -307,9 +301,9 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
                 selectedKeys={field.value ? [field.value] : []}
                 size="lg"
                 variant="underlined"
-                onSelectionChange={async (key) => {
-                  if (!key) return;
-                  const scenarioId = key.anchorKey;
+                onSelectionChange={(key) => {
+                  if (!key || typeof key === "string") return;
+                  const scenarioId = key.anchorKey as string;
 
                   field.onChange(scenarioId);
 
@@ -318,7 +312,6 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
                   );
 
                   if (scenario) {
-                    setSelectedScenario(scenario);
                     setValue(
                       "assignedRoles",
                       scenario.roles.map((role) => ({
@@ -400,6 +393,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
           <div className="w-full flex justify-end">
             <ButtonPanel
               isBeingEdited={isBeingEdited}
+              isEditDisabled={initialEvent.status !== "upcoming"}
               isSaveButtonTypeSubmit={true}
               isSaveDisabled={!isDirty || isSaving}
               onCancelEditClicked={onOpenCancel}

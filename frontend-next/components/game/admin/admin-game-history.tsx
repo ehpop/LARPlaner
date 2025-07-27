@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Button,
   getKeyValue,
@@ -18,7 +18,7 @@ import {
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { IGameActionLog, IGameSession } from "@/types/game.types";
-import gameService from "@/services/game.service";
+import { useGameHistory } from "@/services/game/useGames";
 
 interface GameHistoryElementProps {
   gameHistory: IGameActionLog[];
@@ -135,38 +135,13 @@ interface AdminGameHistoryProps {
 
 const AdminGameHistory = ({ game }: AdminGameHistoryProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [gameHistory, setGameHistory] = useState<IGameActionLog[]>([]);
-  const [isLoading, setIsLoading] = useState(false); // Added loading state
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isModalOpen) {
-      return;
-    }
-
-    const fetchHistory = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await gameService.getGameHistoryByGameId(game.id);
-
-        if (response.success) {
-          setGameHistory(response.data);
-        } else {
-          setError(response.data);
-          setGameHistory([]);
-        }
-      } catch (err) {
-        setError("Failed to load game history. Please try again.");
-        setGameHistory([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchHistory().then(() => {});
-  }, [isModalOpen, game.id]);
+  const {
+    data: gameHistory,
+    isLoading,
+    isError,
+    error,
+  } = useGameHistory(game.id);
 
   const handleOpenChange = (isOpen: boolean) => {
     setIsModalOpen(isOpen);
@@ -176,19 +151,19 @@ const AdminGameHistory = ({ game }: AdminGameHistoryProps) => {
     if (isLoading) {
       return <Spinner label="Loading history..." />;
     }
-    if (error) {
+    if (isError) {
       return (
-        <p style={{ color: "red" }}>
+        <p className="text-danger">
           <FormattedMessage
             defaultMessage="Error: {errorMessage}"
             id="adminGameHistory.error"
-            values={{ errorMessage: error }}
+            values={{ errorMessage: error?.message }}
           />
         </p>
       );
     }
 
-    return <GameHistoryElement gameHistory={gameHistory} />;
+    return gameHistory && <GameHistoryElement gameHistory={gameHistory} />;
   };
 
   return (

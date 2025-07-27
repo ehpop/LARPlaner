@@ -17,7 +17,7 @@ export default function ScenarioDisplayPage({ params }: any) {
   if (isError) {
     return (
       <div className="w-full flex justify-center">
-        <p>{error?.message}</p>
+        <p className="text-danger">{error?.message}</p>
       </div>
     );
   }

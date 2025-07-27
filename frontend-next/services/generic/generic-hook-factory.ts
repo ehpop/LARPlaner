@@ -14,12 +14,16 @@ import {
   genericGetById,
   genericUpdate,
 } from "@/services/generic/generic.service";
+import { MINUTE } from "@/utils/date-time";
 
 type EntityWithId = { id: string };
+
+const DEFAULT_STALE_TIME = 90 * MINUTE;
 
 interface CrudHookConfig<E extends EntityWithId, G, P>
   extends CrudApiConfig<E, G, P> {
   entityName: string;
+  staleTime?: number;
 }
 
 export function createCrudHooks<E extends EntityWithId, G, P>(
@@ -39,6 +43,7 @@ export function createCrudHooks<E extends EntityWithId, G, P>(
     return useQuery({
       queryKey: queryKeys.all,
       queryFn: () => genericGetAll(config),
+      staleTime: config.staleTime || DEFAULT_STALE_TIME,
     });
   };
 
@@ -47,6 +52,7 @@ export function createCrudHooks<E extends EntityWithId, G, P>(
       queryKey: queryKeys.detail(id!),
       queryFn: () => genericGetById(id as string, config),
       enabled: !!id,
+      staleTime: config.staleTime || DEFAULT_STALE_TIME,
     });
   };
 

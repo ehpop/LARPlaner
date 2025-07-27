@@ -5,31 +5,39 @@ import { Card } from "@heroui/react";
 import { CardBody, CardHeader } from "@heroui/card";
 import React from "react";
 
-import LoadingOverlay from "@/components/common/loading-overlay";
 import { IGameSession } from "@/types/game.types";
-import useGame from "@/hooks/use-game";
-import useEvent from "@/hooks/event/use-event";
+import useEventAndScenario from "@/hooks/event/use-event";
 import QrItemScanner from "@/components/game/user/qr-item-scanner";
 import MyCharacterModal from "@/components/game/user/my-character-modal";
 import ActionsModal from "@/components/game/user/actions-modal";
 import UserGameHistory from "@/components/game/user/user-game-history";
+import LoadingOverlay from "@/components/common/loading-overlay";
+import { useGameSession } from "@/services/game/useGames";
 
 const ActiveGamePage = ({ params }: any) => {
   const resolvedParams = React.use(params) as { id: string };
   const gameId = resolvedParams.id;
 
   const intl = useIntl();
-  const { game, loading } = useGame(gameId);
+  const { data: game, isLoading, isError, error } = useGameSession(gameId);
 
-  const allDataLoaded = game && !loading;
+  const allDataLoaded = game && !isLoading;
+
+  if (isError) {
+    return (
+      <div className="w-full flex justify-center">
+        <p className="text-danger">{error?.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen flex justify-center">
       <LoadingOverlay
-        isLoading={loading}
+        isLoading={isLoading}
         label={intl.formatMessage({
           defaultMessage: "Loading game data...",
-          id: "game.id.page.display.loading",
+          id: "game.id.page.display.isLoading",
         })}
       >
         {allDataLoaded ? (
@@ -50,7 +58,7 @@ const ActiveGamePage = ({ params }: any) => {
 export default ActiveGamePage;
 
 const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
-  const { event, scenario, loading } = useEvent(game.eventId || "");
+  const { event, scenario, loading } = useEventAndScenario(game.eventId);
 
   const allDataLoaded = event && scenario && !loading;
 

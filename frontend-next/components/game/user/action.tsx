@@ -9,15 +9,16 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { useState } from "react";
 
 import { IScenarioAction, IScenarioItemAction } from "@/types/scenario.types";
 import { IGameSession } from "@/types/game.types";
 import { useAuth } from "@/providers/firebase-provider";
-import gameService from "@/services/game.service";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import { showErrorToastWithTimeout } from "@/utils/toast";
+import { usePerformAction } from "@/services/game/useGames";
+import { getErrorMessage } from "@/utils/error";
 
 const Action = ({
   game,
@@ -29,42 +30,47 @@ const Action = ({
   afterActionPerformed?: () => void;
 }) => {
   const auth = useAuth();
+  const intl = useIntl();
   const [isActionResultModalOpen, setIsActionResultModalOpen] = useState(false);
   const [actionResultMessage, setActionResultMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(auth.loading);
 
   const userRole = game.assignedRoles.find(
     (ar) => ar.assignedUserID === auth.user?.uid,
   );
 
-  const performAction = (action: IScenarioAction | IScenarioItemAction) => {
-    setIsLoading(true);
+  const { mutate: performAction, isPending } = usePerformAction();
+
+  const handlePerformAction = () => {
     if (!userRole) {
-      setIsActionResultModalOpen(true);
-      setActionResultMessage("Something went wrong");
-      setIsLoading(false);
+      showErrorToastWithTimeout(
+        intl.formatMessage({
+          id: "action.userRoleNotFound",
+          defaultMessage: "Something went wrong: user role not found.",
+        }),
+      );
 
       return;
     }
 
-    gameService
-      .performAction(game.id, {
-        actionId: action.id,
-        performerRoleId: userRole?.scenarioRoleId,
-        targetItemId: "itemId" in action ? action?.itemId : undefined,
-      })
-      .then((res) => {
-        if (res.success) {
+    performAction(
+      {
+        id: game.id,
+        actionRequest: {
+          actionId: action.id,
+          performerRoleId: userRole.scenarioRoleId,
+          targetItemId: "itemId" in action ? action.itemId : undefined,
+        },
+      },
+      {
+        onSuccess: (data) => {
           setIsActionResultModalOpen(true);
-          setActionResultMessage(res.data.message);
-        } else {
-          showErrorToastWithTimeout(res.data);
-        }
-      })
-      .catch((error) => showErrorToastWithTimeout(error))
-      .finally(() => {
-        setIsLoading(false);
-      });
+          setActionResultMessage(data.message);
+        },
+        onError: (error) => {
+          showErrorToastWithTimeout(getErrorMessage(error));
+        },
+      },
+    );
   };
 
   const ActionResultModalElement = (
@@ -106,7 +112,7 @@ const Action = ({
   );
 
   return (
-    <LoadingOverlay isLoading={isLoading}>
+    <LoadingOverlay isLoading={isPending || auth.loading}>
       <Card key={action.id} className="w-full flex flex-col space-y-1">
         <CardHeader>
           <p>{action.name}</p>
@@ -118,9 +124,7 @@ const Action = ({
           <Button
             color="primary"
             variant="bordered"
-            onPress={() => {
-              performAction(action);
-            }}
+            onPress={handlePerformAction}
           >
             <FormattedMessage
               defaultMessage="Perform action"

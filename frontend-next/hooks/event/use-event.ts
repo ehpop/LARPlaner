@@ -1,54 +1,46 @@
 import { useIntl } from "react-intl";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import { IEvent } from "@/types/event.types";
-import { IScenario } from "@/types/scenario.types";
-import eventsService from "@/services/events.service";
-import scenariosService from "@/services/scenarios.service";
+import { useEvent } from "@/services/events/useEvents";
+import { useScenario } from "@/services/scenarios/useScenarios";
 import { showErrorMessage } from "@/hooks/utils";
+import { IEvent } from "@/types/event.types";
 
-const useEvent = (id: string) => {
+const useEventAndScenario = (id: IEvent["id"]) => {
   const intl = useIntl();
-  const [event, setEvent] = useState<IEvent | null>(null);
-  const [scenario, setScenario] = useState<IScenario | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: event,
+    isLoading: eventLoading,
+    error: eventError,
+  } = useEvent(id);
+  const {
+    data: scenario,
+    isLoading: scenarioLoading,
+    error: scenarioError,
+  } = useScenario(event?.scenarioId);
+
+  const loading = eventLoading || scenarioLoading;
 
   useEffect(() => {
-    const loadEventData = async () => {
-      const eventResponse = await eventsService.getById(id);
+    if (loading) {
+      return;
+    }
 
-      if (!eventResponse.success) {
-        return showErrorMessage(eventResponse.data);
-      }
-      setEvent(eventResponse.data);
-      const { scenarioId } = eventResponse.data;
-
-      if (!scenarioId) {
-        return showErrorMessage(
-          intl.formatMessage({
-            id: "events.page.display.error.noScenario",
-            defaultMessage: "Event has no scenario assigned.",
-          }),
-        );
-      }
-
-      const scenarioResponse = await scenariosService.getById(scenarioId);
-
-      if (!scenarioResponse.success) {
-        return showErrorMessage(scenarioResponse.data);
-      }
-
-      setScenario(scenarioResponse.data);
-    };
-
-    loadEventData().finally(() => setLoading(false));
-
-    return () => {
-      setLoading(true);
-    };
-  }, [id]);
+    if (eventError) {
+      showErrorMessage(eventError.message);
+    } else if (scenarioError) {
+      showErrorMessage(scenarioError.message);
+    } else if (event && !event.scenarioId) {
+      showErrorMessage(
+        intl.formatMessage({
+          id: "events.page.display.error.noScenario",
+          defaultMessage: "Event has no scenario assigned.",
+        }),
+      );
+    }
+  }, [event, eventError, scenarioError, loading]);
 
   return { event, scenario, loading };
 };
 
-export default useEvent;
+export default useEventAndScenario;

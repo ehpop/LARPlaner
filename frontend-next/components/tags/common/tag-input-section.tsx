@@ -19,6 +19,7 @@ import {
 } from "@/utils/toast";
 import { TagsProvider, useTagsContext } from "@/providers/tags-provider";
 import { useCreateAllTags } from "@/services/tags/useTags";
+import { getErrorMessage } from "@/utils/error";
 
 type INewTagForm = Omit<ITag, "id">;
 
@@ -119,7 +120,7 @@ const TagInputSection = ({
         refetchTags();
       },
       onError: (error) => {
-        showErrorToastWithTimeout(error.message);
+        showErrorToastWithTimeout(getErrorMessage(error));
       },
     });
   };

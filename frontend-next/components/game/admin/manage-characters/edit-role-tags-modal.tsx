@@ -9,7 +9,6 @@ import {
   ModalHeader,
 } from "@heroui/react";
 
-import gameService from "@/services/game.service";
 import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
@@ -17,6 +16,8 @@ import {
 import { IAppliedTag } from "@/types/tags.types";
 import { IGameRoleState, IGameSession } from "@/types/game.types";
 import InputAppliedTagsWithTable from "@/components/tags/input-applied-tags-with-table";
+import { useUpdateGameSessionRoleState } from "@/services/game/useGames";
+import { getErrorMessage } from "@/utils/error";
 
 interface EditRoleTagsModalProps {
   isOpen: boolean;
@@ -35,7 +36,9 @@ export const EditRoleTagsModal = ({
   const [editingTags, setEditingTags] = useState<IAppliedTag[]>(
     role.appliedTags,
   );
-  const [isSaving, setIsSaving] = useState(false);
+
+  const { isPending: isSaving, mutate: updateGameSessionRoleState } =
+    useUpdateGameSessionRoleState();
 
   useEffect(() => {
     if (isOpen) {
@@ -44,31 +47,28 @@ export const EditRoleTagsModal = ({
   }, [role, isOpen]);
 
   const handleSave = async () => {
-    setIsSaving(true);
-
-    try {
-      const response = await gameService.updateGameSessionRoleState(role.id, {
-        activeTags: editingTags.map((t) => t.tag.id),
-      });
-
-      if (response.success) {
-        showSuccessToastWithTimeout(
-          intl.formatMessage({
-            defaultMessage: "Successfully updated characters tags",
-            id: "admin.manage-characters.role.tags.updated.successfully",
-          }),
-        );
-        onSaveSuccess(response.data);
-      } else {
-        showErrorToastWithTimeout(
-          response.data ?? "Failed to update role tags.",
-        );
-      }
-    } catch (err: any) {
-      showErrorToastWithTimeout(err.message ?? "An unexpected error occurred.");
-    } finally {
-      setIsSaving(false);
-    }
+    updateGameSessionRoleState(
+      {
+        roleStateId: role.id,
+        roleStateRequest: {
+          activeTags: editingTags.map((t) => t.tag.id),
+        },
+      },
+      {
+        onSuccess: (data) => {
+          showSuccessToastWithTimeout(
+            intl.formatMessage({
+              defaultMessage: "Successfully updated characters tags",
+              id: "admin.manage-characters.role.tags.updated.successfully",
+            }),
+          );
+          onSaveSuccess(data);
+        },
+        onError: (error) => {
+          showErrorToastWithTimeout(getErrorMessage(error));
+        },
+      },
+    );
   };
 
   const handleClose = () => {

@@ -11,7 +11,6 @@ import ActionsListForm from "@/components/scenarios/actions-list-form";
 import ScenarioItemsForm from "@/components/scenarios/scenario-items-form";
 import { ScenarioRolesForm } from "@/components/scenarios/scenario-roles-form";
 import { TagsProvider } from "@/providers/tags-provider";
-import { emptyScenario } from "@/services/mock/mock-data";
 import { IScenario, IScenarioPersisted } from "@/types/scenario.types";
 import {
   showErrorToastWithTimeout,
@@ -24,6 +23,8 @@ import {
   useUpdateScenario,
 } from "@/services/scenarios/useScenarios";
 import { useRoles } from "@/services/roles/useRoles";
+import { emptyScenario } from "@/types/initial-types";
+import { getErrorMessage } from "@/utils/error";
 
 export default function ScenarioForm({
   initialScenario,
@@ -76,26 +77,27 @@ export default function ScenarioForm({
 
   const onSubmit = (data: IScenario) => {
     if (isNewScenario) {
-      //TODO: assert that data is not persisted
+      //TODO: If we create scenario, types inside scenario should not be required to be persisted yet
+      // @ts-ignore
       createScenarioMutation.mutate(data, {
         onSuccess: () => {
-          showSuccessToastWithTimeout("Role created successfully");
-          router.push("/admin/roles");
+          showSuccessToastWithTimeout("Scenario created successfully");
+          router.push("/admin/scenarios");
         },
         onError: (error) => {
-          showErrorToastWithTimeout(error.message);
+          showErrorToastWithTimeout(getErrorMessage(error));
         },
       });
     } else {
       updateScenarioMutation.mutate(data as IScenarioPersisted, {
         onSuccess: (updatedScenario) => {
-          showSuccessToastWithTimeout("Role updated successfully");
+          showSuccessToastWithTimeout("Scenario updated successfully");
           setIsBeingEdited(false);
           reset(updatedScenario);
           setLastSavedScenario(updatedScenario);
         },
         onError: (error) => {
-          showErrorToastWithTimeout(error.message);
+          showErrorToastWithTimeout(getErrorMessage(error));
         },
       });
     }
@@ -110,7 +112,7 @@ export default function ScenarioForm({
         router.push("/admin/scenarios");
       },
       onError: (error) => {
-        showErrorToastWithTimeout(error.message);
+        showErrorToastWithTimeout(getErrorMessage(error));
       },
     });
   };
@@ -152,6 +154,9 @@ export default function ScenarioForm({
                 {...field}
                 isRequired
                 className="w-full"
+                classNames={{
+                  inputWrapper: "border-b border-black/50", // Tailwind for 50% opacity black underline
+                }}
                 errorMessage={errors.name?.message}
                 isDisabled={!isBeingEdited}
                 isInvalid={!!errors.name}

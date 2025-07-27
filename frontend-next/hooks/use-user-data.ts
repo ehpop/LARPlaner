@@ -1,100 +1,92 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useIntl } from "react-intl";
 
 import { useAuth } from "@/providers/firebase-provider";
-import { IEvent } from "@/types/event.types";
-import { IScenario, IScenarioRole } from "@/types/scenario.types";
-import { IRole } from "@/types/roles.types";
-import eventsService from "@/services/events.service";
-import scenariosService from "@/services/scenarios.service";
-import rolesService from "@/services/roles.service";
+import useEventAndScenario from "@/hooks/event/use-event";
+import { useRole } from "@/services/roles/useRoles";
 import { showErrorMessage } from "@/hooks/utils";
+import { IEvent } from "@/types/event.types";
 
-const useUserEventData = ({ id }: { id: string }) => {
+const useUserEventData = (id: IEvent["id"]) => {
   const intl = useIntl();
-  const auth = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
-  const [event, setEvent] = useState<IEvent | null>(null);
-  const [scenario, setScenario] = useState<IScenario | null>(null);
-  const [userScenarioRole, setUserScenarioRole] =
-    useState<IScenarioRole | null>(null);
-  const [userRole, setUserRole] = useState<IRole | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    event,
+    scenario,
+    loading: eventAndScenarioLoading,
+  } = useEventAndScenario(id);
+
+  const assignedRole = useMemo(() => {
+    if (!event || !user?.email) return null;
+
+    return event.assignedRoles.find(
+      (role) => role.assignedEmail === user.email,
+    );
+  }, [event, user?.email]);
+
+  const userScenarioRole = useMemo(() => {
+    if (!scenario || !assignedRole) return null;
+
+    return scenario.roles.find(
+      (role) => role.id === assignedRole.scenarioRoleId,
+    );
+  }, [scenario, assignedRole]);
+
+  const {
+    data: userRole,
+    isLoading: roleLoading,
+    error: roleError,
+  } = useRole(userScenarioRole?.roleId);
+
+  const loading = authLoading || eventAndScenarioLoading || roleLoading;
 
   useEffect(() => {
-    const loadEventData = async () => {
-      if (auth.loading) {
-        return;
-      }
+    if (loading) {
+      return;
+    }
 
-      const eventResponse = await eventsService.getById(id);
+    if (roleError) {
+      showErrorMessage(roleError.message);
 
-      if (!eventResponse.success) {
-        return showErrorMessage(eventResponse.data);
-      }
+      return;
+    }
 
-      setEvent(eventResponse.data);
-      const { scenarioId } = eventResponse.data;
-
-      if (!scenarioId) {
-        return showErrorMessage(
-          intl.formatMessage({
-            id: "events.page.display.error.noScenario",
-            defaultMessage: "Event has no scenario assigned.",
-          }),
-        );
-      }
-
-      const scenarioResponse = await scenariosService.getById(scenarioId);
-
-      if (!scenarioResponse.success) {
-        return showErrorMessage(scenarioResponse.data);
-      }
-      setScenario(scenarioResponse.data);
-
-      const userEmail = auth.user?.email;
-      const assignedRole = eventResponse.data.assignedRoles.find(
-        (role) => role.assignedEmail === userEmail,
-      );
-
-      if (assignedRole === undefined) {
-        return showErrorMessage(
+    if (event && scenario) {
+      if (!assignedRole) {
+        showErrorMessage(
           intl.formatMessage({
             id: "events.page.display.error.noRole",
             defaultMessage: "User has no role assigned to this event.",
           }),
         );
+      } else if (!userScenarioRole) {
+        showErrorMessage(
+          intl.formatMessage({
+            id: "events.page.display.error.noRole",
+            defaultMessage: "User's role not found in scenario.",
+          }),
+        );
       }
+    }
+  }, [
+    loading,
+    event,
+    scenario,
+    assignedRole,
+    userScenarioRole,
+    roleError,
+    intl,
+  ]);
 
-      const userScenarioRole = scenarioResponse.data.roles.find(
-        (role) => role.id === assignedRole.scenarioRoleId,
-      );
-
-      if (!userScenarioRole) {
-        return showErrorMessage("User's role not found in scenario.");
-      }
-
-      setUserScenarioRole(userScenarioRole);
-
-      const roleResponse = await rolesService.getById(
-        userScenarioRole.roleId as string,
-      );
-
-      if (!roleResponse.success) {
-        return showErrorMessage(roleResponse.data);
-      }
-
-      setUserRole(roleResponse.data);
-    };
-
-    loadEventData().finally(() => {
-      if (!auth.loading) {
-        setLoading(false);
-      }
-    });
-  }, [id, auth.user]);
-
-  return { event, scenario, userScenarioRole, userRole, loading };
+  return {
+    event,
+    scenario,
+    userScenarioRole,
+    userRole,
+    loading,
+    error: roleError,
+  };
 };
 
 export default useUserEventData;

@@ -5,26 +5,34 @@ import { Card } from "@heroui/react";
 import { CardBody, CardHeader } from "@heroui/card";
 import React from "react";
 
-import useGame from "@/hooks/use-game";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import { IGameSession } from "@/types/game.types";
-import useEvent from "@/hooks/event/use-event";
+import useEventAndScenario from "@/hooks/event/use-event";
 import AdminGameHistory from "@/components/game/admin/admin-game-history";
 import ManageCharacters from "@/components/game/admin/manage-characters/manage-characters";
+import { useGameSession } from "@/services/game/useGames";
 
 const ActiveAdminGamePage = ({ params }: any) => {
   const resolvedParams = React.use(params) as { id: string };
   const gameId = resolvedParams.id;
 
   const intl = useIntl();
-  const { game, loading } = useGame(gameId);
+  const { data: game, isLoading, isError, error } = useGameSession(gameId);
 
-  const allDataLoaded = game && !loading;
+  const allDataLoaded = game && !isLoading;
+
+  if (isError) {
+    return (
+      <div className="w-full flex justify-center">
+        <p className="text-danger">{error?.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen flex justify-center">
       <LoadingOverlay
-        isLoading={loading}
+        isLoading={isLoading}
         label={intl.formatMessage({
           defaultMessage: "Loading event...",
           id: "game.admin.id.page.display.loading",
@@ -48,7 +56,7 @@ const ActiveAdminGamePage = ({ params }: any) => {
 export default ActiveAdminGamePage;
 
 const ActiveAdminGameDisplay = ({ game }: { game: IGameSession }) => {
-  const { event, scenario, loading } = useEvent(game.eventId || "");
+  const { event, scenario, loading } = useEventAndScenario(game.eventId);
 
   const allDataLoaded = event && scenario && !loading;
 

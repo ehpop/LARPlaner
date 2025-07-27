@@ -1,7 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
-
-import gameService from "@/services/game.service";
-import { IAction } from "@/types/scenario.types";
+import { useAvailableActionsForUser } from "@/services/game/useGames";
 
 export const useAvailableActions = (params: any) => {
   const {
@@ -13,53 +10,20 @@ export const useAvailableActions = (params: any) => {
     userRoleState,
   } = params || {};
 
-  const [actions, setActions] = useState<IAction[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const shouldFetch =
+    isModalOpen && event && scenario && userRole && userScenarioRole;
 
-  const fetchData = useCallback(async () => {
-    if (!userRoleState?.id) {
-      setActions([]);
-
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const res = await gameService.getAvailableActionsForUser(
-        userRoleState.id,
-      );
-
-      if (res.success) {
-        setActions(res.data);
-      } else {
-        setError(res.data || "Failed to fetch available actions.");
-      }
-    } catch (err) {
-      setError(err as string);
-      setActions([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userRoleState?.id]);
-
-  useEffect(() => {
-    const shouldFetch =
-      isModalOpen && event && scenario && userRole && userScenarioRole;
-
-    if (shouldFetch) {
-      fetchData();
-    } else {
-      setActions([]);
-    }
-  }, [isModalOpen, event, scenario, userRole, userScenarioRole, fetchData]);
-
-  return {
-    actions,
+  const {
+    data: actions,
     isLoading,
     error,
-    refetch: fetchData,
+    refetch,
+  } = useAvailableActionsForUser(shouldFetch ? userRoleState?.id : undefined);
+
+  return {
+    actions: actions || [],
+    isLoading,
+    error,
+    refetch,
   };
 };

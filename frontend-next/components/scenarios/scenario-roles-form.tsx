@@ -4,9 +4,9 @@ import { FormattedMessage } from "react-intl";
 import { Control, useFieldArray, useWatch } from "react-hook-form";
 
 import { RoleItem } from "@/components/scenarios/role-item-display";
-import { emptyScenarioRole } from "@/services/mock/mock-data";
 import { IScenario } from "@/types/scenario.types";
 import { IRole } from "@/types/roles.types";
+import { emptyScenarioRole } from "@/types/initial-types";
 
 interface ScenarioRolesFormProps {
   control: Control<IScenario>;

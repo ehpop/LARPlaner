@@ -8,7 +8,6 @@ import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import InputTagsWithTable from "@/components/tags/input-tags-with-table";
-import { emptyRole } from "@/services/mock/mock-data";
 import { IRole, IRolePersisted } from "@/types/roles.types";
 import {
   showErrorToastWithTimeout,
@@ -20,6 +19,8 @@ import {
   useUpdateRole,
 } from "@/services/roles/useRoles";
 import { TagsProvider } from "@/providers/tags-provider";
+import { emptyRole } from "@/types/initial-types";
+import { getErrorMessage } from "@/utils/error";
 
 export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const intl = useIntl();
@@ -69,7 +70,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
           router.push("/admin/roles");
         },
         onError: (error) => {
-          showErrorToastWithTimeout(error.message);
+          showErrorToastWithTimeout(getErrorMessage(error));
         },
       });
     } else {
@@ -81,7 +82,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
           setLastSavedRole(updatedRole);
         },
         onError: (error) => {
-          showErrorToastWithTimeout(error.message);
+          showErrorToastWithTimeout(getErrorMessage(error));
         },
       });
     }
@@ -96,7 +97,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
         router.push("/admin/roles");
       },
       onError: (error) => {
-        showErrorToastWithTimeout(error.message);
+        showErrorToastWithTimeout(getErrorMessage(error));
       },
     });
   };

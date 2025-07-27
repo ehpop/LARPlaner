@@ -1,47 +1,33 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
-import { IEvent } from "@/types/event.types";
-import eventsService from "@/services/events.service";
-import { showErrorMessage } from "@/hooks/utils";
+import { useEvents } from "@/services/events/useEvents";
 
 const useAllEvents = (assignedEmail?: string, eventStatus?: string) => {
-  const [events, setEvents] = useState<IEvent[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: allEvents, isLoading, error } = useEvents();
 
-  useEffect(() => {
-    const loadEventData = async () => {
-      const eventResponse = await eventsService.getAll();
+  const filteredEvents = useMemo(() => {
+    if (!allEvents) {
+      return [];
+    }
 
-      if (!eventResponse.success) {
-        return showErrorMessage(eventResponse.data);
-      }
+    let events = allEvents;
 
-      let events = eventResponse.data;
+    if (assignedEmail) {
+      events = events.filter((e) =>
+        e.assignedRoles.some(
+          (assignedRole) => assignedRole.assignedEmail === assignedEmail,
+        ),
+      );
+    }
 
-      if (assignedEmail) {
-        events = events.filter(
-          (e) =>
-            e.assignedRoles.findIndex(
-              (assignedRole) => assignedRole.assignedEmail === assignedEmail,
-            ) !== -1,
-        );
-      }
+    if (eventStatus) {
+      events = events.filter((e) => e.status === eventStatus);
+    }
 
-      if (eventStatus) {
-        events = events.filter((e) => e.status === eventStatus);
-      }
+    return events;
+  }, [allEvents, assignedEmail, eventStatus]);
 
-      setEvents(events);
-    };
-
-    loadEventData().finally(() => setLoading(false));
-
-    return () => {
-      setLoading(true);
-    };
-  }, []);
-
-  return { events, loading };
+  return { events: filteredEvents, loading: isLoading, error };
 };
 
 export default useAllEvents;

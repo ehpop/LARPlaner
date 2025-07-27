@@ -8,30 +8,20 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { useAuth } from "@/providers/firebase-provider";
-import gameService from "@/services/game.service";
+import { useUserGameHistory } from "@/services/game/useGames";
 import { IGameActionLog, IGameSession } from "@/types/game.types";
 
 const UserGameHistory = ({ game }: { game: IGameSession }) => {
-  const auth = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [gameHistory, setGameHistory] = useState<IGameActionLog[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isModalOpen || !auth.user?.email) return;
-
-    gameService.getUserGameHistoryByGameId(game.id).then((response) => {
-      if (response.success) {
-        setGameHistory(response.data);
-      } else {
-        setError(response.data);
-      }
-    });
-  }, [isModalOpen]);
+  const {
+    data: gameHistory,
+    error,
+    isLoading,
+  } = useUserGameHistory(isModalOpen ? game.id : undefined);
 
   const UserGameHistoryModalElement = (
     <Modal
@@ -51,27 +41,32 @@ const UserGameHistory = ({ game }: { game: IGameSession }) => {
           />
         </ModalHeader>
         <ModalBody>
-          <div>
-            {error ? (
-              <p>{error}</p>
-            ) : (
-              <>
-                <FormattedMessage
-                  defaultMessage="Your history for game ID: {gameId}"
-                  id="userGameHistory.modal.gameId"
-                  values={{ gameId: game.id }}
-                />
-                <div className="flex flex-col space-y-2 mt-2">
-                  {gameHistory.map((historyItem) => (
-                    <GameHistoryLogElement
-                      key={historyItem.id}
-                      historyItem={historyItem}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+          {isLoading && (
+            <p>
+              <FormattedMessage
+                defaultMessage="Loading history..."
+                id="userGameHistory.modal.loading"
+              />
+            </p>
+          )}
+          {error && <p>{error.message}</p>}
+          {gameHistory && (
+            <div>
+              <FormattedMessage
+                defaultMessage="Your history for game ID: {gameId}"
+                id="userGameHistory.modal.gameId"
+                values={{ gameId: game.id }}
+              />
+              <div className="flex flex-col space-y-2 mt-2">
+                {gameHistory.map((historyItem) => (
+                  <GameHistoryLogElement
+                    key={historyItem.id}
+                    historyItem={historyItem}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </ModalBody>
         <ModalFooter>
           <Button

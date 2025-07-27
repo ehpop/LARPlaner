@@ -1,4 +1,15 @@
+import { isAxiosError } from "axios";
+
 export const getErrorMessage = (error: unknown): string => {
+  console.log("error: ", error);
+  if (
+    isAxiosError(error) &&
+    error.response?.data?.message &&
+    typeof error.response.data.message === "string"
+  ) {
+    return error.response.data.message;
+  }
+
   if (error instanceof Error) {
     return error.message;
   }

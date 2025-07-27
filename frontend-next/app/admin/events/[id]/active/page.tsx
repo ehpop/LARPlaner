@@ -7,56 +7,66 @@ import { CardBody, CardHeader } from "@heroui/card";
 import React from "react";
 import { useRouter } from "next/navigation";
 
-import { IEvent } from "@/types/event.types";
-import { IScenario } from "@/types/scenario.types";
-import eventsService from "@/services/events.service";
+import { IEvent, IEventPersisted } from "@/types/event.types";
+import { IScenario, IScenarioPersisted } from "@/types/scenario.types";
 import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import EventPageWrapper from "@/components/events/wrapper/event-page-wrapper";
+import { useUpdateEventStatus } from "@/services/events/useEvents";
+import { getErrorMessage } from "@/utils/error";
 
 const ActiveEventAdminPage = ({ params }: any) => {
+  return (
+    <EventPageWrapper expectedStatus="active" params={params}>
+      {({ event, scenario }) => (
+        <ActiveEventContent event={event} scenario={scenario} />
+      )}
+    </EventPageWrapper>
+  );
+};
+
+const ActiveEventContent = ({
+  event,
+  scenario,
+}: {
+  event: IEventPersisted;
+  scenario: IScenarioPersisted;
+}) => {
   const intl = useIntl();
   const router = useRouter();
 
+  const updateEventStatus = useUpdateEventStatus();
+
+  const handleArchiveEvent = () => {
+    updateEventStatus.mutate(
+      { id: event.id, status: "historic" },
+      {
+        onSuccess: () => {
+          showSuccessToastWithTimeout(
+            intl.formatMessage({
+              id: "components.events.events-display-admin.successfully-transitioned-to-historic",
+              defaultMessage: "Event status changed to: HISTORIC",
+            }),
+          );
+
+          router.push(`/admin/events/${event.id}/hitoric`);
+        },
+        onError: (error) => {
+          showErrorToastWithTimeout(getErrorMessage(error));
+        },
+      },
+    );
+  };
+
   return (
-    <EventPageWrapper expectedStatus="active" params={params}>
-      {({ event, scenario }) => {
-        const handleArchiveEvent = () => {
-          if (!event) {
-            return;
-          }
-
-          eventsService
-            .updateEventStatus(event.id, "historic")
-            .then((res) => {
-              if (res.success) {
-                showSuccessToastWithTimeout(
-                  intl.formatMessage({
-                    id: "components.events.events-display-admin.successfully-transitioned-to-historic",
-                    defaultMessage: "Event status changed to: HISTORIC",
-                  }),
-                );
-
-                router.push(`/admin/events/${event.id}/historic`);
-              } else {
-                showErrorToastWithTimeout(res.data);
-              }
-            })
-            .catch((error) => showErrorToastWithTimeout(error));
-        };
-
-        return (
-          <ActiveEventAdminDisplay
-            event={event}
-            scenario={scenario}
-            onArchiveEvent={handleArchiveEvent}
-          />
-        );
-      }}
-    </EventPageWrapper>
+    <ActiveEventAdminDisplay
+      event={event}
+      scenario={scenario}
+      onArchiveEvent={handleArchiveEvent}
+    />
   );
 };
 

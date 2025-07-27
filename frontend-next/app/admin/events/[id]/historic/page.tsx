@@ -1,6 +1,5 @@
 "use client";
 
-// The new, clean HistoricEventAdminPage.tsx
 import React from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useRouter } from "next/navigation";
@@ -14,7 +13,6 @@ import {
   useDisclosure,
 } from "@heroui/react";
 
-import eventsService from "@/services/events.service";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import { IEvent } from "@/types/event.types";
 import { IScenario } from "@/types/scenario.types";
@@ -24,10 +22,12 @@ import {
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
 import EventPageWrapper from "@/components/events/wrapper/event-page-wrapper";
+import { useDeleteEvent } from "@/services/events/useEvents";
 
 const HistoricEventAdminPage = ({ params }: any) => {
   const intl = useIntl();
   const router = useRouter();
+  const deleteEventMutation = useDeleteEvent();
 
   return (
     <EventPageWrapper expectedStatus="historic" params={params}>
@@ -35,10 +35,8 @@ const HistoricEventAdminPage = ({ params }: any) => {
         const handleDeleteEvent = async () => {
           if (!event || !event.id) return;
 
-          try {
-            const res = await eventsService.delete(event.id);
-
-            if (res.success) {
+          deleteEventMutation.mutate(event.id, {
+            onSuccess: () => {
               showSuccessToastWithTimeout(
                 intl.formatMessage({
                   id: "admin.events.id.historic.page.successfully-deleted",
@@ -46,12 +44,11 @@ const HistoricEventAdminPage = ({ params }: any) => {
                 }),
               );
               router.push(`/admin/events`);
-            } else {
-              showErrorToastWithTimeout(res.data);
-            }
-          } catch (error) {
-            showErrorToastWithTimeout(getErrorMessage(error));
-          }
+            },
+            onError: (error) => {
+              showErrorToastWithTimeout(getErrorMessage(error));
+            },
+          });
         };
 
         return (
