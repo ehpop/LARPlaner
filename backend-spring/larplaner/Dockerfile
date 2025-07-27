@@ -23,31 +23,3 @@ RUN addgroup --system spring && adduser --system --ingroup spring spring
 USER spring:spring
 
 ENTRYPOINT ["java","-jar","app.jar"]
-
-
-FROM eclipse-temurin:17-jre-jammy AS dev-h2
-WORKDIR /app
-
-ARG JAR_FILE=target/*.jar
-
-COPY --from=builder /app/${JAR_FILE} app.jar
-
-ENV SPRING_PROFILES_ACTIVE=dev
-
-EXPOSE 8080
-
-ENTRYPOINT ["java","-jar","app.jar"]
-
-
-FROM eclipse-temurin:17-jre-jammy AS dev-neondb
-WORKDIR /app
-
-ARG JAR_FILE=target/*.jar
-
-COPY --from=builder /app/${JAR_FILE} app.jar
-
-ENV SPRING_PROFILES_ACTIVE=dev-neondb
-
-EXPOSE 8080
-
-ENTRYPOINT ["java","-jar","app.jar"]
