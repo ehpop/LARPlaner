@@ -44,7 +44,7 @@ export const RoleItem = ({
   }, [availableRoles, filterText]);
 
   return (
-    <div className="w-full flex flex-col border-1 sm:p-3 p-1 bg-custom-light-gradient dark:bg-custom-dark-gradient">
+    <div className="w-full flex flex-col border sm:p-3 p-1 bg-custom-light-gradient dark:bg-custom-dark-gradient">
       <HidableSection
         additionalButtons={
           isBeingEdited && (

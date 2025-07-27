@@ -146,7 +146,7 @@ const ActionTagInputGroup = ({
   isBeingEdited,
 }: ActionTagInputGroupProps) => {
   return (
-    <div className="border-1 p-3">
+    <div className="border p-3">
       <HidableSection
         section={
           <InputTagsWithTable
@@ -233,7 +233,7 @@ const ActionForm = ({
   return (
     <>
       <ModalBody>
-        <div className="w-full flex flex-col space-y-3 border-1 p-3">
+        <div className="w-full flex flex-col space-y-3 border p-3">
           <Controller
             control={control}
             name={createName("name")}
@@ -368,7 +368,7 @@ const ActionRow = ({
   });
 
   return (
-    <div className="w-full flex flex-row justify-between items-baseline border-1 p-3">
+    <div className="w-full flex flex-row justify-between items-baseline border p-3">
       <Input
         isDisabled
         isRequired

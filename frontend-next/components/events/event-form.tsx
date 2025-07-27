@@ -157,7 +157,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
       className="w-full flex justify-center"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="sm:w-4/5 w-full space-y-3 border-1 p-3">
+      <div className="sm:w-4/5 w-full space-y-3 border p-3">
         <div className="w-full flex justify-center">
           <p className="text-3xl" id="view-event-modal">
             {isNewEvent ? (
@@ -362,7 +362,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
           </div>
         </div>
 
-        <div className="w-full flex flex-col p-3 border-1">
+        <div className="w-full flex flex-col p-3 border">
           <HidableSection
             section={
               <EventAssignRolesForm

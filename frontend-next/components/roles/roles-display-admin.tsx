@@ -138,7 +138,7 @@ const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
   }, [filterText, handleAddNewRole]);
 
   return (
-    <div className="w-full flex flex-col justify-top p-3 border-1 space-y-5">
+    <div className="w-full flex flex-col justify-top p-3 border space-y-5">
       <div className="w-full flex justify-center">
         <h1 className="text-2xl">
           <FormattedMessage defaultMessage="Roles" id="roles.title" />

@@ -136,7 +136,7 @@ const ScenariosDisplayAdmin = ({
   }, [filterText, handleAddNewScenario]);
 
   return (
-    <div className="w-full h-[80vh] flex flex-col justify-top p-3 border-1 space-y-5">
+    <div className="w-full h-[80vh] flex flex-col justify-top p-3 border space-y-5">
       <div className="w-full flex justify-center">
         <h1 className="text-2xl">
           <FormattedMessage defaultMessage="Scenarios" id="scenarios.title" />

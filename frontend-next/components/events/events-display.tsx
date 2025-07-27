@@ -52,7 +52,7 @@ export const EventsDisplay = ({
       <p className="md:text-3xl whitespace-nowrap">{title}</p>
       <Input
         classNames={{
-          base: "max-w-full sm:max-w-[10rem] h-10",
+          base: "max-w-full sm:max-w-40 h-10",
           mainWrapper: "h-full",
           input: "text-small",
           inputWrapper:

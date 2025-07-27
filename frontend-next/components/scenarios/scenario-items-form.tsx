@@ -30,7 +30,7 @@ const ItemForm = ({ control, index, remove, isBeingEdited }: ItemFormProps) => {
   });
 
   return (
-    <div className="w-full flex flex-col border-1 space-y-3 p-3 dark:bg-custom-dark-gradient bg-custom-light-gradient">
+    <div className="w-full flex flex-col border space-y-3 p-3 dark:bg-custom-dark-gradient bg-custom-light-gradient">
       <HidableSection
         additionalButtons={
           <>
@@ -93,7 +93,7 @@ const ItemForm = ({ control, index, remove, isBeingEdited }: ItemFormProps) => {
                 }),
               }}
             />
-            <div className="w-full border-1 p-3 space-y-3">
+            <div className="w-full border p-3 space-y-3">
               <HidableSection
                 section={
                   <ActionsListForm

@@ -19,6 +19,7 @@ import {
   useDeleteRole,
   useUpdateRole,
 } from "@/services/roles/useRoles";
+import { TagsProvider } from "@/providers/tags-provider";
 
 export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const intl = useIntl();
@@ -106,157 +107,165 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   };
 
   const form = (
-    <form
-      className="w-full flex flex-col justify-center border-1 p-3 space-y-3"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div className="w-full flex justify-center">
-        <p className="text-3xl">
-          {isNewRole ? (
-            <FormattedMessage
-              defaultMessage="New Role"
-              id="role.form.newRole"
-            />
-          ) : (
-            <FormattedMessage
-              defaultMessage='Role "{roleName}"'
-              id="role.form.roleName"
-              values={{ roleName: watchedRoleName }}
-            />
-          )}
-        </p>
-      </div>
-
-      <Controller
-        control={control}
-        name="name"
-        render={({ field }) => (
-          <Input
-            {...field}
-            isRequired
-            description={intl.formatMessage({
-              defaultMessage: "Name of this role that will be used in scenario",
-              id: "role.display.name.description",
-            })}
-            errorMessage={errors.name?.message}
-            isDisabled={!isNewRole && !isBeingEdited}
-            isInvalid={!!errors.name}
-            label={intl.formatMessage({
-              defaultMessage: "Role name",
-              id: "role.display.name",
-            })}
-            placeholder={intl.formatMessage({
-              defaultMessage: "Enter role name",
-              id: "role.display.name.placeholder",
-            })}
-            size="lg"
-            variant="underlined"
-          />
-        )}
-        rules={{
-          required: intl.formatMessage({
-            defaultMessage: "Role name cannot be empty",
-            id: "role.display.name.required",
-          }),
-        }}
-      />
-
-      <Controller
-        control={control}
-        name="description"
-        render={({ field }) => (
-          <Textarea
-            {...field}
-            isRequired
-            description={intl.formatMessage({
-              id: "role.id.page.description.description",
-              defaultMessage: "Base description of this role",
-            })}
-            errorMessage={errors.description?.message}
-            isDisabled={!isNewRole && !isBeingEdited}
-            isInvalid={!!errors.description}
-            label={intl.formatMessage({
-              id: "role.id.page.description.label",
-              defaultMessage: "Role description",
-            })}
-            placeholder={intl.formatMessage({
-              id: "role.display.description.placeholder",
-              defaultMessage: "Enter role description",
-            })}
-            size="lg"
-            variant="underlined"
-          />
-        )}
-        rules={{
-          required: intl.formatMessage({
-            defaultMessage: "Description cannot be empty",
-            id: "role.display.description.required",
-          }),
-        }}
-      />
-
-      <div className="w-full min-h-full border-1 p-3 space-y-3">
-        <div className="w-full flex flex-row justify-between">
-          <p className="text-xl font-bold">
-            <FormattedMessage
-              defaultMessage="Character's tags:"
-              id="role.id.page.display.tags"
-            />
-          </p>
-          <Button
-            size="sm"
-            variant="bordered"
-            onPress={() => setShowTags(!showTags)}
-          >
-            {showTags ? "-" : "+"}
-          </Button>
-        </div>
-        {showTags && (
-          <Controller
-            control={control}
-            name="tags"
-            render={({ field }) => (
-              <InputTagsWithTable
-                addedTags={field.value || []}
-                description={intl.formatMessage({
-                  defaultMessage: "Required tags to display action",
-                  id: "scenarios.new.page.requiredTagsToDisplayActionDescription",
-                })}
-                inputLabel={intl.formatMessage({
-                  defaultMessage: "Required tags to display action",
-                  id: "scenarios.new.page.input",
-                })}
-                isDisabled={!isNewRole && !isBeingEdited}
-                placeholder={intl.formatMessage({
-                  defaultMessage: "Enter tag name",
-                  id: "role.display.tag.name.placeholder",
-                })}
-                setAddedTags={field.onChange}
+    <TagsProvider>
+      <form
+        className="w-full flex flex-col justify-center border p-3 space-y-3"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="w-full flex justify-center">
+          <p className="text-3xl">
+            {isNewRole ? (
+              <FormattedMessage
+                defaultMessage="New Role"
+                id="role.form.newRole"
+              />
+            ) : (
+              <FormattedMessage
+                defaultMessage='Role "{roleName}"'
+                id="role.form.roleName"
+                values={{ roleName: watchedRoleName }}
               />
             )}
-          />
-        )}
-      </div>
+          </p>
+        </div>
 
-      {isNewRole ? (
-        <div className="w-full flex justify-end space-x-3">
-          <Button color="success" isLoading={isSaving} size="lg" type="submit">
-            <FormattedMessage defaultMessage="Save" id="role.display.save" />
-          </Button>
+        <Controller
+          control={control}
+          name="name"
+          render={({ field }) => (
+            <Input
+              {...field}
+              isRequired
+              description={intl.formatMessage({
+                defaultMessage:
+                  "Name of this role that will be used in scenario",
+                id: "role.display.name.description",
+              })}
+              errorMessage={errors.name?.message}
+              isDisabled={!isNewRole && !isBeingEdited}
+              isInvalid={!!errors.name}
+              label={intl.formatMessage({
+                defaultMessage: "Role name",
+                id: "role.display.name",
+              })}
+              placeholder={intl.formatMessage({
+                defaultMessage: "Enter role name",
+                id: "role.display.name.placeholder",
+              })}
+              size="lg"
+              variant="underlined"
+            />
+          )}
+          rules={{
+            required: intl.formatMessage({
+              defaultMessage: "Role name cannot be empty",
+              id: "role.display.name.required",
+            }),
+          }}
+        />
+
+        <Controller
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <Textarea
+              {...field}
+              isRequired
+              description={intl.formatMessage({
+                id: "role.id.page.description.description",
+                defaultMessage: "Base description of this ole",
+              })}
+              errorMessage={errors.description?.message}
+              isDisabled={!isNewRole && !isBeingEdited}
+              isInvalid={!!errors.description}
+              label={intl.formatMessage({
+                id: "role.id.page.description.label",
+                defaultMessage: "Role descripion",
+              })}
+              placeholder={intl.formatMessage({
+                id: "role.display.description.placeholder",
+                defaultMessage: "Enter role descripion",
+              })}
+              size="lg"
+              variant="underlined"
+            />
+          )}
+          rules={{
+            required: intl.formatMessage({
+              defaultMessage: "Description cannot be empty",
+              id: "role.display.description.requred",
+            }),
+          }}
+        />
+
+        <div className="w-full min-h-full border p-3 space-y-3">
+          <div className="w-full flex flex-row justify-between">
+            <p className="text-xl font-bold">
+              <FormattedMessage
+                defaultMessage="Character's tags:"
+                id="role.id.page.display.tags"
+              />
+            </p>
+            <Button
+              size="sm"
+              variant="bordered"
+              onPress={() => setShowTags(!showTags)}
+            >
+              {showTags ? "-" : "+"}
+            </Button>
+          </div>
+          {showTags && (
+            <Controller
+              control={control}
+              name="tags"
+              render={({ field }) => (
+                <InputTagsWithTable
+                  addedTags={field.value || []}
+                  description={intl.formatMessage({
+                    defaultMessage: "Required tags to display action",
+                    id: "scenarios.new.page.requiredTagsToDisplayActionDescription",
+                  })}
+                  inputLabel={intl.formatMessage({
+                    defaultMessage: "Required tags to display action",
+                    id: "scenarios.new.page.input",
+                  })}
+                  isDisabled={!isNewRole && !isBeingEdited}
+                  placeholder={intl.formatMessage({
+                    defaultMessage: "Enter tag name",
+                    id: "role.display.tag.name.placeholder",
+                  })}
+                  setAddedTags={field.onChange}
+                />
+              )}
+            />
+          )}
         </div>
-      ) : (
-        <div className="w-full flex justify-end">
-          <ButtonPanel
-            isBeingEdited={isBeingEdited}
-            isSaveButtonTypeSubmit={true}
-            isSaveDisabled={!isDirty || isSaving}
-            onCancelEditClicked={onOpenCancel}
-            onDeleteClicked={onOpenDelete}
-            onEditClicked={() => setIsBeingEdited(true)}
-          />
-        </div>
-      )}
-    </form>
+
+        {isNewRole ? (
+          <div className="w-full flex justify-end space-x-3">
+            <Button
+              color="success"
+              isLoading={isSaving}
+              size="lg"
+              type="submit"
+            >
+              <FormattedMessage defaultMessage="Save" id="role.display.save" />
+            </Button>
+          </div>
+        ) : (
+          <div className="w-full flex justify-end">
+            <ButtonPanel
+              isBeingEdited={isBeingEdited}
+              isSaveButtonTypeSubmit={true}
+              isSaveDisabled={!isDirty || isSaving}
+              onCancelEditClicked={onOpenCancel}
+              onDeleteClicked={onOpenDelete}
+              onEditClicked={() => setIsBeingEdited(true)}
+            />
+          </div>
+        )}
+      </form>
+    </TagsProvider>
   );
 
   const confirmDelete = (

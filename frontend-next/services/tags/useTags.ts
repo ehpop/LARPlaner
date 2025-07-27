@@ -2,7 +2,7 @@ import {
   useMutation,
   UseMutationResult,
   useQueryClient,
-} from "@tanstack/react-query/src";
+} from "@tanstack/react-query";
 
 import { createCrudHooks } from "@/services/generic/generic-hook-factory";
 import {

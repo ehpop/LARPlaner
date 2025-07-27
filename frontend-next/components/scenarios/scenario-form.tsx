@@ -126,7 +126,7 @@ export default function ScenarioForm({
         className="w-full flex justify-center"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="w-full space-y-3 border-1 p-3">
+        <div className="w-full space-y-3 border p-3">
           <div className="w-full flex justify-center">
             <p className="text-3xl" id="add-event-modal">
               {isNewScenario ? (
@@ -206,7 +206,7 @@ export default function ScenarioForm({
             }}
           />
 
-          <div className="w-full border-1 p-3 space-y-3">
+          <div className="w-full border p-3 space-y-3">
             <HidableSection
               section={
                 <ScenarioRolesForm
@@ -226,7 +226,7 @@ export default function ScenarioForm({
             />
           </div>
 
-          <div className="w-full border-1 p-3 space-y-3">
+          <div className="w-full border p-3 space-y-3">
             <HidableSection
               section={
                 <ScenarioItemsForm
@@ -245,7 +245,7 @@ export default function ScenarioForm({
             />
           </div>
 
-          <div className="w-full border-1 p-3 space-y-3">
+          <div className="w-full border p-3 space-y-3">
             <HidableSection
               section={
                 <ActionsListForm

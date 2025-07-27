@@ -213,7 +213,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
 
   const newMessageElement = (
     <form ref={formRef} onSubmit={(e) => handleMessageSend(e)}>
-      <div className="w-full flex justify-between space-x-3 border-1 rounded-small p-3">
+      <div className="w-full flex justify-between space-x-3 border rounded-small p-3">
         <FormTextarea
           formRef={formRef}
           maxRows={10}
@@ -257,7 +257,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
           tagName="h1"
           values={{ eventId, chatId }}
         />
-        <div className="h-full flex flex-col-reverse border-1 p-3 space-y-3 overflow-y-auto rounded-small">
+        <div className="h-full flex flex-col-reverse border p-3 space-y-3 overflow-y-auto rounded-small">
           <div ref={messagesEndRef} />
           {messages.map((message: any, index) => (
             <Message key={index} message={message} />
