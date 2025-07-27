@@ -24,10 +24,9 @@ import { ButtonPanel } from "@/components/buttons/button-pannel";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
 import EventAssignRolesForm from "@/components/events/event-assign-roles-form";
 import LoadingOverlay from "@/components/common/loading-overlay";
-import eventsService from "@/services/events.service";
 import { emptyEvent } from "@/services/mock/mock-data";
 import scenariosService from "@/services/scenarios.service";
-import { IEvent } from "@/types/event.types";
+import { IEvent, IEventPersisted } from "@/types/event.types";
 import { IScenario } from "@/types/scenario.types";
 import { isValidEventDate, setTimeOnDate } from "@/utils/date-time";
 import {
@@ -35,6 +34,11 @@ import {
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
 import HidableSection from "@/components/common/hidable-section";
+import {
+  useCreateEvent,
+  useDeleteEvent,
+  useUpdateEvent,
+} from "@/services/events/useEvents";
 
 export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   const intl = useIntl();
@@ -45,8 +49,6 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
     IScenario | undefined
   >(undefined);
   const [isBeingEdited, setIsBeingEdited] = useState(isNewEvent);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [allScenarios, setAllScenarios] = useState<IScenario[]>([]);
   const [lastSavedEvent, setLastSavedEvent] = useState(initialEvent);
@@ -64,6 +66,14 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
 
   const watchedName = watch("name");
   const watchedScenarioId = watch("scenarioId");
+
+  const createEventMutation = useCreateEvent();
+  const updateEventMutation = useUpdateEvent();
+  const deleteEventMutation = useDeleteEvent();
+
+  const isSaving =
+    createEventMutation.isPending || updateEventMutation.isPending;
+  const isDeleting = deleteEventMutation.isPending;
 
   useEffect(() => {
     setIsLoading(true);
@@ -86,28 +96,30 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   }, []);
 
   const onSubmit = (data: IEvent) => {
-    setIsSaving(true);
-    const serviceCall = isNewEvent
-      ? eventsService.save(data)
-      : eventsService.update(data.id!, data);
-
-    serviceCall
-      .then((res) => {
-        if (res.success) {
-          showSuccessToastWithTimeout("Event saved successfully");
-          if (isNewEvent) {
-            router.push("/admin/events");
-          } else {
-            setIsBeingEdited(false);
-            reset(res.data);
-            setLastSavedEvent(res.data);
-          }
-        } else {
-          showErrorToastWithTimeout(res.data);
-        }
-      })
-      .catch((error) => showErrorToastWithTimeout(error))
-      .finally(() => setIsSaving(false));
+    if (isNewEvent) {
+      //TODO: Assert that data has scenarioID
+      createEventMutation.mutate(data, {
+        onSuccess: () => {
+          showSuccessToastWithTimeout("Event created successfully");
+          router.push("/admin/events");
+        },
+        onError: (error) => {
+          showErrorToastWithTimeout(error.message);
+        },
+      });
+    } else {
+      updateEventMutation.mutate(data as IEventPersisted, {
+        onSuccess: (updatedEvent) => {
+          showSuccessToastWithTimeout("Event updated successfully");
+          setIsBeingEdited(false);
+          reset(updatedEvent);
+          setLastSavedEvent(updatedEvent);
+        },
+        onError: (error) => {
+          showErrorToastWithTimeout(error.message);
+        },
+      });
+    }
   };
 
   const handleConfirmCancel = () => {
@@ -117,19 +129,16 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
 
   const handleConfirmDelete = () => {
     if (!lastSavedEvent?.id) return;
-    setIsDeleting(true);
-    eventsService
-      .delete(lastSavedEvent.id)
-      .then((response) => {
-        if (response.success) {
-          showSuccessToastWithTimeout("Event deleted successfully");
-          router.push("/admin/events");
-        } else {
-          showErrorToastWithTimeout(response.data);
-        }
-      })
-      .catch((error) => showErrorToastWithTimeout(error))
-      .finally(() => setIsDeleting(false));
+
+    deleteEventMutation.mutate(lastSavedEvent.id, {
+      onSuccess: () => {
+        showSuccessToastWithTimeout("Event deleted successfully");
+        router.push("/admin/roles");
+      },
+      onError: (error) => {
+        showErrorToastWithTimeout(error.message);
+      },
+    });
   };
 
   const {
@@ -411,6 +420,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
       {form}
       <ConfirmActionModal
         handleOnConfirm={handleConfirmDelete}
+        isConfirmActionDisabled={isDeleting}
         isOpen={isOpenDelete}
         prompt={intl.formatMessage({
           defaultMessage: "Are you sure you want to delete this event?",

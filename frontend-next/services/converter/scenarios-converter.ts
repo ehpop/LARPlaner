@@ -3,14 +3,19 @@ import {
   IActionPostDTO,
   IScenario,
   IScenarioAction,
+  IScenarioActionPersisted,
   IScenarioActionPostDTO,
   IScenarioGetDTO,
   IScenarioItem,
   IScenarioItemAction,
+  IScenarioItemActionPersisted,
   IScenarioItemActionPostDTO,
+  IScenarioItemPersisted,
   IScenarioItemPostDTO,
+  IScenarioPersisted,
   IScenarioPostDTO,
   IScenarioRole,
+  IScenarioRolePersisted,
   IScenarioRolePostDTO,
 } from "@/types/scenario.types";
 import { ITag } from "@/types/tags.types";
@@ -43,17 +48,26 @@ function convertActionToActionPostDTO(action: IAction): IActionPostDTO {
  * ITagGetDTO) are structurally compatible with their domain counterparts (IScenarioRole, ITag).
  *
  */
-export function convertGetDtoToScenario(dto: IScenarioGetDTO): IScenario {
+export function convertGetDtoToScenario(
+  dto: IScenarioGetDTO,
+): IScenarioPersisted {
   return {
     id: dto.id,
     name: dto.name,
     description: dto.description,
-    roles: dto.roles.map((role) => ({ ...role })),
-    items: dto.items.map((item) => ({
-      ...item,
-      actions: item.actions.map((action) => ({ ...action })),
-    })),
-    actions: dto.actions.map((action) => ({ ...action })),
+    roles: dto.roles.map((role) => ({ ...role }) as IScenarioRolePersisted),
+    items: dto.items.map(
+      (item) =>
+        ({
+          ...item,
+          actions: item.actions.map(
+            (action) => ({ ...action }) as IScenarioItemActionPersisted,
+          ),
+        }) as IScenarioItemPersisted,
+    ),
+    actions: dto.actions.map(
+      (action) => ({ ...action }) as IScenarioActionPersisted,
+    ),
   };
 }
 

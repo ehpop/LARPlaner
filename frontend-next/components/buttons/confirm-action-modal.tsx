@@ -14,12 +14,14 @@ const ConfirmActionModal = ({
   handleOnConfirm,
   isOpen,
   onOpenChange,
+  isConfirmActionDisabled = false,
 }: {
   title: string;
   prompt: string;
   handleOnConfirm: () => void;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  isConfirmActionDisabled?: boolean;
 }) => {
   return (
     <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
@@ -39,6 +41,7 @@ const ConfirmActionModal = ({
               </Button>
               <Button
                 color="primary"
+                isDisabled={isConfirmActionDisabled}
                 onPress={() => {
                   onClose();
                   handleOnConfirm();

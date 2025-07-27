@@ -1,61 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 
 import LoadingOverlay from "@/components/common/loading-overlay";
-import ScenariosService from "@/services/scenarios.service";
-import { IScenario } from "@/types/scenario.types";
 import ScenariosDisplayAdmin from "@/components/scenarios/scenarios-display-admin";
+import { useScenarios } from "@/services/scenarios/useScenarios";
 
 function ScenariosPage() {
   const intl = useIntl();
-  const [scenariosData, setScenariosData] = useState<IScenario[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchScenarios = async () => {
-      try {
-        const response = await ScenariosService.getAll();
+  const { data: scenarios, isLoading, error, isError } = useScenarios();
 
-        if (response.success) {
-          setScenariosData(response.data);
-        } else {
-          setError(
-            intl.formatMessage({
-              id: "scenarios.page.failed.to.fetch.scenarios",
-              defaultMessage: "Failed to fetch scenarios",
-            }),
-          );
-        }
-      } catch (err) {
-        setError(
-          intl.formatMessage({
-            id: "scenarios.page.an.error.occurred.while.fetching.scenarios",
-            defaultMessage: "An error occurred while fetching scenarios",
-          }),
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchScenarios().then(() => {});
-  }, []);
-
-  if (error) {
+  if (isError) {
     return (
       <div className="w-full flex justify-center">
-        <p>{error}</p>
+        <p>{error?.message}</p>
       </div>
     );
   }
 
   return (
     <div className="w-full space-y-3">
-      <LoadingOverlay isLoading={loading} label={"Loading scenarios..."}>
-        <ScenariosDisplayAdmin scenariosList={scenariosData || []} />
+      <LoadingOverlay
+        isLoading={isLoading}
+        label={intl.formatMessage({
+          id: "admin.scenarios.loading",
+          defaultMessage: "Loading scenarios...",
+        })}
+      >
+        <ScenariosDisplayAdmin scenariosList={scenarios || []} />
       </LoadingOverlay>
     </div>
   );

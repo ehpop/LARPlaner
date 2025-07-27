@@ -1,7 +1,12 @@
-import { ITag, ITagGetDTO, ITagPostDTO } from "@/types/tags.types";
+import {
+  ITag,
+  ITagGetDTO,
+  ITagPersisted,
+  ITagPostDTO,
+} from "@/types/tags.types";
 
-export function convertGetDtoToTag(dto: ITagGetDTO): ITag {
-  return { ...dto } as ITag;
+export function convertGetDtoToTag(dto: ITagGetDTO): ITagPersisted {
+  return { ...dto } as ITagPersisted;
 }
 
 export function convertTagToPostDto(tag: ITag): ITagPostDTO {

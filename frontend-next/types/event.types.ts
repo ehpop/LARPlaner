@@ -47,11 +47,31 @@ export type IEvent = {
   description: string;
   scenarioId?: IScenario["id"];
   gameSessionId: IGameSession["id"] | null;
-  assignedRoles: {
-    id?: string;
-    scenarioRoleId: IScenarioRole["roleId"];
-    assignedEmail: string;
-  }[];
+  assignedRoles: IAssignedRole[];
+};
+
+export type IEventPersisted = {
+  id: string;
+  name: string;
+  img: string;
+  status: IEventStatus;
+  date: ZonedDateTime;
+  description: string;
+  scenarioId: IScenario["id"];
+  gameSessionId: IGameSession["id"] | null;
+  assignedRoles: IAssignedRolePersisted[];
+};
+
+export type IAssignedRole = {
+  id?: string;
+  scenarioRoleId: IScenarioRole["roleId"];
+  assignedEmail: string;
+};
+
+export type IAssignedRolePersisted = {
+  id: string;
+  scenarioRoleId: IScenarioRole["roleId"];
+  assignedEmail: string;
 };
 
 export type IEventStatus = "historic" | "active" | "upcoming";

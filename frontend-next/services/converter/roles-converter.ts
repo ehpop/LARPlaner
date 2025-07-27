@@ -1,7 +1,12 @@
-import { IRole, IRoleGetDTO, IRolePostDTO } from "@/types/roles.types";
+import {
+  IRole,
+  IRoleGetDTO,
+  IRolePersisted,
+  IRolePostDTO,
+} from "@/types/roles.types";
 
-export function convertGetDtoToRole(dto: IRoleGetDTO): IRole {
-  return { ...dto } as IRole;
+export function convertGetDtoToRole(dto: IRoleGetDTO): IRolePersisted {
+  return { ...dto } as IRolePersisted;
 }
 
 export function convertRoleToPostDto(role: IRole): IRolePostDTO {

@@ -1,6 +1,7 @@
 package com.larplaner.dto.action;
 
 import com.larplaner.dto.BaseRequestDTO;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -15,9 +16,13 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class ActionRequestDTO extends BaseRequestDTO {
 
+  @NotBlank
   private String name;
+  @NotBlank
   private String description;
+  @NotBlank
   private String messageOnSuccess;
+  @NotBlank
   private String messageOnFailure;
 
   private List<UUID> requiredTagsToDisplay;

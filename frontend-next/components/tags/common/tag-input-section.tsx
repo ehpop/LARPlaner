@@ -12,13 +12,13 @@ import { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { useTags } from "@/providers/tags-provider";
-import tagsService from "@/services/tags.service";
 import { ITag } from "@/types/tags.types";
 import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
+import { TagsProvider, useTagsContext } from "@/providers/tags-provider";
+import { useCreateAllTags } from "@/services/tags/useTags";
 
 type INewTagForm = Omit<ITag, "id">;
 
@@ -51,14 +51,39 @@ const TagInputSection = ({
     formState: { errors },
   } = useForm<INewTagForm>({ defaultValues: initialNewTagState });
 
-  const { allTags, isLoading, refetchTags } = useTags();
+  const { allTags, isLoading, isError, error, refetchTags } = useTagsContext();
+
+  const createAllTagsMutation = useCreateAllTags();
+  const isSavingTag = createAllTagsMutation.isPending;
 
   const [selectedKey, setSelectedKey] = useState<Key | null>(null);
   const [tagsFilterText, setTagsFilterText] = useState<string>("");
 
+  const filteredItems = useMemo(() => {
+    if (!allTags) {
+      return [];
+    }
+
+    if (!tagsFilterText) return allTags;
+
+    return allTags.filter((tag) =>
+      tag.value.toLowerCase().includes(tagsFilterText.toLowerCase()),
+    );
+  }, [allTags, tagsFilterText]);
+
+  if (isError || allTags || error) {
+    if (isError) {
+      return (
+        <div className="w-full flex justify-center">
+          <p>{error?.message}</p>
+        </div>
+      );
+    }
+  }
+
   const handleAddExistingTag = (key: Key) => {
     setSelectedKey(key);
-    const tagToAdd = allTags.find((tag) => tag.id === key);
+    const tagToAdd = allTags && allTags.find((tag) => tag.id === key);
 
     if (tagToAdd) {
       onTagAdd(tagToAdd);
@@ -75,39 +100,32 @@ const TagInputSection = ({
       ...data,
       expiresAfterMinutes: data.expiresAfterMinutes || 0,
     };
-    const res = await tagsService.saveAll([payload]);
 
-    if (res.success) {
-      if (res.data.length === 0) {
-        showErrorToastWithTimeout("No tags were created");
+    createAllTagsMutation.mutate([payload], {
+      onSuccess: (createdTags) => {
+        if (createdTags.length === 0) {
+          showErrorToastWithTimeout("No tags were created");
+          reset();
+
+          return;
+        }
+        const newTag = createdTags[0];
+
+        onTagAdd(newTag);
         reset();
-
-        return;
-      }
-
-      const newTag = res.data[0];
-
-      onTagAdd(newTag);
-      reset();
-      showSuccessToastWithTimeout(
-        "Successfully added new tag: " + newTag.value,
-      );
-      refetchTags();
-    } else {
-      showErrorToastWithTimeout(res.data);
-    }
+        showSuccessToastWithTimeout(
+          "Successfully added new tag: " + newTag.value,
+        );
+        refetchTags();
+      },
+      onError: (error) => {
+        showErrorToastWithTimeout(error.message);
+      },
+    });
   };
 
-  const filteredItems = useMemo(() => {
-    if (!tagsFilterText) return allTags;
-
-    return allTags.filter((tag) =>
-      tag.value.toLowerCase().includes(tagsFilterText.toLowerCase()),
-    );
-  }, [allTags, tagsFilterText]);
-
   return (
-    <>
+    <TagsProvider>
       <div className="p-3 border rounded-md">
         <h3 className="font-semibold mb-2">
           <FormattedMessage
@@ -192,6 +210,7 @@ const TagInputSection = ({
           <Button
             className="self-start"
             color="primary"
+            isDisabled={isSavingTag}
             type="submit"
             variant="bordered"
             onPress={() => handleSubmit(handleCreateNewTag)()}
@@ -200,7 +219,7 @@ const TagInputSection = ({
           </Button>
         </div>
       </div>
-    </>
+    </TagsProvider>
   );
 };
 

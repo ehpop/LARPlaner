@@ -1,65 +1,39 @@
 "use client";
 
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, ReactNode, useContext } from "react";
 
-import { ITag } from "@/types/tags.types";
-import { showErrorToastWithTimeout } from "@/utils/toast";
-import tagsService from "@/services/tags.service";
+import { ITagPersisted } from "@/types/tags.types";
+import { useTags } from "@/services/tags/useTags";
 
 interface ITagsContext {
-  allTags: ITag[];
+  allTags: ITagPersisted[] | undefined;
   isLoading: boolean;
   refetchTags: () => void;
+  isError: boolean;
+  error: Error | null;
 }
 
-// Create the context with a default value
 const TagsContext = createContext<ITagsContext | undefined>(undefined);
 
-// Create the Provider component
 export const TagsProvider = ({ children }: { children: ReactNode }) => {
-  const [allTags, setAllTags] = useState<ITag[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [refetchTrigger, setRefetchTrigger] = useState(0);
-
-  const refetchTags = () => setRefetchTrigger((prev) => prev + 1);
-
-  useEffect(() => {
-    const fetchAllTags = async () => {
-      setIsLoading(true);
-      try {
-        const response = await tagsService.getAll();
-
-        if (!response.success) {
-          showErrorToastWithTimeout("Something went wrong");
-
-          return;
-        }
-        const data = response.data;
-
-        setAllTags(data);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAllTags();
-  }, [refetchTrigger]);
+  const {
+    data: allTags,
+    isLoading,
+    isError,
+    error,
+    refetch: refetchTags,
+  } = useTags();
 
   return (
-    <TagsContext.Provider value={{ allTags, isLoading, refetchTags }}>
+    <TagsContext.Provider
+      value={{ allTags, isLoading, isError, error, refetchTags }}
+    >
       {children}
     </TagsContext.Provider>
   );
 };
 
-// Create a custom hook for easy consumption
-export const useTags = (): ITagsContext => {
+export const useTagsContext = (): ITagsContext => {
   const context = useContext(TagsContext);
 
   if (context === undefined) {

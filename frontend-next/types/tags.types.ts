@@ -9,6 +9,13 @@ export type ITag = {
   expiresAfterMinutes?: number;
 };
 
+export type ITagPersisted = {
+  id: string;
+  value: string;
+  isUnique?: boolean;
+  expiresAfterMinutes?: number;
+};
+
 export type ITagGetDTO = IGetDTO & {
   value: string;
   isUnique?: boolean;
@@ -24,6 +31,14 @@ export type ITagPostDTO = IPostDTO & {
 export type IAppliedTag = {
   id?: string;
   tag: ITag;
+  userEmail: string;
+  userID: string;
+  appliedToUserAt: ZonedDateTime;
+};
+
+export type IAppliedTagPersisted = {
+  id: string;
+  tag: ITagPersisted;
   userEmail: string;
   userID: string;
   appliedToUserAt: ZonedDateTime;

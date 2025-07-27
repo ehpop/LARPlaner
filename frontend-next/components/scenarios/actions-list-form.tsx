@@ -371,6 +371,8 @@ const ActionRow = ({
     <div className="w-full flex flex-row justify-between items-baseline border-1 p-3">
       <Input
         isDisabled
+        isRequired
+        className="w-1/2"
         label={intl.formatMessage(messages.nameLabel)}
         size="sm"
         value={actionName || ""}

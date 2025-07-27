@@ -3,13 +3,13 @@ import { IAction, IScenarioItem, IScenarioRole } from "@/types/scenario.types";
 import { IAppliedTag, ITag } from "@/types/tags.types";
 
 export type IGameSession = {
-  id: string; // Unique session ID
-  eventId: IEvent["id"]; // Reference to the planned event
-  startTime: string; // ISO timestamp when the session started
-  endTime: string | null; // ISO timestamp when the session ended (null if ongoing)
-  assignedRoles: IGameRoleState[]; // Current role states
-  items: IGameItemState[]; // State of items in the session
-  actions: IGameActionLog[]; // Log of actions taken
+  id: string;
+  eventId: IEvent["id"];
+  startTime: string;
+  endTime: string | null;
+  assignedRoles: IGameRoleState[];
+  items: IGameItemState[];
+  actions: IGameActionLog[];
 };
 
 export type IGameSessionGetDTO = IGameSession;
@@ -17,30 +17,30 @@ export type IGameSessionPostDTO = IGameSession;
 
 export type IGameRoleState = {
   id: string;
-  scenarioRoleId: IScenarioRole["id"]; // The role in the scenario
-  assignedEmail: string; // Player assigned to this role
-  assignedUserID: string; // User ID of the player
-  appliedTags: IAppliedTag[]; // Tags representing buffs, conditions, or status
-  actionHistory: IGameActionLog[]; // Actions performed by this role
+  scenarioRoleId: IScenarioRole["id"];
+  assignedEmail: string;
+  assignedUserID: string;
+  appliedTags: IAppliedTag[];
+  actionHistory: IGameActionLog[];
 };
 
 export type IGameItemState = {
-  scenarioItemId: IScenarioItem["id"]; // The item from the scenario
-  currentHolderRoleId: IScenarioRole["id"] | null; // Who holds this item, if any
-  actionHistory: IGameActionLog[]; // Log of actions taken on the item
+  scenarioItemId: IScenarioItem["id"];
+  currentHolderRoleId: IScenarioRole["id"] | null;
+  actionHistory: IGameActionLog[];
 };
 
 export type IGameActionLog = {
-  id: string; // Unique ID for the action log entry
+  id: string;
   sessionId: IGameSession["id"];
-  actionId: IAction["id"]; // Reference to the action
-  timestamp: string; // ISO timestamp of when the action occurred
-  performerRoleId: IScenarioRole["id"]; // Who performed the action
-  targetItemId?: IScenarioItem["id"]; // If the action was on an item
-  success: boolean; // Whether the action was successful
-  appliedTags: ITag[]; // Tags applied due to this action
-  removedTags: ITag[]; // Tags removed due to this action
-  message: string; // Description of the outcome
+  actionId: IAction["id"];
+  timestamp: string;
+  performerRoleId: IScenarioRole["id"];
+  targetItemId?: IScenarioItem["id"];
+  success: boolean;
+  appliedTags: ITag[];
+  removedTags: ITag[];
+  message: string;
 };
 
 export type IGameActionRequest = {

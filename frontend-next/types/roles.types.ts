@@ -25,3 +25,10 @@ export type IRole = {
   description: string;
   tags: ITag[];
 };
+
+export type IRolePersisted = {
+  id: string;
+  name: string;
+  description: string;
+  tags: ITag[];
+};

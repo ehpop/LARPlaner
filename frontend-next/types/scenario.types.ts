@@ -1,6 +1,6 @@
 import { ITag, ITagGetDTO } from "@/types/tags.types";
 import { IGetDTO, IPostDTO } from "@/types/dto.types";
-import { IRole } from "@/types/roles.types";
+import { IRole, IRolePersisted } from "@/types/roles.types";
 
 /**
  * Role DTO for POST and UPDATE requests
@@ -33,10 +33,28 @@ export type IScenario = {
   actions: IScenarioAction[];
 };
 
+export type IScenarioPersisted = {
+  id: string;
+  name: string;
+  description: string;
+  roles: IScenarioRolePersisted[];
+  items: IScenarioItemPersisted[];
+  actions: IScenarioActionPersisted[];
+};
+
 export type IScenarioRole = {
   id?: string;
   roleId?: IRole["id"];
   scenarioId?: IScenario["id"];
+  descriptionForGM: string;
+  descriptionForOwner: string;
+  descriptionForOthers: string;
+};
+
+export type IScenarioRolePersisted = {
+  id: string;
+  roleId: IRolePersisted["id"];
+  scenarioId: IScenarioPersisted["id"];
   descriptionForGM: string;
   descriptionForOwner: string;
   descriptionForOthers: string;
@@ -66,6 +84,13 @@ export type IScenarioItem = {
   description: string;
   actions: IScenarioItemAction[];
 };
+export type IScenarioItemPersisted = {
+  id: string;
+  scenarioId: IScenarioPersisted["id"];
+  name: string;
+  description: string;
+  actions: IScenarioItemActionPersisted[];
+};
 
 export type IScenarioItemPostDTO = IPostDTO & {
   name: string;
@@ -84,6 +109,22 @@ export type IScenarioItemGetDTO = IGetDTO & {
 
 export type IAction = {
   id?: string;
+  name: string;
+  description: string;
+  messageOnSuccess: string;
+  messageOnFailure: string;
+  requiredTagsToDisplay: ITag[];
+  requiredTagsToSucceed: ITag[];
+  forbiddenTagsToDisplay: ITag[];
+  forbiddenTagsToSucceed: ITag[];
+  tagsToApplyOnSuccess: ITag[];
+  tagsToApplyOnFailure: ITag[];
+  tagsToRemoveOnSuccess: ITag[];
+  tagsToRemoveOnFailure: ITag[];
+};
+
+export type IActionPersisted = {
+  id: string;
   name: string;
   description: string;
   messageOnSuccess: string;
@@ -133,6 +174,10 @@ export type IScenarioAction = IAction & {
   scenarioId?: IScenario["id"];
 };
 
+export type IScenarioActionPersisted = IActionPersisted & {
+  scenarioId: IScenarioPersisted["id"];
+};
+
 export type IScenarioActionGetDTO = IActionGetDTO & {
   scenarioId: IScenario["id"];
 };
@@ -144,6 +189,11 @@ export type IScenarioActionPostDTO = IActionPostDTO & {
 export type IScenarioItemAction = IAction & {
   id?: string;
   itemId?: string;
+};
+
+export type IScenarioItemActionPersisted = IActionPersisted & {
+  id: string;
+  itemId: string;
 };
 
 export type IScenarioItemActionGetDTO = IActionGetDTO & {

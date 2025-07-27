@@ -10,17 +10,20 @@ import LoadingOverlay from "@/components/common/loading-overlay";
 import ActionsListForm from "@/components/scenarios/actions-list-form";
 import ScenarioItemsForm from "@/components/scenarios/scenario-items-form";
 import { ScenarioRolesForm } from "@/components/scenarios/scenario-roles-form";
-import useAllRoles from "@/hooks/roles/use-all-roles";
 import { TagsProvider } from "@/providers/tags-provider";
 import { emptyScenario } from "@/services/mock/mock-data";
-import scenariosService from "@/services/scenarios.service";
-import { IScenario } from "@/types/scenario.types";
+import { IScenario, IScenarioPersisted } from "@/types/scenario.types";
 import {
-  showErrorToast,
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
 import HidableSection from "@/components/common/hidable-section";
+import {
+  useCreateScenario,
+  useDeleteScenario,
+  useUpdateScenario,
+} from "@/services/scenarios/useScenarios";
+import { useRoles } from "@/services/roles/useRoles";
 
 export default function ScenarioForm({
   initialScenario,
@@ -30,7 +33,15 @@ export default function ScenarioForm({
   const intl = useIntl();
   const router = useRouter();
   const isNewScenario = !initialScenario;
-  const { roles: allRoles } = useAllRoles();
+  const {
+    data: allRoles,
+    isLoading: isLoadingRoles,
+    isError,
+    error,
+  } = useRoles();
+
+  const [isBeingEdited, setIsBeingEdited] = useState(isNewScenario);
+  const [lastSavedScenario, setLastSavedScenario] = useState(initialScenario);
 
   const {
     control,
@@ -39,14 +50,18 @@ export default function ScenarioForm({
     watch,
     formState: { errors, isDirty },
   } = useForm<IScenario>({
-    defaultValues: initialScenario || emptyScenario,
+    defaultValues: lastSavedScenario || emptyScenario,
   });
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isBeingEdited, setIsBeingEdited] = useState(isNewScenario);
-
   const watchedScenarioName = watch("name");
+
+  const createScenarioMutation = useCreateScenario();
+  const updateScenarioMutation = useUpdateScenario();
+  const deleteScenarioMutation = useDeleteScenario();
+
+  const isSaving =
+    createScenarioMutation.isPending || updateScenarioMutation.isPending;
+  const isDeleting = deleteScenarioMutation.isPending;
 
   const {
     onOpen: onOpenDelete,
@@ -60,55 +75,44 @@ export default function ScenarioForm({
   } = useDisclosure();
 
   const onSubmit = (data: IScenario) => {
-    setIsSaving(true);
-
-    const serviceCall = isNewScenario
-      ? scenariosService.save(data)
-      : scenariosService.update(data.id!, data);
-
-    serviceCall
-      .then((result) => {
-        if (result.success) {
-          showSuccessToastWithTimeout(
-            intl.formatMessage({
-              defaultMessage: "Scenario saved successfully",
-              id: "scenario.form.save.success",
-            }),
-          );
-          if (isNewScenario) {
-            router.push("/admin/scenarios");
-          } else {
-            reset(result.data);
-            setIsBeingEdited(false);
-          }
-        } else {
-          showErrorToast(result.data);
-        }
-      })
-      .catch((error) => showErrorToast(error))
-      .finally(() => setIsSaving(false));
+    if (isNewScenario) {
+      //TODO: assert that data is not persisted
+      createScenarioMutation.mutate(data, {
+        onSuccess: () => {
+          showSuccessToastWithTimeout("Role created successfully");
+          router.push("/admin/roles");
+        },
+        onError: (error) => {
+          showErrorToastWithTimeout(error.message);
+        },
+      });
+    } else {
+      updateScenarioMutation.mutate(data as IScenarioPersisted, {
+        onSuccess: (updatedScenario) => {
+          showSuccessToastWithTimeout("Role updated successfully");
+          setIsBeingEdited(false);
+          reset(updatedScenario);
+          setLastSavedScenario(updatedScenario);
+        },
+        onError: (error) => {
+          showErrorToastWithTimeout(error.message);
+        },
+      });
+    }
   };
 
   const handleConfirmDelete = () => {
-    if (!initialScenario?.id) return;
-    setIsDeleting(true);
-    scenariosService
-      .delete(initialScenario.id)
-      .then((result) => {
-        if (result.success) {
-          showSuccessToastWithTimeout(
-            intl.formatMessage({
-              defaultMessage: "Scenario deleted successfully",
-              id: "scenario.form.delete.success",
-            }),
-          );
-          router.push("/admin/scenarios");
-        } else {
-          showErrorToastWithTimeout(result.data);
-        }
-      })
-      .catch((error) => showErrorToastWithTimeout(error))
-      .finally(() => setIsDeleting(false));
+    if (!lastSavedScenario?.id) return;
+
+    deleteScenarioMutation.mutate(lastSavedScenario.id, {
+      onSuccess: () => {
+        showSuccessToastWithTimeout("Scenario deleted successfully");
+        router.push("/admin/scenarios");
+      },
+      onError: (error) => {
+        showErrorToastWithTimeout(error.message);
+      },
+    });
   };
 
   const handleConfirmCancel = () => {
@@ -206,7 +210,7 @@ export default function ScenarioForm({
             <HidableSection
               section={
                 <ScenarioRolesForm
-                  availableRoles={allRoles}
+                  availableRoles={allRoles || []}
                   control={control}
                   isBeingEdited={isBeingEdited}
                 />
@@ -292,9 +296,17 @@ export default function ScenarioForm({
     </TagsProvider>
   );
 
+  if (isError) {
+    return (
+      <div className="w-full flex justify-center">
+        <p>{error?.message}</p>
+      </div>
+    );
+  }
+
   return (
     <LoadingOverlay
-      isLoading={isSaving || isDeleting}
+      isLoading={isSaving || isDeleting || isLoadingRoles}
       label={
         isSaving
           ? intl.formatMessage({
