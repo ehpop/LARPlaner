@@ -17,11 +17,15 @@ import com.larplaner.mapper.scenario.ScenarioItemActionMapper;
 import com.larplaner.mapper.scenario.ScenarioItemMapper;
 import com.larplaner.mapper.scenario.ScenarioMapper;
 import com.larplaner.mapper.scenario.ScenarioRoleMapper;
+import com.larplaner.model.event.AssignedRole;
+import com.larplaner.model.event.Event;
+import com.larplaner.model.event.EventStatusEnum;
 import com.larplaner.model.scenario.Scenario;
 import com.larplaner.model.scenario.ScenarioAction;
 import com.larplaner.model.scenario.ScenarioItem;
 import com.larplaner.model.scenario.ScenarioItemAction;
 import com.larplaner.model.scenario.ScenarioRole;
+import com.larplaner.repository.event.EventRepository;
 import com.larplaner.repository.scenario.ScenarioActionRepository;
 import com.larplaner.repository.scenario.ScenarioItemActionRepository;
 import com.larplaner.repository.scenario.ScenarioItemRepository;
@@ -58,6 +62,7 @@ public class ScenarioServiceImpl implements ScenarioService {
   private final ScenarioItemRepository scenarioItemRepository;
   private final ScenarioActionRepository scenarioActionRepository;
   private final ScenarioItemActionRepository scenarioItemActionRepository;
+  private final EventRepository eventRepository;
 
   @Override
   @Transactional(readOnly = true)
@@ -103,7 +108,34 @@ public class ScenarioServiceImpl implements ScenarioService {
 
     Scenario updatedScenario = scenarioRepository.save(existingScenario);
 
+    updateEventAssignedRoles(updatedScenario);
+
     return scenarioMapper.toDTO(updatedScenario);
+  }
+
+  private void updateEventAssignedRoles(Scenario updatedScenario) {
+    List<Event> eventsThatShouldHaveRolesUpdated = eventRepository.findAllByScenario_IdAndStatus(updatedScenario.getId(),
+        EventStatusEnum.UPCOMING);
+
+    eventsThatShouldHaveRolesUpdated.forEach(event -> {
+      var assignedRoles = event.getAssignedRoles().stream()
+          .map(AssignedRole::getScenarioRole).collect(Collectors.toSet());
+      var newRolesInScenario = updatedScenario.getRoles();
+
+      var rolesToDeleteFromEvent = event.getAssignedRoles().stream()
+          .filter(assignedRole -> !newRolesInScenario.contains(assignedRole.getScenarioRole()))
+          .toList();
+      var rolesToAddToEvent = newRolesInScenario.stream()
+          .filter(role -> !assignedRoles.contains(role))
+          .map(role -> AssignedRole.builder().scenarioRole(role).event(event).build())
+          .toList();
+
+      event.getAssignedRoles().removeAll(rolesToDeleteFromEvent);
+      event.getAssignedRoles().addAll(rolesToAddToEvent);
+    });
+
+    eventRepository.saveAll(eventsThatShouldHaveRolesUpdated);
+    log.debug("Updated {} events related to scenario", eventsThatShouldHaveRolesUpdated.size());
   }
 
   @Override
