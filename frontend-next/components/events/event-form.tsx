@@ -409,7 +409,17 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
   return (
     <LoadingOverlay
       isLoading={isSaving || isDeleting || isLoading}
-      label={isSaving ? "Saving event..." : "Deleting event..."}
+      label={
+        isSaving
+          ? intl.formatMessage({
+              id: "events.id.page.saving",
+              defaultMessage: "Saving event...",
+            })
+          : intl.formatMessage({
+              id: "events.id.page.deleting",
+              defaultMessage: "Deleting event...",
+            })
+      }
     >
       {form}
       <ConfirmActionModal

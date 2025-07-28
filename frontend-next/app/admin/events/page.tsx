@@ -24,7 +24,7 @@ function EventsPage() {
       <LoadingOverlay
         isLoading={isLoading}
         label={intl.formatMessage({
-          defaultMessage: "Loading active events...",
+          defaultMessage: "Loading events...",
           id: "admin.events.loading",
         })}
       >

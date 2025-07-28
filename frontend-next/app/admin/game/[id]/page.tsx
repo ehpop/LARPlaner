@@ -34,7 +34,7 @@ const ActiveAdminGamePage = ({ params }: any) => {
       <LoadingOverlay
         isLoading={isLoading}
         label={intl.formatMessage({
-          defaultMessage: "Loading event...",
+          defaultMessage: "Loading game...",
           id: "game.admin.id.page.display.loading",
         })}
       >

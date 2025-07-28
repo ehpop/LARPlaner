@@ -42,7 +42,7 @@ const EventPageWrapper = ({
       <LoadingOverlay
         isLoading={loading}
         label={intl.formatMessage({
-          id: "events.page.wrapper.error",
+          id: "events.page.wrapper.loading",
           defaultMessage: "Loading event and scenario...",
         })}
       >

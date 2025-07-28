@@ -310,11 +310,11 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
       label={
         isSaving
           ? intl.formatMessage({
-              defaultMessage: "Saving...",
+              defaultMessage: "Saving role...",
               id: "role.form.saving",
             })
           : intl.formatMessage({
-              defaultMessage: "Deleting...",
+              defaultMessage: "Deleting role...",
               id: "role.form.deleting",
             })
       }

@@ -247,7 +247,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
       isLoading={loading}
       label={intl.formatMessage({
         id: "events.active.id.chat.loading",
-        defaultMessage: "Loading chat",
+        defaultMessage: "Loading chat...",
       })}
     >
       <div className="w-full h-[75vh] flex flex-col justify-start space-y-5">
