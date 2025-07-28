@@ -3,7 +3,6 @@ package com.larplaner.dto.game.roleState;
 import com.larplaner.dto.BaseResponseDTO;
 import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
 import com.larplaner.dto.tag.AppliedTagResponseDTO;
-import com.larplaner.dto.tag.TagResponseDTO;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;

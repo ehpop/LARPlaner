@@ -19,7 +19,10 @@ ENV SPRING_PROFILES_ACTIVE=prod
 
 EXPOSE 8080
 
-#RUN addgroup --system spring && adduser --system --ingroup spring spring
-#USER spring:spring
+RUN addgroup --system spring && adduser --system --ingroup spring spring
+# Accoring to docs this should be set to access secure files,
+# but it doesn't seem to work so it is disabled for now
+# RUN usermod -a -G 1000 spring
+USER spring:spring
 
 ENTRYPOINT ["java","-jar","app.jar"]

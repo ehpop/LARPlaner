@@ -4,7 +4,6 @@ import com.larplaner.api.role.RoleController;
 import com.larplaner.dto.role.RoleRequestDTO;
 import com.larplaner.dto.role.RoleResponseDTO;
 import com.larplaner.dto.role.UpdateRoleRequestDTO;
-import com.larplaner.service.admin.security.SecurityService;
 import com.larplaner.service.role.RoleService;
 import java.util.List;
 import java.util.UUID;

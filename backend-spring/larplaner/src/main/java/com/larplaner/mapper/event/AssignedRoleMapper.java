@@ -4,7 +4,6 @@ import com.larplaner.dto.event.assignedRole.AssignedRoleRequestDTO;
 import com.larplaner.dto.event.assignedRole.AssignedRoleResponseDTO;
 import com.larplaner.dto.event.assignedRole.AssignedRoleUpdateRequestDTO;
 import com.larplaner.model.event.AssignedRole;
-import com.larplaner.repository.event.EventRepository;
 import com.larplaner.repository.scenario.ScenarioRoleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
