@@ -16,12 +16,10 @@ import com.larplaner.model.event.Event;
 import com.larplaner.model.event.EventStatusEnum;
 import com.larplaner.repository.event.EventRepository;
 import com.larplaner.repository.game.GameSessionRepository;
-import com.larplaner.service.event.EventService;
 import com.larplaner.service.admin.firebase.UserLookupService;
+import com.larplaner.service.event.EventService;
 import com.larplaner.service.game.impl.GameSessionServiceImpl;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +39,6 @@ import org.springframework.util.StringUtils;
 public class EventServiceImpl implements EventService {
 
   private final UserLookupService userLookupService;
-  @PersistenceContext
-  private EntityManager entityManager;
 
   private final EventRepository eventRepository;
   private final EventMapper eventMapper;
@@ -83,8 +79,9 @@ public class EventServiceImpl implements EventService {
 
     Event event = eventRepository.getReferenceById(id);
 
-    if(!EventStatusEnum.UPCOMING.equals(event.getStatus())){
-      throw new EntityCouldNotBeEdited("Event can not be edited because it isn't in status: " + EventStatusEnum.UPCOMING);
+    if (!EventStatusEnum.UPCOMING.equals(event.getStatus())) {
+      throw new EntityCouldNotBeEdited(
+          "Event can not be edited because it isn't in status: " + EventStatusEnum.UPCOMING);
     }
 
     eventMapper.updateEntityFromDTO(eventDTO, event);
@@ -123,9 +120,8 @@ public class EventServiceImpl implements EventService {
     }
 
     switch (event.getStatus()) {
-      case HISTORIC -> {
-        return updateEventStatusFromHistoric(event, newStatus);
-      }
+      case HISTORIC ->
+          throw new EventStatusCouldNotBeChanged("Cannot change event status from historic");
       case ACTIVE -> {
         return updateEventStatusFromActive(event, newStatus);
       }
@@ -135,10 +131,6 @@ public class EventServiceImpl implements EventService {
       default -> throw new IllegalStateException(
           "There is no logic for changing EventStatus from : " + event.getStatus().name());
     }
-  }
-
-  private Event updateEventStatusFromHistoric(Event event, EventStatusEnum newStatus) {
-    throw new EventStatusCouldNotBeChanged("Cannot change event status from historic");
   }
 
   private Event updateEventStatusFromActive(Event event, EventStatusEnum newStatus) {
@@ -162,11 +154,9 @@ public class EventServiceImpl implements EventService {
           "Cannot change event status from upcoming to " + newStatus.name().toLowerCase());
     }
 
-    //TODO: ENABLE THIS CHECK
-//    checkIfAllEmailsAreValidInEvent(event);
+    checkIfAllEmailsAreValidInEvent(event);
 
     gameSessionService.createGameSession(event);
-
     event.setStatus(EventStatusEnum.ACTIVE);
     return eventRepository.save(event);
   }
@@ -221,7 +211,7 @@ public class EventServiceImpl implements EventService {
   /**
    * It is okay for multiple emails to be empty/nulls
    *
-   * @param eventDTO
+   * @param eventDTO - DTO of event with emails to check
    */
   private void checkForDuplicatesInRequest(EventUpdateRequestDTO eventDTO) {
     List<String> emailsInRequest = eventDTO.getAssignedRoles().stream()

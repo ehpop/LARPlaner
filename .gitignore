@@ -35,3 +35,7 @@ replay_pid*
 # environment
 .env
 
+*.mv.db
+*.trace.db
+
+backend-spring/larplaner/src/main/resources/config/*.json

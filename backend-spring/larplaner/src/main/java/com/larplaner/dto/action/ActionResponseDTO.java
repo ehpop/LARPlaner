@@ -3,7 +3,6 @@ package com.larplaner.dto.action;
 import com.larplaner.dto.BaseResponseDTO;
 import com.larplaner.dto.tag.TagResponseDTO;
 import java.util.List;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
