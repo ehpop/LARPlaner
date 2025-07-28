@@ -60,7 +60,7 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOrigins(List.of("http://localhost:9000, https://larplaner.vercel.app"));
+    configuration.setAllowedOrigins(List.of("http://localhost:9000", "https://larplaner.vercel.app"));
 
     configuration.setAllowedMethods(
         Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
