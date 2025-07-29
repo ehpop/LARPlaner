@@ -9,16 +9,19 @@ App for planing and conducting LARP events
 - Next.js
 - TypeScript
 - Tailwind CSS
+- React
+- Swiper
+- HeroUI
 
 **Backend:**
 
 - Spring Boot (Java)
-- (Assuming Maven or Gradle for build)
+- Maven
 
 **Infrastructure:**
 
 - Docker
-- Nginx (based on directory structure)
+- Nginx
 
 ## Getting Started
 
@@ -28,35 +31,35 @@ App for planing and conducting LARP events
 
 ### Running the Application
 
-1.  **Clone the repository:**
+1. **Clone the repository:**
 
-    ```bash
-    git clone <your-repository-url>
-    cd LARPlaner
-    ```
+   ```bash
+   git clone <your-repository-url>
+   cd LARPlaner
+   ```
 
-2.  **Environment Variables:**
+2. **Environment Variables:**
 
-    - Ensure you have a `.env` file configured in the root directory based on `.env.example` (if one exists) or the project's requirements.
+    - Create a `.env` file in the root directory. You can use the `.env.example` file as a template if it exists.
 
-3.  **Build and Run with Docker Compose:**
+3. **Build and Run with Docker Compose:**
 
-    ```bash
-    docker-compose up --build
-    ```
+   ```bash
+   docker-compose up --build
+   ```
 
-    This command will build the Docker images for the frontend and backend (if Dockerfiles exist and are configured in `compose.yaml`) and start the services defined in your `compose.yaml` file.
+   This command will build the Docker images for the frontend and backend and start all the services.
 
-4.  **Access the application:**
-    - The application should typically be accessible at `http://localhost:80` (if Nginx is configured as a reverse proxy) or directly via the frontend's port (e.g., `http://localhost:3000`). Check your `compose.yaml` and Nginx configuration for the exact ports.
+4. **Access the application:**
+    - The application will be accessible at `http://localhost:80`.
 
 ## Project Structure
 
 - `frontend-next/`: Contains the Next.js frontend application.
 - `backend-spring/`: Contains the Spring Boot backend application.
-- `nginx/`: Contains Nginx configuration files (if used).
+- `nginx/`: Contains Nginx configuration files.
 - `compose.yaml`: Docker Compose file defining the services, networks, and volumes.
-- `.env`: Environment variables (should not be committed to Git).
+- `.env`: Environment variables (not committed to Git).
 - `README.md`: This file.
 
 ## Contributing
