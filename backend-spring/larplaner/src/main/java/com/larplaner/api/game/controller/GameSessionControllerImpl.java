@@ -11,7 +11,6 @@ import com.larplaner.service.game.GameSessionService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,14 +81,6 @@ public class GameSessionControllerImpl implements GameSessionController {
   }
 
   @Override
-  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-  public ResponseEntity<GameActionLogResponseDTO> createGameHistory(
-      GameActionLogResponseDTO gameActionLogDTO) {
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(gameSessionService.createGameHistory(gameActionLogDTO));
-  }
-
-  @Override
   @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToGameSession(#id)")
   public ResponseEntity<GameActionLogResponseDTO> performActionInGameSession(UUID id,
       GameActionRequestDTO actionRequestDTO) {
@@ -100,7 +91,8 @@ public class GameSessionControllerImpl implements GameSessionController {
 
   @Override
   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-  public ResponseEntity<GameSessionResponseDTO> updateGameSessionRoleState(UUID gameSessionRoleId, UpdateGameRoleStateRequestDTO requestDTO) {
+  public ResponseEntity<GameSessionResponseDTO> updateGameSessionRoleState(UUID gameSessionRoleId,
+      UpdateGameRoleStateRequestDTO requestDTO) {
     return ResponseEntity.ok(
         gameSessionService.updateRoleState(gameSessionRoleId, requestDTO)
     );
@@ -109,7 +101,7 @@ public class GameSessionControllerImpl implements GameSessionController {
   @Override
   @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToGameSessionRole(#gameSessionRoleId)")
   public ResponseEntity<List<ScenarioActionResponseDTO>> getAvailableActionsForUser(
-      UUID gameSessionRoleId){
+      UUID gameSessionRoleId) {
     return ResponseEntity.ok(
         gameSessionService.getAvailableActionsForUser(gameSessionRoleId)
     );
@@ -118,7 +110,7 @@ public class GameSessionControllerImpl implements GameSessionController {
   @Override
   @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToGameSessionRole(#gameSessionRoleId)")
   public ResponseEntity<List<ScenarioItemActionResponseDTO>> getAvailableItemActionsForUser(
-      UUID gameSessionRoleId, UUID itemId){
+      UUID gameSessionRoleId, UUID itemId) {
     return ResponseEntity.ok(
         gameSessionService.getAvailableItemActionsForUser(gameSessionRoleId, itemId)
     );

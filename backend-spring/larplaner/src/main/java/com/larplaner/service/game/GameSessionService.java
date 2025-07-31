@@ -7,6 +7,7 @@ import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
 import com.larplaner.dto.scenario.action.ScenarioActionResponseDTO;
 import com.larplaner.dto.scenario.itemAction.ScenarioItemActionResponseDTO;
 import com.larplaner.model.event.Event;
+import com.larplaner.model.game.GameActionLog;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public interface GameSessionService {
 
   List<GameActionLogResponseDTO> getUserGameHistoryByGameId(UUID gameId);
 
-  GameActionLogResponseDTO createGameHistory(GameActionLogResponseDTO gameActionLogDTO);
+  GameActionLogResponseDTO createGameHistory(GameActionLog gameActionLogDTO);
 
   GameActionLogResponseDTO performAction(UUID id, GameActionRequestDTO actionRequestDTO);
 

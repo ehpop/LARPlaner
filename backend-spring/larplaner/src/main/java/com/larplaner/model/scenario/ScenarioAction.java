@@ -13,7 +13,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 @Getter

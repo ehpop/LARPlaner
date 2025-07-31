@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Table(name = "scenario_items")
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 @Getter

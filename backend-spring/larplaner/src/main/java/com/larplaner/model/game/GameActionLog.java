@@ -20,7 +20,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "game_action_logs")
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 @Getter

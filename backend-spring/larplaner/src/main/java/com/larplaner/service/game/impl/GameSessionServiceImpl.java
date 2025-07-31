@@ -11,7 +11,6 @@ import com.larplaner.mapper.game.GameSessionMapper;
 import com.larplaner.mapper.game.action.GameActionLogMapper;
 import com.larplaner.mapper.scenario.ScenarioActionMapper;
 import com.larplaner.mapper.scenario.ScenarioItemActionMapper;
-import com.larplaner.mapper.tag.TagMapper;
 import com.larplaner.model.action.Action;
 import com.larplaner.model.event.Event;
 import com.larplaner.model.game.GameActionLog;
@@ -22,6 +21,7 @@ import com.larplaner.model.scenario.Scenario;
 import com.larplaner.model.tag.AppliedTag;
 import com.larplaner.model.tag.Tag;
 import com.larplaner.repository.game.GameActionLogRepository;
+import com.larplaner.repository.game.GameItemStateRepository;
 import com.larplaner.repository.game.GameRoleStateRepository;
 import com.larplaner.repository.game.GameSessionRepository;
 import com.larplaner.repository.scenario.ScenarioActionRepository;
@@ -57,11 +57,11 @@ public class GameSessionServiceImpl implements GameSessionService {
   private final UserLookupService userLookupService;
   private final ScenarioActionRepository scenarioActionRepository;
   private final ScenarioItemActionRepository scenarioItemActionRepository;
-  private final TagMapper tagMapper;
   private final GameRoleStateRepository gameRoleStateRepository;
   private final TagHelper tagHelper;
   private final ScenarioActionMapper scenarioActionMapper;
   private final ScenarioItemActionMapper scenarioItemActionMapper;
+  private final GameItemStateRepository gameItemStateRepository;
 
   @Override
   public List<GameSessionResponseDTO> getAllGameSessions() {
@@ -163,7 +163,7 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public List<GameActionLogResponseDTO> getUserGameHistoryByGameId(UUID gameId){
+  public List<GameActionLogResponseDTO> getUserGameHistoryByGameId(UUID gameId) {
     return getUserGameHistoryByGameId(SecurityService.getFirebaseToken().getUid(), gameId);
   }
 
@@ -193,8 +193,7 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public GameActionLogResponseDTO createGameHistory(GameActionLogResponseDTO gameActionLogDTO) {
-    GameActionLog gameActionLog = gameActionLogMapper.toEntity(gameActionLogDTO);
+  public GameActionLogResponseDTO createGameHistory(GameActionLog gameActionLog) {
     return gameActionLogMapper.toDTO(gameActionLogRepository.save(gameActionLog));
   }
 
@@ -202,10 +201,16 @@ public class GameSessionServiceImpl implements GameSessionService {
       GameActionRequestDTO gameActionRequestDTO) {
     var game = gameSessionRepository.findById(gameSessionId)
         .orElseThrow(EntityNotFoundException::new);
+
     var userRole = game.getAssignedRoles().stream()
         .filter(assignedRole -> assignedRole.getScenarioRole().getId()
             .equals(gameActionRequestDTO.getPerformerRoleId()))
         .findFirst().orElseThrow(EntityNotFoundException::new);
+
+    var targetItem = Objects.nonNull(gameActionRequestDTO.getTargetItemId())
+        ? gameItemStateRepository.findByScenarioItemId(gameActionRequestDTO.getTargetItemId())
+        .orElseThrow(EntityNotFoundException::new)
+        : null;
 
     var actionToPerform = Objects.isNull(gameActionRequestDTO.getTargetItemId())
         ? scenarioActionRepository.getReferenceById(gameActionRequestDTO.getActionId())
@@ -241,15 +246,15 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     gameRoleStateRepository.save(userRole);
 
-    return createGameHistory(GameActionLogResponseDTO.builder()
-        .gameSessionId(gameSessionId)
-        .actionId(actionToPerform.getId())
+    return createGameHistory(GameActionLog.builder()
+        .gameSession(game)
+        .action(actionToPerform)
         .success(success)
         .message(messageToDisplay)
-        .removedTags(tagsToRemove.stream().map(tagMapper::toDTO).toList())
-        .appliedTags(tagsToApply.stream().map(tagMapper::toDTO).toList())
-        .performerRoleId(userRole.getId())
-        .targetItemId(gameActionRequestDTO.getTargetItemId())
+        .removedTags(tagsToRemove)
+        .appliedTags(tagsToApply)
+        .performerRole(userRole)
+        .targetItem(Objects.isNull(targetItem) ? null : targetItem)
         .timestamp(ZonedDateTime.now())
         .build());
   }

@@ -96,15 +96,6 @@ public interface GameSessionController {
   ResponseEntity<List<GameActionLogResponseDTO>> getUserGameHistoryByGameId(
       @Parameter(description = "ID of the game to retrieve history for") @PathVariable UUID gameId);
 
-  @Operation(summary = "Create a new game history entry")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "Game history entry created successfully"),
-      @ApiResponse(responseCode = "400", description = "Invalid input")
-  })
-  @PostMapping("/history")
-  ResponseEntity<GameActionLogResponseDTO> createGameHistory(
-      @Parameter(description = "Game history entry to create") @RequestBody GameActionLogResponseDTO gameActionLogDTO);
-
   @Operation(summary = "Try to perform action")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Successfully processed action request"),

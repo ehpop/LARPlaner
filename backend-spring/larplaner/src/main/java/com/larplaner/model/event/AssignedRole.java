@@ -16,7 +16,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "assigned_roles")
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 @Getter

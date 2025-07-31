@@ -28,7 +28,6 @@ public class TagMapper {
     }
 
     return Tag.builder()
-        .id(dto.getId())
         .value(dto.getValue())
         .isUnique(dto.getIsUnique())
         .expiresAfterMinutes(dto.getExpiresAfterMinutes())

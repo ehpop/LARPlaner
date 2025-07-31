@@ -27,14 +27,6 @@ public class RoleMapper {
         .build();
   }
 
-  public Role toEntity(RoleResponseDTO dto) {
-    return Role.builder()
-        .id(dto.getId())
-        .name(dto.getName())
-        .description(dto.getDescription())
-        .build();
-  }
-
   public Role toEntity(RoleRequestDTO dto) {
     return Role.builder()
         .name(dto.getName())

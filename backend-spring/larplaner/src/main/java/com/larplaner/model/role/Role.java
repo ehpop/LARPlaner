@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder.Default;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +18,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "roles")
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 @Getter
@@ -27,6 +25,7 @@ import lombok.experimental.SuperBuilder;
 @ToString
 public class Role extends BaseEntity {
 
+  @Column(unique = true, nullable = false)
   private String name;
 
   @Column(length = 4096)

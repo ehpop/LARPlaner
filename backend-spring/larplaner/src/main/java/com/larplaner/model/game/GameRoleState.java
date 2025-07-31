@@ -24,15 +24,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Table(name = "game_role_states")
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 @Getter
 @Setter
 @ToString
+@Slf4j
 public class GameRoleState extends BaseEntity {
 
   @ManyToOne
@@ -58,14 +59,14 @@ public class GameRoleState extends BaseEntity {
   @Default
   private List<GameActionLog> actionHistory = new ArrayList<>();
 
-  public Collection<Tag> getAllActiveTags(){
+  public Collection<Tag> getAllActiveTags() {
     return appliedTags.stream()
         .filter(AppliedTag::isTagActive)
         .map(AppliedTag::getTag)
         .collect(Collectors.toSet());
   }
 
-  public Optional<AppliedTag> findAppliedTagByTag(Tag tag){
+  public Optional<AppliedTag> findAppliedTagByTag(Tag tag) {
     return appliedTags
         .stream()
         .filter(AppliedTag::isTagActive)

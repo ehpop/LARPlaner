@@ -13,7 +13,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 @Getter
@@ -29,7 +28,6 @@ public class ScenarioItemAction extends Action {
 
   public ScenarioItemAction(Action action) {
     super();
-    this.setId(action.getId());
     this.setName(action.getName());
     this.setDescription(action.getDescription());
     this.setMessageOnSuccess(action.getMessageOnSuccess());

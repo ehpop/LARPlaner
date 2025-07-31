@@ -17,7 +17,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "scenario_roles")
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 @Getter
@@ -45,7 +44,7 @@ public class ScenarioRole extends BaseEntity {
   private String descriptionForOthers;
 
   @ToString.Include(name = "scenarioId")
-  public String getScenarioId(){
+  public String getScenarioId() {
     return (scenario != null) ? scenario.getId().toString() : null;
   }
 }
