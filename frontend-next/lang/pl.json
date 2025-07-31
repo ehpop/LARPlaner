@@ -179,7 +179,7 @@
   "game.manageCharacters.tags.noContent": "Brak ról w tej grze",
   "game.manageCharacters.tagsCount": "Liczba tagów",
   "game.myCharacterModal.actionsAvailable": "Aktywne tagi dla Twojej postaci:",
-  "game.myCharacterModal.appliedByOn": "Przez {userEmail} dnia {appliedDate}",
+  "game.myCharacterModal.appliedByOn": "Dodano {appliedDate}",
   "game.myCharacterModal.button.label": "Moja postać",
   "game.myCharacterModal.error.noData": "Nie można załadować danych roli.",
   "game.myCharacterModal.role": "Rola: {roleName}",

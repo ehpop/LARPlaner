@@ -90,18 +90,16 @@ export const usePerformAction = (): UseMutationResult<
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: [gameQueryKeys.all, data.gameSessionId, "history"],
+        queryKey: gameQueryKeys.detail(variables.id),
       });
       queryClient.invalidateQueries({
-        queryKey: [gameQueryKeys.all, data.gameSessionId, "user-history"],
+        queryKey: [gameQueryKeys.all, variables.id, "history"],
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          "game",
-          "roles",
-          variables.actionRequest.performerRoleId,
-          "available-actions",
-        ],
+        queryKey: [gameQueryKeys.all, variables.id, "user-history"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["game", "roles", variables.actionRequest.performerRoleId],
       });
     },
   });
@@ -131,7 +129,7 @@ export const useUpdateGameSessionRoleState = (): UseMutationResult<
         queryKey: gameQueryKeys.detail(updatedGameSession.id),
       });
       queryClient.invalidateQueries({
-        queryKey: ["game", "roles", variables.roleStateId, "available-actions"],
+        queryKey: ["game", "roles", variables.roleStateId],
       });
     },
   });

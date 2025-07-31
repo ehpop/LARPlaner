@@ -177,7 +177,7 @@
   "game.manageCharacters.tags.noContent": "No roles in this game",
   "game.manageCharacters.tagsCount": "Tags count",
   "game.myCharacterModal.actionsAvailable": "Active tags for your character:",
-  "game.myCharacterModal.appliedByOn": "By {userEmail} on {appliedDate}",
+  "game.myCharacterModal.appliedByOn": "Applied on {appliedDate}",
   "game.myCharacterModal.button.label": "My character",
   "game.myCharacterModal.error.noData": "Cannot load role data.",
   "game.myCharacterModal.role": "Role: {roleName}",
