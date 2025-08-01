@@ -12,17 +12,20 @@ import com.larplaner.repository.game.GameRoleStateRepository;
 import com.larplaner.repository.game.GameSessionRepository;
 import com.larplaner.repository.role.RoleRepository;
 import com.larplaner.repository.scenario.ScenarioRepository;
+import com.larplaner.security.FirebaseAuthenticationToken;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service("securityService")
 public class SecurityService {
 
@@ -31,17 +34,6 @@ public class SecurityService {
   private final GameRoleStateRepository gameRoleStateRepository;
   private final RoleRepository roleRepository;
   private final ScenarioRepository scenarioRepository;
-
-  public SecurityService(EventRepository eventRepository,
-      GameSessionRepository gameSessionRepository,
-      GameRoleStateRepository gameRoleStateRepository, RoleRepository roleRepository,
-      ScenarioRepository scenarioRepository) {
-    this.eventRepository = eventRepository;
-    this.gameSessionRepository = gameSessionRepository;
-    this.gameRoleStateRepository = gameRoleStateRepository;
-    this.roleRepository = roleRepository;
-    this.scenarioRepository = scenarioRepository;
-  }
 
   public boolean isUserAssignedToEvent(UUID eventId) {
     Event event = eventRepository.findById(eventId).orElseThrow(EntityNotFoundException::new);
@@ -93,7 +85,12 @@ public class SecurityService {
 
   public static FirebaseToken getFirebaseToken() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return (FirebaseToken) authentication.getPrincipal();
+
+    if (authentication instanceof FirebaseAuthenticationToken) {
+      return ((FirebaseAuthenticationToken) authentication).getPrincipal();
+    }
+
+    throw new IllegalStateException("The user is not authenticated with a Firebase token.");
   }
 
 }

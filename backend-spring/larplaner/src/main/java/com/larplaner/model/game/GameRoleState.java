@@ -10,6 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,10 +53,12 @@ public class GameRoleState extends BaseEntity {
   private String assignedUserID;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OrderBy("appliedToUserAt DESC")
   @Default
   private List<AppliedTag> appliedTags = new ArrayList<>();
 
   @OneToMany(mappedBy = "performerRole", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OrderBy("timestamp DESC")
   @Default
   private List<GameActionLog> actionHistory = new ArrayList<>();
 

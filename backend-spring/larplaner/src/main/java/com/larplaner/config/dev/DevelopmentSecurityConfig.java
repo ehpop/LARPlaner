@@ -49,6 +49,8 @@ public class DevelopmentSecurityConfig {
             .requestMatchers(toH2Console()).permitAll()
             .requestMatchers("/", "/index.html", "/swagger-ui/**", "/v3/api-docs/**",
                 "/swagger-ui.html").permitAll()
+            // --- WS Authorization Rules ---
+            .requestMatchers("/ws/**").permitAll()
             // --- API Authorization Rules ---
             .requestMatchers("/api/**").authenticated()
             // Fallback: any other request must be authenticated

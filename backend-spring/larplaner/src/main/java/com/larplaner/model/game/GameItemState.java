@@ -8,9 +8,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,5 +47,7 @@ public class GameItemState extends BaseEntity {
   private GameRoleState currentHolderRole;
 
   @OneToMany(mappedBy = "targetItem", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<GameActionLog> actionHistory;
+  @OrderBy("timestamp DESC")
+  @Default
+  private List<GameActionLog> actionHistory = new ArrayList<>();
 }

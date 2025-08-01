@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class GameSession extends BaseEntity {
   private List<GameItemState> items = new ArrayList<>();
 
   @OneToMany(mappedBy = "gameSession", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OrderBy("timestamp DESC ")
   @Default
   private List<GameActionLog> actions = new ArrayList<>();
 

@@ -43,7 +43,11 @@ public class SecurityConfig {
         // Apply authorization rules
         .authorizeHttpRequests(auth -> auth
             // --- Public endpoints ---
-            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+            .requestMatchers("/", "/index.html", "/swagger-ui/**", "/v3/api-docs/**",
+                "/swagger-ui.html").permitAll()
+
+            // --- WS Authorization Rules ---
+            .requestMatchers("/ws/**").permitAll()
 
             // --- API Authorization Rules ---
             .requestMatchers("/api/**").authenticated()
@@ -60,7 +64,8 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOrigins(List.of("http://localhost:9000", "https://larplaner.vercel.app"));
+    configuration.setAllowedOrigins(
+        List.of("http://localhost:9000", "https://larplaner.vercel.app"));
 
     configuration.setAllowedMethods(
         Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

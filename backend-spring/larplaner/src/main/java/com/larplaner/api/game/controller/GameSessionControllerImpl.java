@@ -7,11 +7,15 @@ import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
 import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
 import com.larplaner.dto.scenario.action.ScenarioActionResponseDTO;
 import com.larplaner.dto.scenario.itemAction.ScenarioItemActionResponseDTO;
+import com.larplaner.repository.game.GameRoleStateRepository;
 import com.larplaner.service.game.GameSessionService;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,9 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/game")
 @RequiredArgsConstructor
+@Slf4j
 public class GameSessionControllerImpl implements GameSessionController {
 
   private final GameSessionService gameSessionService;
+  private final SimpMessagingTemplate messagingTemplate;
+  private final GameRoleStateRepository gameRoleStateRepository;
 
   @Override
   public ResponseEntity<List<GameSessionResponseDTO>> getAllGameSessions() {
@@ -84,18 +91,28 @@ public class GameSessionControllerImpl implements GameSessionController {
   @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToGameSession(#id)")
   public ResponseEntity<GameActionLogResponseDTO> performActionInGameSession(UUID id,
       GameActionRequestDTO actionRequestDTO) {
-    return ResponseEntity.ok(
-        gameSessionService.performAction(id, actionRequestDTO)
-    );
+    var actionResult = gameSessionService.performAction(id, actionRequestDTO);
+
+    messagingTemplate.convertAndSend(
+        String.format("/topic/game/%s/action", actionResult.getGameSessionId()),
+        "User performed action");
+    return ResponseEntity.ok(actionResult);
   }
 
   @Override
   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public ResponseEntity<GameSessionResponseDTO> updateGameSessionRoleState(UUID gameSessionRoleId,
       UpdateGameRoleStateRequestDTO requestDTO) {
-    return ResponseEntity.ok(
-        gameSessionService.updateRoleState(gameSessionRoleId, requestDTO)
-    );
+    var updatedGameSession = gameSessionService.updateRoleState(gameSessionRoleId, requestDTO);
+
+    var gameSessionRole = gameRoleStateRepository.findById(gameSessionRoleId).orElseThrow(
+        EntityNotFoundException::new);
+
+    messagingTemplate.convertAndSendToUser(gameSessionRole.getAssignedUserID(),
+        "/topic/game/role",
+        "Admin modified role");
+
+    return ResponseEntity.ok(updatedGameSession);
   }
 
   @Override

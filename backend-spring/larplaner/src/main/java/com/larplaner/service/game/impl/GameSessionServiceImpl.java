@@ -34,7 +34,6 @@ import jakarta.persistence.EntityNotFoundException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -143,21 +142,25 @@ public class GameSessionServiceImpl implements GameSessionService {
 
   @Override
   public List<GameActionLogResponseDTO> getAllGameHistory() {
-    return gameActionLogRepository.findAll().stream()
+    return gameActionLogRepository.findAll()
+        .stream()
         .map(gameActionLogMapper::toDTO)
         .collect(Collectors.toList());
   }
 
   @Override
   public GameActionLogResponseDTO getGameHistoryById(UUID id) {
-    return gameActionLogRepository.findById(id)
+    return gameActionLogRepository
+        .findById(id)
         .map(gameActionLogMapper::toDTO)
         .orElse(null);
   }
 
   @Override
   public List<GameActionLogResponseDTO> getGameHistoryByGameId(UUID gameId) {
-    return gameActionLogRepository.findByGameSession_Id(gameId).stream()
+    return gameActionLogRepository
+        .findByGameSession_Id(gameId)
+        .stream()
         .map(gameActionLogMapper::toDTO)
         .collect(Collectors.toList());
   }
@@ -187,7 +190,6 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     return gameActionLogRepository.findByGameSession_IdAndPerformerRole_Id(gameId, userRoleId)
         .stream()
-        .sorted(Comparator.comparing(GameActionLog::getTimestamp).reversed())
         .map(gameActionLogMapper::toDTO)
         .collect(Collectors.toList());
   }
