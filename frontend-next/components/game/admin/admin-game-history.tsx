@@ -1,24 +1,23 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Button,
-  getKeyValue,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
 } from "@heroui/react";
 import { FormattedMessage, useIntl } from "react-intl";
+import { useQueryClient } from "@tanstack/react-query";
+import { SortDescriptor } from "@react-types/shared";
 
 import { IGameActionLog, IGameSession } from "@/types/game.types";
 import { useGameHistory } from "@/services/game/useGames";
+import { useStomp } from "@/providers/stomp-client-provider";
+import { AdminTableDisplay } from "@/components/table/admin-table-display";
+import { usePagination } from "@/hooks/use-pagination";
+import PaginationControl from "@/components/table/pagination-control";
 
 interface GameHistoryElementProps {
   gameHistory: IGameActionLog[];
@@ -26,6 +25,40 @@ interface GameHistoryElementProps {
 
 const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
   const intl = useIntl();
+  const itemsPerPage = 20;
+
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+    column: "timestamp",
+    direction: "descending",
+  });
+
+  const sortedHistory = useMemo(() => {
+    if (!sortDescriptor || !sortDescriptor.column) {
+      return gameHistory;
+    }
+
+    return [...gameHistory].sort((a, b) => {
+      const first = a[sortDescriptor.column as keyof IGameActionLog] as any;
+      const second = b[sortDescriptor.column as keyof IGameActionLog] as any;
+
+      let cmp = 0;
+
+      if (first < second) {
+        cmp = -1;
+      } else if (first > second) {
+        cmp = 1;
+      }
+
+      if (sortDescriptor.direction === "descending") {
+        cmp *= -1;
+      }
+
+      return cmp;
+    });
+  }, [gameHistory, sortDescriptor]);
+
+  const { currentList, currentPage, totalPages, setCurrentPage } =
+    usePagination(sortedHistory, itemsPerPage);
 
   const historyTableColumns = [
     { key: "id", label: "ID" },
@@ -35,6 +68,7 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
         id: "admin.admin-game-history.timestamp",
         defaultMessage: "Timestamp",
       }),
+      allowsSorting: true,
     },
     {
       key: "performerRoleId",
@@ -42,6 +76,7 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
         id: "admin.admin-game-history.performer.role.id",
         defaultMessage: "Performer Role ID",
       }),
+      allowsSorting: true,
     },
     {
       key: "targetItemId",
@@ -49,6 +84,7 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
         id: "admin.admin-game-history.target.item.id",
         defaultMessage: "Target Item ID",
       }),
+      allowsSorting: true,
     },
     {
       key: "success",
@@ -81,51 +117,44 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
   ];
 
   const rows = useMemo(() => {
-    return gameHistory.map((historyItem) => ({
+    return currentList.map((historyItem) => ({
       id: historyItem.id,
       timestamp: new Date(historyItem.timestamp).toLocaleString(intl.locale),
       performerRoleId: historyItem.performerRoleId,
       targetItemId: historyItem.targetItemId,
-      success: historyItem.success
-        ? intl.formatMessage({ defaultMessage: "Yes", id: "common.yes" })
-        : intl.formatMessage({ defaultMessage: "No", id: "common.no" }),
+      success: historyItem.success ? (
+        <p className="text-center text-large">✅</p>
+      ) : (
+        <p className="text-center text-large">❌</p>
+      ),
       message: historyItem.message,
       appliedTags: historyItem.appliedTags.map((tag) => tag.value).join(", "),
       removedTags: historyItem.removedTags.map((tag) => tag.value).join(", "),
     }));
-  }, [gameHistory, intl]);
+  }, [currentList, intl]);
+
+  const bottomContent = useMemo(() => {
+    return (
+      <PaginationControl
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        totalPages={totalPages}
+      />
+    );
+  }, [currentPage, totalPages, setCurrentPage]);
 
   return (
-    <Table
-      isStriped
-      aria-label={intl.formatMessage({
-        id: "admin.admin-game-history.game.action.history.table",
-        defaultMessage: "Game Action History Table",
-      })}
-    >
-      <TableHeader columns={historyTableColumns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody
-        emptyContent={
-          <FormattedMessage
-            defaultMessage="No history available."
-            id="game.actionsModal.noHistory"
-          />
-        }
-        items={rows}
-      >
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell key={`${item.id}-${columnKey}`}>
-                {getKeyValue(item, columnKey)}
-              </TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <AdminTableDisplay
+      isCompact
+      bottomContent={bottomContent}
+      classNames={{
+        wrapper: "max-h-[75vh] min-h-[75vh]",
+      }}
+      columns={historyTableColumns}
+      rows={rows}
+      sortDescriptor={sortDescriptor}
+      onSortChange={setSortDescriptor}
+    />
   );
 };
 
@@ -136,16 +165,37 @@ interface AdminGameHistoryProps {
 const AdminGameHistory = ({ game }: AdminGameHistoryProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { client: stompClient, isConnected } = useStomp();
+  const queryClient = useQueryClient();
+
   const {
     data: gameHistory,
     isLoading,
     isError,
     error,
+    refetch: refetchGameHistory,
   } = useGameHistory(game.id);
 
   const handleOpenChange = (isOpen: boolean) => {
     setIsModalOpen(isOpen);
   };
+
+  useEffect(() => {
+    if (!stompClient || !stompClient.active || !isConnected) {
+      return;
+    }
+
+    const subscription = stompClient.subscribe(
+      `/topic/game/${game.id}/action`,
+      () => {
+        refetchGameHistory;
+      },
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [stompClient, queryClient, isConnected, game.id, refetchGameHistory]);
 
   const renderModalContent = () => {
     if (isLoading) {

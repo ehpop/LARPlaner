@@ -136,41 +136,52 @@ export const useUpdateGameSessionRoleState = (): UseMutationResult<
 };
 
 export const useAvailableActionsForUser = (
-  gameSessionRoleId: IGameRoleState["id"] | undefined,
+  gameSessionRole: IGameRoleState | undefined,
 ): UseQueryResult<IScenarioActionGetDTO[], Error> => {
   return useQuery({
-    queryKey: ["game", "roles", gameSessionRoleId, "available-actions"],
+    queryKey: [
+      "game",
+      "roles",
+      gameSessionRole?.appliedTags
+        .map((t) => t.tag.value)
+        .sort()
+        .join(","),
+      "available-actions",
+    ],
     queryFn: async () => {
       const { data } = await api.get(
-        `/game/roles/${gameSessionRoleId}/availableActions`,
+        `/game/roles/${gameSessionRole?.id}/availableActions`,
       );
 
       return data;
     },
-    enabled: !!gameSessionRoleId,
+    enabled: !!gameSessionRole,
   });
 };
 
 export const useAvailableItemActionsForUser = (
-  gameSessionRoleId: IGameRoleState["id"] | undefined,
+  gameRoleState: IGameRoleState | undefined,
   itemId: IScenarioItem["id"] | undefined,
 ): UseQueryResult<IScenarioActionGetDTO[], Error> => {
   return useQuery({
     queryKey: [
       "game",
       "roles",
-      gameSessionRoleId,
+      gameRoleState?.appliedTags
+        .map((t) => t.tag.value)
+        .sort()
+        .join(","),
       "items",
       itemId,
       "available-actions",
     ],
     queryFn: async () => {
       const { data } = await api.get(
-        `/game/roles/${gameSessionRoleId}/items/${itemId}/availableActions`,
+        `/game/roles/${gameRoleState?.id}/items/${itemId}/availableActions`,
       );
 
       return data;
     },
-    enabled: !!gameSessionRoleId && !!itemId,
+    enabled: !!gameRoleState && !!itemId,
   });
 };

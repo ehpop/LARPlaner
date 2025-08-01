@@ -7,8 +7,8 @@ import { SortDescriptor } from "@react-types/shared";
 
 import { IRole } from "@/types/roles.types";
 import { AdminTableDisplay } from "@/components/table/admin-table-display";
-import PaginationControl from "@/components/table/pagination-control";
 import { usePagination } from "@/hooks/use-pagination";
+import PaginationControl from "@/components/table/pagination-control";
 
 const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
   const intl = useIntl();
@@ -137,8 +137,18 @@ const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
     );
   }, [filterText, handleAddNewRole]);
 
+  const bottomContent = useMemo(() => {
+    return (
+      <PaginationControl
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        totalPages={totalPages}
+      />
+    );
+  }, [currentPage, setCurrentPage, totalPages]);
+
   return (
-    <div className="w-full flex flex-col justify-top p-3 border space-y-5">
+    <div className="w-full h-[80vh] flex flex-col justify-top p-3 border space-y-5">
       <div className="w-full flex justify-center">
         <h1 className="text-2xl">
           <FormattedMessage defaultMessage="Roles" id="roles.title" />
@@ -147,6 +157,8 @@ const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
       <div className="w-full h-full flex flex-col justify-between space-y-3">
         <div className="flex flex-col space-y-3">
           <AdminTableDisplay
+            isCompact
+            bottomContent={bottomContent}
             columns={columns}
             rows={rows}
             sortDescriptor={sortDescriptor}
@@ -155,11 +167,6 @@ const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
             onSortChange={setSortDescriptor}
           />
         </div>
-        <PaginationControl
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalPages={totalPages}
-        />
       </div>
     </div>
   );

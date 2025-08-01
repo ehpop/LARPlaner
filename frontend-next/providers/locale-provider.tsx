@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { IntlProvider } from "react-intl";
 
 import { locales } from "@/lang/i18n/i18n-config";
-import { LocaleContext } from "@/context/locale-context"; // Your existing context file
+import { LocaleContext } from "@/context/locale-context";
 
 const defaultLocale = "en";
 const supportedLocales = new Set(Object.keys(locales));

@@ -40,7 +40,8 @@ const MyCharacterModal = ({ game }: { game: IGameSession }) => {
       <Modal
         isOpen={isModalOpen}
         placement="center"
-        size="4xl"
+        scrollBehavior="inside"
+        size="2xl"
         onOpenChange={setIsModalOpen}
       >
         <ModalContent>
@@ -95,7 +96,7 @@ const AppliedTagListItem = ({ appliedTag }: AppliedTagListItemProps) => {
     tag.expiresAfterMinutes !== undefined && tag.expiresAfterMinutes > 0;
 
   return (
-    <li className="py-5">
+    <li key={appliedTag.id} className="py-5">
       <div className="flex items-center space-x-4">
         <div className="min-w-0 flex-1">
           <p className="truncate text-base font-semibold text-stone-300">
@@ -108,6 +109,7 @@ const AppliedTagListItem = ({ appliedTag }: AppliedTagListItemProps) => {
               values={{
                 appliedDate: (
                   <FormattedDate
+                    key={`${appliedTag.id}-${appliedTag.appliedToUserAt}`}
                     day="numeric"
                     hour="numeric"
                     minute="numeric"
@@ -194,14 +196,14 @@ const MyCharacterModalBody = ({
   return (
     <Card>
       <CardBody>
-        <p>
+        <p className="text-2xl text-gray-200 mb-2">
           <FormattedMessage
             defaultMessage="Role: {roleName}"
             id="game.myCharacterModal.role"
             values={{ roleName: role.name }}
           />
         </p>
-        <p>
+        <p className="text-medium text-gray-200 mb-2">
           <FormattedMessage
             defaultMessage="Description: {scenarioRoleName}"
             id="game.myCharacterModal.scenarioRole"

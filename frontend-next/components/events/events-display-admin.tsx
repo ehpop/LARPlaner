@@ -66,6 +66,7 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
   };
 
   const handleRowClick = (event: IEvent) => {
+    console.log(event);
     router.push(`/admin/events/${event.id}/${event.status}`);
   };
 
@@ -131,7 +132,19 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
     name: event.name,
     description: event.description,
     date: getDateAndTime(event.date.toDate()),
-    status: event.status,
+    status: (
+      <p
+        className={
+          event.status === "active"
+            ? "text-success"
+            : event.status === "upcoming"
+              ? "text-warning"
+              : "text-default"
+        }
+      >
+        {event.status}
+      </p>
+    ),
     assignedRoles: getHowManyRolesAssigned(event),
     actions: (
       <Button
@@ -173,6 +186,16 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
     );
   }, [filterText, handleAddNewEvent]);
 
+  const bottomContent = useMemo(() => {
+    return (
+      <PaginationControl
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        totalPages={totalPages}
+      />
+    );
+  }, [currentPage, setCurrentPage, totalPages]);
+
   return (
     <div className="w-full h-[80vh] flex flex-col justify-top p-3 border space-y-5">
       <div className="w-full flex justify-center">
@@ -183,7 +206,9 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
       <div className="w-full h-full flex flex-col justify-between space-y-3">
         <div className="flex flex-col space-y-3">
           <AdminTableDisplay
+            bottomContent={bottomContent}
             columns={columns}
+            isCompact={true}
             rows={rows}
             sortDescriptor={sortDescriptor}
             topContent={topContent}
@@ -191,11 +216,6 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
             onSortChange={setSortDescriptor}
           />
         </div>
-        <PaginationControl
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalPages={totalPages}
-        />
       </div>
     </div>
   );

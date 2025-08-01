@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import {
   Button,
@@ -9,11 +9,13 @@ import {
   ModalHeader,
   Spinner,
 } from "@heroui/react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { IGameSession } from "@/types/game.types";
 import { IEvent } from "@/types/event.types";
 import { RolesTable } from "@/components/game/admin/manage-characters/roles-table";
 import { useGameSession } from "@/services/game/useGames";
+import { useStomp } from "@/providers/stomp-client-provider";
 
 const ManageCharacters = ({
   gameId,
@@ -24,6 +26,32 @@ const ManageCharacters = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: game, isLoading, isError, error } = useGameSession(gameId);
+
+  const { client: stompClient, isConnected } = useStomp();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!stompClient || !stompClient.active || !isConnected) {
+      return;
+    }
+
+    const subscription = stompClient.subscribe(
+      `/topic/game/${gameId}/action`,
+      (_message) => {
+        console.log(
+          "Received message that user performed action. Refetching game data.",
+        );
+
+        queryClient.refetchQueries({
+          queryKey: ["game", "detail", gameId],
+        });
+      },
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [stompClient, isConnected, queryClient, gameId]);
 
   return (
     <>

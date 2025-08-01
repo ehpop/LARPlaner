@@ -18,7 +18,7 @@ export const useAvailableActions = (params: any) => {
     isLoading,
     error,
     refetch,
-  } = useAvailableActionsForUser(shouldFetch ? userRoleState?.id : undefined);
+  } = useAvailableActionsForUser(shouldFetch ? userRoleState : undefined);
 
   return {
     actions: actions || [],

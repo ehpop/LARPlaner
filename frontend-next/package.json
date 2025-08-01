@@ -27,6 +27,7 @@
     "@react-aria/ssr": "3.9.4",
     "@react-aria/visually-hidden": "3.8.12",
     "@react-stately/data": "^3.13.1",
+    "@stomp/stompjs": "^7.1.1",
     "@tailwindcss/postcss": "^4.1.11",
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-query-devtools": "^5.59.20",
@@ -51,6 +52,7 @@
     "react-intl": "^6.5.5",
     "react-qr-code": "^2.0.15",
     "react-swiper": "^0.1.5",
+    "sockjs-client": "^1.6.1",
     "swiper": "^11.2.0",
     "uuid": "^10.0.0"
   },
@@ -61,6 +63,7 @@
     "@types/node": "20.5.7",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
+    "@types/sockjs-client": "^1.5.4",
     "@typescript-eslint/eslint-plugin": "7.2.0",
     "@typescript-eslint/parser": "7.2.0",
     "autoprefixer": "10.4.19",

@@ -57,7 +57,7 @@ const UserGameHistory = ({ game }: { game: IGameSession }) => {
                 id="userGameHistory.modal.gameId"
                 values={{ gameId: game.id }}
               />
-              <div className="flex flex-col space-y-2 mt-2">
+              <div className="flex flex-col-reverse space-y-2 mt-2">
                 {gameHistory.map((historyItem) => (
                   <GameHistoryLogElement
                     key={historyItem.id}

@@ -182,7 +182,7 @@ export const ScannedItemCard = ({
     isLoading,
     error,
     refetch,
-  } = useAvailableItemActions(userRoleState?.id, scenarioItem?.id);
+  } = useAvailableItemActions(userRoleState, scenarioItem?.id);
 
   if (!scenarioItem) {
     return (
@@ -203,6 +203,32 @@ export const ScannedItemCard = ({
     );
   }
 
+  const renderItemActions = () => {
+    if (isLoading) {
+      return null;
+    }
+
+    if (itemActions.length > 0) {
+      return itemActions.map((action) => (
+        <Action
+          key={action.id}
+          action={action}
+          afterActionPerformed={refetch}
+          game={game}
+        />
+      ));
+    }
+
+    return (
+      <p className="text-center">
+        <FormattedMessage
+          defaultMessage="No actions available for you."
+          id="scanner.noActionsAvailable"
+        />
+      </p>
+    );
+  };
+
   return (
     <Card key={scenarioItem.id}>
       <CardHeader>
@@ -211,7 +237,7 @@ export const ScannedItemCard = ({
       <CardBody>
         <div className="flex flex-col space-y-2">
           <p>{scenarioItem.description}</p>
-          <p className="text-xs">
+          <p className="text-small">
             <FormattedMessage
               defaultMessage="Actions available for this item:"
               id="scanner.actionsAvailable"
@@ -220,23 +246,7 @@ export const ScannedItemCard = ({
           {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
           <LoadingOverlay isLoading={isLoading}>
-            <div className="flex flex-col space-y-1">
-              {itemActions.length > 0 ? (
-                itemActions.map((action) => (
-                  <Action
-                    key={action.id}
-                    action={action}
-                    afterActionPerformed={() => refetch()}
-                    game={game}
-                  />
-                ))
-              ) : (
-                <FormattedMessage
-                  defaultMessage="No actions available for you."
-                  id="scanner.noActionsAvailable"
-                />
-              )}
-            </div>
+            <div className="flex flex-col space-y-1">{renderItemActions()}</div>
           </LoadingOverlay>
         </div>
       </CardBody>

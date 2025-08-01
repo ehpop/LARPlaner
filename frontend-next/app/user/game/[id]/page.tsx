@@ -3,7 +3,8 @@
 import { FormattedMessage, useIntl } from "react-intl";
 import { Card } from "@heroui/react";
 import { CardBody, CardHeader } from "@heroui/card";
-import React from "react";
+import React, { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { IGameSession } from "@/types/game.types";
 import useEventAndScenario from "@/hooks/event/use-event";
@@ -13,6 +14,7 @@ import ActionsModal from "@/components/game/user/actions-modal";
 import UserGameHistory from "@/components/game/user/user-game-history";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import { useGameSession } from "@/services/game/useGames";
+import { useStomp } from "@/providers/stomp-client-provider";
 
 const ActiveGamePage = ({ params }: any) => {
   const resolvedParams = React.use(params) as { id: string };
@@ -61,6 +63,30 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
   const { event, scenario, loading } = useEventAndScenario(game.eventId);
 
   const allDataLoaded = event && scenario && !loading;
+
+  const { client: stompClient, isConnected } = useStomp();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!stompClient || !stompClient.active || !isConnected) {
+      return;
+    }
+
+    const subscription = stompClient.subscribe(
+      `/user/topic/game/role`,
+      (_message) => {
+        console.log("Received message for game role state");
+
+        queryClient.refetchQueries({
+          queryKey: ["game", "detail", game.id],
+        });
+      },
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [stompClient, isConnected, queryClient, game.id, game.eventId]);
 
   if (!allDataLoaded) {
     return (

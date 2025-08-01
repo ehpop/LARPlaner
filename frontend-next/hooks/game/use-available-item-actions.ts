@@ -3,7 +3,7 @@ import { IScenarioItem } from "@/types/scenario.types";
 import { useAvailableItemActionsForUser } from "@/services/game/useGames";
 
 export const useAvailableItemActions = (
-  userId: IGameRoleState["id"] | undefined,
+  gameRoleState: IGameRoleState | undefined,
   itemId: IScenarioItem["id"] | undefined,
 ) => {
   const {
@@ -11,7 +11,7 @@ export const useAvailableItemActions = (
     isLoading,
     error,
     refetch,
-  } = useAvailableItemActionsForUser(userId, itemId);
+  } = useAvailableItemActionsForUser(gameRoleState, itemId);
 
   return {
     actions: actions || [],

@@ -21,27 +21,41 @@ export const AdminTableDisplay = ({
   rows,
   onRowClick,
   topContent,
+  bottomContent,
   sortDescriptor,
   onSortChange,
+  isCompact = false,
+  classNames = {
+    wrapper: "max-h-[60vh] min-h-[60vh]",
+  },
 }: {
   columns: Column[];
   rows: any[];
-  onRowClick: (row: any) => void;
+  onRowClick?: (row: any) => void;
   topContent?: ReactNode;
+  bottomContent?: ReactNode;
   sortDescriptor: SortDescriptor | null;
   onSortChange: (descriptor: SortDescriptor) => void;
+  isCompact?: boolean;
+  classNames?: { wrapper: string };
 }) => {
   const intl = useIntl();
 
   return (
     <Table
+      isHeaderSticky
       isStriped
       aria-label={intl.formatMessage({
         id: "table.admin-table-display.admin.table",
         defaultMessage: "Admin Table",
       })}
+      bottomContent={bottomContent}
+      bottomContentPlacement="outside"
+      classNames={classNames}
+      isCompact={isCompact}
       sortDescriptor={sortDescriptor ?? undefined}
       topContent={topContent}
+      topContentPlacement="outside"
       onSortChange={onSortChange}
     >
       <TableHeader columns={columns}>
@@ -65,7 +79,12 @@ export const AdminTableDisplay = ({
           <TableRow
             key={row.id}
             className="cursor-pointer hover:dark:bg-stone-700 hover:bg-stone-300 hover:shadow-md transition-all"
-            onClick={() => onRowClick(row)}
+            onClick={() => {
+              if (onRowClick !== undefined) {
+                //TODO: I made status as <p> element, but this should be typed
+                onRowClick({ ...row, status: row.status.props.children });
+              }
+            }}
           >
             {(columnKey) => (
               <TableCell>{row[columnKey as keyof typeof row]}</TableCell>
