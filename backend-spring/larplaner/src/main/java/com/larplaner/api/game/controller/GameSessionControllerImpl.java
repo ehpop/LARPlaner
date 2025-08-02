@@ -7,6 +7,7 @@ import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
 import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
 import com.larplaner.dto.scenario.action.ScenarioActionResponseDTO;
 import com.larplaner.dto.scenario.itemAction.ScenarioItemActionResponseDTO;
+import com.larplaner.mapper.tag.AppliedTagMapper;
 import com.larplaner.repository.game.GameRoleStateRepository;
 import com.larplaner.service.game.GameSessionService;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +31,7 @@ public class GameSessionControllerImpl implements GameSessionController {
   private final GameSessionService gameSessionService;
   private final SimpMessagingTemplate messagingTemplate;
   private final GameRoleStateRepository gameRoleStateRepository;
+  private final AppliedTagMapper appliedTagMapper;
 
   @Override
   public ResponseEntity<List<GameSessionResponseDTO>> getAllGameSessions() {
@@ -88,14 +91,21 @@ public class GameSessionControllerImpl implements GameSessionController {
   }
 
   @Override
-  @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToGameSession(#id)")
-  public ResponseEntity<GameActionLogResponseDTO> performActionInGameSession(UUID id,
+  @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToGameSession(#gameSessionId)")
+  public ResponseEntity<GameActionLogResponseDTO> performActionInGameSession(UUID gameSessionId,
       GameActionRequestDTO actionRequestDTO) {
-    var actionResult = gameSessionService.performAction(id, actionRequestDTO);
+    var actionResult = gameSessionService.performAction(gameSessionId, actionRequestDTO);
+    var gameSessionRole = gameRoleStateRepository.findById(actionResult.getPerformerRoleId())
+        .orElseThrow(EntityNotFoundException::new);
 
     messagingTemplate.convertAndSend(
         String.format("/topic/game/%s/action", actionResult.getGameSessionId()),
         "User performed action");
+
+    messagingTemplate.convertAndSend(
+        String.format("/topic/game/%s/action/byUserId/%s", actionResult.getGameSessionId(),
+            SecurityContextHolder.getContext().getAuthentication().getName()),
+        gameSessionRole.getAppliedTags().stream().map(appliedTagMapper::toDTO).toList());
     return ResponseEntity.ok(actionResult);
   }
 

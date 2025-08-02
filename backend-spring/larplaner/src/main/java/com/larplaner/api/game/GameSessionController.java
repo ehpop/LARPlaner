@@ -101,9 +101,9 @@ public interface GameSessionController {
       @ApiResponse(responseCode = "200", description = "Successfully processed action request"),
       @ApiResponse(responseCode = "404", description = "Game session not found")
   })
-  @PostMapping("/{id}/perform-action")
+  @PostMapping("/{gameSessionId}/perform-action")
   ResponseEntity<GameActionLogResponseDTO> performActionInGameSession(
-      @Parameter(description = "ID of the game session in which to perform action") @PathVariable UUID id,
+      @Parameter(description = "ID of the game session in which to perform action") @PathVariable UUID gameSessionId,
       @RequestBody @Valid
       GameActionRequestDTO actionRequestDTO);
 
