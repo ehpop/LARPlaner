@@ -8,20 +8,57 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import QRCode from "react-qr-code";
-import React from "react";
+import React, { useState } from "react";
+import { toPng } from "html-to-image";
+import { saveAs } from "file-saver";
+
+import { sanitizeFilename } from "@/utils/sanitize";
+import { showErrorToastWithTimeout } from "@/utils/toast";
 
 export const QrModal = ({
   isOpen,
   onOpenChange,
   qrCodeData,
   modalTitle,
+  savedFileName,
 }: {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   qrCodeData: string;
   modalTitle?: string;
+  savedFileName?: string;
 }) => {
   const intl = useIntl();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleDownloadPressed = async () => {
+    setIsLoading(true);
+
+    try {
+      const element = document.getElementById(`generated-qr-code`);
+
+      if (!element) {
+        return;
+      }
+
+      const pngDataUrl = await toPng(element);
+      const base64Data = pngDataUrl.split(",")[1];
+      const filename = sanitizeFilename(
+        savedFileName || `qr-code-${new Date()}.png`,
+      );
+
+      saveAs(base64Data, filename);
+    } catch (error) {
+      showErrorToastWithTimeout(
+        intl.formatMessage({
+          id: "admin.events.id.upcoming.page.download.error.zipGenerationFailed",
+          defaultMessage: "An error occurred while creating the zip file.",
+        }),
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Modal
@@ -57,14 +94,27 @@ export const QrModal = ({
             </ModalHeader>
             <ModalBody className="dark:bg-white">
               <div className="w-full flex justify-center">
-                <QRCode value={qrCodeData} />
+                <QRCode id="generated-qr-code" value={qrCodeData} />
               </div>
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter className="flex flex-row justify-between gap-2">
               <Button color="danger" variant="bordered" onPress={onClose}>
                 {intl.formatMessage({
                   id: "common.close",
                   defaultMessage: "Close",
+                })}
+              </Button>
+
+              <Button
+                color="default"
+                isDisabled={isLoading}
+                isLoading={isLoading}
+                variant="bordered"
+                onPress={() => handleDownloadPressed()}
+              >
+                {intl.formatMessage({
+                  id: "common.download",
+                  defaultMessage: "Download",
                 })}
               </Button>
             </ModalFooter>

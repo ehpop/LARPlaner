@@ -65,9 +65,8 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
     return `${assignedRoles.length}/${allRoles.length}`;
   };
 
-  const handleRowClick = (event: IEvent) => {
-    console.log(event);
-    router.push(`/admin/events/${event.id}/${event.status}`);
+  const handleRowClick = (event: (typeof rows)[0]) => {
+    router.push(`/admin/events/${event.id}/${event.status.props.children}`);
   };
 
   const handleEditClick = (event: IEvent) => {

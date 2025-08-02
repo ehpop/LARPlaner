@@ -134,6 +134,7 @@ export const RolesTable = ({ game, event }: RolesTableProps) => {
 
       {roleToEdit && (
         <EditRoleTagsModal
+          gameId={game.id}
           isOpen={!!roleToEdit}
           role={roleToEdit}
           onClose={handleCloseModal}

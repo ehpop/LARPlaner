@@ -154,9 +154,6 @@ export default function ScenarioForm({
                 {...field}
                 isRequired
                 className="w-full"
-                classNames={{
-                  inputWrapper: "border-b border-black/50", // Tailwind for 50% opacity black underline
-                }}
                 errorMessage={errors.name?.message}
                 isDisabled={!isBeingEdited}
                 isInvalid={!!errors.name}

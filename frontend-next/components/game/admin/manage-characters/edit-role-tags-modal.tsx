@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"; // 1. Import useEffect
+import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import {
   Button,
@@ -24,6 +24,7 @@ interface EditRoleTagsModalProps {
   onClose: () => void;
   onSaveSuccess: (updatedGame: IGameSession) => void;
   role: IGameRoleState;
+  gameId: IGameSession["id"];
 }
 
 export const EditRoleTagsModal = ({
@@ -31,6 +32,7 @@ export const EditRoleTagsModal = ({
   onClose,
   onSaveSuccess,
   role,
+  gameId,
 }: EditRoleTagsModalProps) => {
   const intl = useIntl();
   const [editingTags, setEditingTags] = useState<IAppliedTag[]>(
@@ -96,6 +98,7 @@ export const EditRoleTagsModal = ({
             <ModalBody>
               <InputAppliedTagsWithTable
                 appliedTags={editingTags}
+                gameId={gameId}
                 setAppliedTags={setEditingTags}
                 userRoleState={role}
               />
@@ -107,7 +110,10 @@ export const EditRoleTagsModal = ({
                 variant="bordered"
                 onPress={onCloseHandler}
               >
-                Cancel
+                <FormattedMessage
+                  defaultMessage="Cancel"
+                  id="game.manageCharacters.editTags.button.cancel"
+                />
               </Button>
               <Button
                 color="success"
@@ -115,7 +121,10 @@ export const EditRoleTagsModal = ({
                 variant="solid"
                 onPress={handleSave}
               >
-                Save Changes
+                <FormattedMessage
+                  defaultMessage="Save"
+                  id="game.manageCharacters.editTags.button.save"
+                />
               </Button>
             </ModalFooter>
           </>

@@ -81,8 +81,7 @@ export const AdminTableDisplay = ({
             className="cursor-pointer hover:dark:bg-stone-700 hover:bg-stone-300 hover:shadow-md transition-all"
             onClick={() => {
               if (onRowClick !== undefined) {
-                //TODO: I made status as <p> element, but this should be typed
-                onRowClick({ ...row, status: row.status.props.children });
+                onRowClick(row);
               }
             }}
           >
