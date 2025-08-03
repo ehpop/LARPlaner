@@ -50,7 +50,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (auth.user) {
-      router.push("/");
+      router.push(auth.isAdmin ? "/admin/events" : "/user/events");
     }
   }, [auth.user]);
 
