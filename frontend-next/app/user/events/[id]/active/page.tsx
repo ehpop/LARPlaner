@@ -82,19 +82,19 @@ const ActiveEventDisplay = ({
           </p>
         </CardBody>
         <CardFooter className="flex flex-row justify-between">
-          <Link href={`/user/game/${event.gameSessionId}`}>
-            <Button variant="bordered">
-              <FormattedMessage
-                defaultMessage="Go to game page"
-                id="events.id.active.goToGame"
-              />
-            </Button>
-          </Link>
           <Link href={`/user/events/${event.id}/active/chat`}>
             <Button variant="bordered">
               <FormattedMessage
                 defaultMessage="Write to admins"
                 id="events.id.active.writeToAdmins"
+              />
+            </Button>
+          </Link>
+          <Link href={`/user/game/${event.gameSessionId}`}>
+            <Button color="primary" variant="bordered">
+              <FormattedMessage
+                defaultMessage="Go to game page"
+                id="events.id.active.goToGame"
               />
             </Button>
           </Link>

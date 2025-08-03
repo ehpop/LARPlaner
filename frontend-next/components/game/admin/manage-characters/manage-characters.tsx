@@ -80,8 +80,8 @@ const ManageCharacters = ({
                 />
               </ModalHeader>
               <ModalBody>
-                {isLoading && <Spinner label="isLoading game data..." />}
-                {isError && !isLoading && (
+                {isLoading && <Spinner label="Loading game data..." />}
+                {!isLoading && isError && (
                   <p className="text-danger">
                     <FormattedMessage
                       defaultMessage="Error: {error}"

@@ -7,46 +7,45 @@ import {
 } from "@tanstack/react-query";
 
 import {
-  convertGameToPostDto,
-  convertGetDtoToGame,
-} from "@/services/converter/game-converter";
-import { createCrudHooks } from "@/services/generic/generic-hook-factory";
-import {
-  IGameActionLog,
+  IGameActionLogDetailed,
+  IGameActionLogSummary,
   IGameActionRequest,
-  IGameRoleState,
+  IGameRoleStateSummary,
   IGameSession,
-  IGameSessionGetDTO,
-  IGameSessionPostDTO,
 } from "@/types/game.types";
 import { api } from "@/services/axios";
 import { ITag } from "@/types/tags.types";
 import { IScenarioActionGetDTO, IScenarioItem } from "@/types/scenario.types";
 
-const gameConfig = {
-  entityName: "game",
-  baseUrl: "/game",
-  convertGetDtoToEntity: convertGetDtoToGame,
-  convertEntityToPostDto: convertGameToPostDto,
-  staleTime: 0, // We want game data to be always fresh
+const entityName = "game";
+const DEFAULT_STALE_TIME = 0;
+
+export const gameQueryKeys = {
+  all: [entityName] as const,
+  list: (filters?: object) =>
+    filters ? [entityName, "list", filters] : [entityName, "list"],
+  details: () => [entityName, "detail"] as const,
+  detail: (id: IGameSession["id"]) => [entityName, "detail", id] as const,
 };
 
-const gameHooks = createCrudHooks<
-  IGameSession,
-  IGameSessionGetDTO,
-  IGameSessionPostDTO
->(gameConfig);
+export const useGameSession = (
+  id: IGameSession["id"] | undefined,
+): UseQueryResult<IGameSession, Error> => {
+  return useQuery({
+    queryKey: gameQueryKeys.detail(id!),
+    queryFn: async () => {
+      const { data } = await api.get(`/game/${id}`);
 
-export const useGameSessions = gameHooks.useGetAll;
-export const useGameSession = gameHooks.useGetById;
-export const useCreateGameSession = gameHooks.useCreate;
-export const useUpdateGameSession = gameHooks.useUpdate;
-export const useDeleteGameSession = gameHooks.useDelete;
-export const gameQueryKeys = gameHooks.queryKeys;
+      return data;
+    },
+    enabled: !!id,
+    staleTime: DEFAULT_STALE_TIME,
+  });
+};
 
 export const useGameHistory = (
   gameId: IGameSession["id"] | undefined,
-): UseQueryResult<IGameActionLog[], Error> => {
+): UseQueryResult<IGameActionLogDetailed[], Error> => {
   return useQuery({
     queryKey: [gameQueryKeys.all, gameId, "history"],
     queryFn: async () => {
@@ -60,7 +59,7 @@ export const useGameHistory = (
 
 export const useUserGameHistory = (
   gameId: IGameSession["id"] | undefined,
-): UseQueryResult<IGameActionLog[], Error> => {
+): UseQueryResult<IGameActionLogSummary[], Error> => {
   return useQuery({
     queryKey: [gameQueryKeys.all, gameId, "user-history"],
     queryFn: async () => {
@@ -73,7 +72,7 @@ export const useUserGameHistory = (
 };
 
 export const usePerformAction = (): UseMutationResult<
-  IGameActionLog,
+  IGameActionLogSummary,
   Error,
   { id: IGameSession["id"]; actionRequest: IGameActionRequest }
 > => {
@@ -88,7 +87,7 @@ export const usePerformAction = (): UseMutationResult<
 
       return data;
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: gameQueryKeys.detail(variables.id),
       });
@@ -109,7 +108,7 @@ export const useUpdateGameSessionRoleState = (): UseMutationResult<
   IGameSession,
   Error,
   {
-    roleStateId: IGameRoleState["id"];
+    roleStateId: IGameRoleStateSummary["id"];
     roleStateRequest: { activeTags: ITag["id"][] };
   }
 > => {
@@ -122,7 +121,7 @@ export const useUpdateGameSessionRoleState = (): UseMutationResult<
         roleStateRequest,
       );
 
-      return convertGetDtoToGame(data);
+      return data;
     },
     onSuccess: (updatedGameSession, variables) => {
       queryClient.invalidateQueries({
@@ -136,7 +135,7 @@ export const useUpdateGameSessionRoleState = (): UseMutationResult<
 };
 
 export const useAvailableActionsForUser = (
-  gameSessionRole: IGameRoleState | undefined,
+  gameSessionRole: IGameRoleStateSummary | undefined,
 ): UseQueryResult<IScenarioActionGetDTO[], Error> => {
   return useQuery({
     queryKey: [
@@ -160,7 +159,7 @@ export const useAvailableActionsForUser = (
 };
 
 export const useAvailableItemActionsForUser = (
-  gameRoleState: IGameRoleState | undefined,
+  gameRoleState: IGameRoleStateSummary | undefined,
   itemId: IScenarioItem["id"] | undefined,
 ): UseQueryResult<IScenarioActionGetDTO[], Error> => {
   return useQuery({
@@ -183,5 +182,20 @@ export const useAvailableItemActionsForUser = (
       return data;
     },
     enabled: !!gameRoleState && !!itemId,
+  });
+};
+
+export const useDetailedGameRoleForUser = (
+  gameId: IGameSession["id"] | undefined,
+  userId: IGameRoleStateSummary["assignedUserID"] | undefined,
+): UseQueryResult<IGameRoleStateSummary, Error> => {
+  return useQuery({
+    queryKey: ["game", gameId, "role", userId],
+    queryFn: async () => {
+      const { data } = await api.get(`/game/${gameId}/role/user/${userId}`);
+
+      return data;
+    },
+    enabled: !!gameId && !!userId,
   });
 };

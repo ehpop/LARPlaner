@@ -6,7 +6,7 @@ import { useIntl } from "react-intl";
 
 import TagsManager from "@/components/tags/common/tags-manager";
 import { IAppliedTag, ITag } from "@/types/tags.types";
-import { IGameRoleState, IGameSession } from "@/types/game.types";
+import { IGameRoleStateSummary, IGameSession } from "@/types/game.types";
 import { isTagExpired } from "@/utils/date-time";
 import { useCurrentTime } from "@/hooks/common/use-current-time";
 import { useStomp } from "@/providers/stomp-client-provider";
@@ -18,7 +18,7 @@ const InputAppliedTagsWithTable = ({
   setAppliedTags,
   gameId,
 }: {
-  userRoleState: IGameRoleState;
+  userRoleState: IGameRoleStateSummary;
   appliedTags: IAppliedTag[];
   setAppliedTags: (tags: IAppliedTag[]) => void;
   gameId: IGameSession["id"];
@@ -138,12 +138,12 @@ const InputAppliedTagsWithTable = ({
         handleOnConfirm={handleOnConfirmUpdateTagsViewModal}
         isOpen={isUpdateTagsViewModalOpen}
         prompt={intl.formatMessage({
-          id: "input-applied-tags-with-table.remove-tag-modal.title",
+          id: "input-applied-tags-with-table.user-performed-action.prompt",
           defaultMessage:
             "User performed action and his tags were modified. Do you want to refresh your view? All your changes will be lost. If you save your current changes, they will override the changes made by the user action.",
         })}
         title={intl.formatMessage({
-          id: "input-applied-tags-with-table.remove-tag-modal.title",
+          id: "input-applied-tags-with-table.user-performed-action.title",
           defaultMessage: "User performed action and his tags are modified.",
         })}
         onOpenChange={onOpenUpdateTagsViewModalChange}

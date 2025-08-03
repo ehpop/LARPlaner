@@ -14,7 +14,7 @@ import { FormattedMessage } from "react-intl";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { CardBody, CardHeader } from "@heroui/card";
 
-import { IGameRoleState, IGameSession } from "@/types/game.types";
+import { IGameRoleStateSummary, IGameSession } from "@/types/game.types";
 import { IScenario } from "@/types/scenario.types";
 import { useAuth } from "@/providers/firebase-provider";
 import Action from "@/components/game/user/action";
@@ -173,7 +173,7 @@ export const ScannedItemCard = ({
   scannedData: string;
   game: IGameSession;
   scenario: IScenario;
-  userRoleState: IGameRoleState;
+  userRoleState: IGameRoleStateSummary;
 }) => {
   const scenarioItem = scenario?.items.find((item) => item.id === scannedData);
 

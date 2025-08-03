@@ -57,7 +57,7 @@ const Action = ({
         id: game.id,
         actionRequest: {
           actionId: action.id,
-          performerRoleId: userRole.scenarioRoleId,
+          performerRoleId: userRole.scenarioRole.id,
           targetItemId: "itemId" in action ? action.itemId : undefined,
         },
       },

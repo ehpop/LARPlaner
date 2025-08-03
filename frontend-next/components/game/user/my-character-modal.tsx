@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 import { FormattedDate, FormattedMessage, useIntl } from "react-intl";
 
-import { IGameRoleState, IGameSession } from "@/types/game.types";
+import { IGameRoleStateSummary, IGameSession } from "@/types/game.types";
 import useGameRole from "@/hooks/use-game-role";
 import { IRole } from "@/types/roles.types";
 import { IScenarioRole } from "@/types/scenario.types";
@@ -99,10 +99,10 @@ const AppliedTagListItem = ({ appliedTag }: AppliedTagListItemProps) => {
     <li key={appliedTag.id} className="py-5">
       <div className="flex items-center space-x-4">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-base font-semibold text-stone-300">
+          <p className="truncate text-base font-semibold text-gray-800 dark:text-gray-100">
             {tag.value}
           </p>
-          <p className="truncate text-sm text-gray-500">
+          <p className="truncate text-sm text-gray-600 dark:text-gray-300">
             <FormattedMessage
               defaultMessage="Applied on {appliedDate}"
               id="game.myCharacterModal.appliedByOn"
@@ -159,7 +159,7 @@ interface MyCharacterModalBodyProps {
   loading: boolean;
   role: IRole | null;
   scenarioRole?: IScenarioRole | null;
-  gameRoleState?: IGameRoleState | null;
+  gameRoleState?: IGameRoleStateSummary | null;
 }
 
 const CenteredContent = ({ children }: { children: ReactNode }) => (
@@ -196,14 +196,14 @@ const MyCharacterModalBody = ({
   return (
     <Card>
       <CardBody>
-        <p className="text-2xl text-gray-200 mb-2">
+        <p className="text-2xl mb-2">
           <FormattedMessage
             defaultMessage="Role: {roleName}"
             id="game.myCharacterModal.role"
             values={{ roleName: role.name }}
           />
         </p>
-        <p className="text-medium text-gray-200 mb-2">
+        <p className="text-medium mb-2">
           <FormattedMessage
             defaultMessage="Description: {scenarioRoleName}"
             id="game.myCharacterModal.scenarioRole"
@@ -212,7 +212,7 @@ const MyCharacterModalBody = ({
             }}
           />
         </p>
-        <p className="text-large text-gray-200 mt-2 mb-2">
+        <p className="text-large mt-2 mb-2">
           <FormattedMessage
             defaultMessage="Active tags for your character:"
             id="game.myCharacterModal.actionsAvailable"

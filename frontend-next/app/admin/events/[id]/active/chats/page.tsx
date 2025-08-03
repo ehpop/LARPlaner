@@ -24,7 +24,7 @@ const ActiveEventAdminChatsPage = ({ params }: any) => {
   const auth = useAuth();
   const intl = useIntl();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [chats, setChats] = useState<IChat[]>([]);
 
   const chatsRef = collection(db, "chats");

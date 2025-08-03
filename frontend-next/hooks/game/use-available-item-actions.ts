@@ -1,9 +1,9 @@
-import { IGameRoleState } from "@/types/game.types";
+import { IGameRoleStateSummary } from "@/types/game.types";
 import { IScenarioItem } from "@/types/scenario.types";
 import { useAvailableItemActionsForUser } from "@/services/game/useGames";
 
 export const useAvailableItemActions = (
-  gameRoleState: IGameRoleState | undefined,
+  gameRoleState: IGameRoleStateSummary | undefined,
   itemId: IScenarioItem["id"] | undefined,
 ) => {
   const {

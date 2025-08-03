@@ -9,10 +9,10 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import { useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 
 import { useUserGameHistory } from "@/services/game/useGames";
-import { IGameActionLog, IGameSession } from "@/types/game.types";
+import { IGameActionLogSummary, IGameSession } from "@/types/game.types";
 
 const UserGameHistory = ({ game }: { game: IGameSession }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,20 +51,13 @@ const UserGameHistory = ({ game }: { game: IGameSession }) => {
           )}
           {error && <p>{error.message}</p>}
           {gameHistory && (
-            <div>
-              <FormattedMessage
-                defaultMessage="Your history for game ID: {gameId}"
-                id="userGameHistory.modal.gameId"
-                values={{ gameId: game.id }}
-              />
-              <div className="flex flex-col-reverse space-y-2 mt-2">
-                {gameHistory.map((historyItem) => (
-                  <GameHistoryLogElement
-                    key={historyItem.id}
-                    historyItem={historyItem}
-                  />
-                ))}
-              </div>
+            <div className="flex flex-col-reverse space-y-3 mt-2 mb-2">
+              {gameHistory.map((historyItem) => (
+                <GameHistoryLogElement
+                  key={historyItem.id}
+                  historyItem={historyItem}
+                />
+              ))}
             </div>
           )}
         </ModalBody>
@@ -106,10 +99,8 @@ export default UserGameHistory;
 const GameHistoryLogElement = ({
   historyItem,
 }: {
-  historyItem: IGameActionLog;
+  historyItem: IGameActionLogSummary;
 }) => {
-  const intl = useIntl();
-
   return (
     <Card>
       <CardHeader>
@@ -128,15 +119,20 @@ const GameHistoryLogElement = ({
         <p
           className={`text-xs ${historyItem.success ? "text-green-500" : "text-red-500"}`}
         >
-          {historyItem.success
-            ? intl.formatMessage({
-                id: "user.user-game-history.success",
-                defaultMessage: "Success",
-              })
-            : "Failed"}
+          {historyItem.success ? (
+            <FormattedMessage
+              defaultMessage="Success"
+              id="user.user-game-history.success"
+            />
+          ) : (
+            <FormattedMessage
+              defaultMessage="Failure"
+              id="user.user-game-history.failure"
+            />
+          )}
         </p>
         {historyItem.appliedTags.length > 0 && (
-          <div className="mt-2">
+          <div className="mt-1 mb-1">
             <p className="text-xs font-semibold">
               <FormattedMessage
                 defaultMessage="Applied Tags:"

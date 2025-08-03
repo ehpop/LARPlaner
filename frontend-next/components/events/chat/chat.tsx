@@ -26,12 +26,25 @@ import { useAuth } from "@/providers/firebase-provider";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import { IChat } from "@/components/events/chat/chat-window";
 import FormTextarea from "@/components/forms/form-textarea";
+import { IEventPersisted } from "@/types/event.types";
+import { IGameRoleStateSummary } from "@/types/game.types";
+import { IRolePersisted } from "@/types/roles.types";
 
-const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
+const Chat = ({
+  userRole,
+  userGameRoleState,
+  event,
+  chatId,
+}: {
+  userRole?: IRolePersisted;
+  userGameRoleState?: IGameRoleStateSummary;
+  event: IEventPersisted;
+  chatId: string;
+}) => {
   const auth = useAuth();
   const intl = useIntl();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [totalMessages, setTotalMessages] = useState<number | null>(null);
@@ -48,7 +61,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
   const getCountMessages = async () => {
     const countQuery = query(
       collection(db, "messages"),
-      where("eventId", "==", eventId),
+      where("eventId", "==", event.id),
       where("chatId", "==", chatId),
     );
 
@@ -64,7 +77,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
 
     const baseQuery = query(
       messagesRef,
-      where("eventId", "==", eventId),
+      where("eventId", "==", event.id),
       where("chatId", "==", chatId),
       orderBy("createdAt", "desc"),
       limit(100),
@@ -114,7 +127,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
     const unsubscribe = onSnapshot(
       query(
         messagesRef,
-        where("eventId", "==", eventId),
+        where("eventId", "==", event.id),
         where("chatId", "==", chatId),
         orderBy("createdAt", "desc"),
         limit(100),
@@ -132,7 +145,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
     );
 
     return () => unsubscribe();
-  }, [auth.loading, eventId]);
+  }, [auth.loading, event]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -171,7 +184,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
     const newMessageDoc: IMessage = {
       text: newMessage,
       createdAt: serverTimestamp() as Timestamp,
-      eventId,
+      eventId: event.id,
       userName: auth.user?.displayName,
       userPhoto: auth.user?.photoURL || "",
       userEmail: auth.user?.email,
@@ -183,7 +196,7 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
     const newChatDoc: IChat =
       totalMessages === 0
         ? {
-            eventId,
+            eventId: event.id,
             lastMessage: newMessageDoc,
             lastUpdatedAt: serverTimestamp() as Timestamp,
             createdAt: serverTimestamp() as Timestamp,
@@ -251,12 +264,26 @@ const Chat = ({ eventId, chatId }: { eventId: string; chatId: string }) => {
       })}
     >
       <div className="w-full h-[75vh] flex flex-col justify-start space-y-5">
-        <FormattedMessage
-          defaultMessage="Chat for event {eventId}, chatId {chatId}"
-          id="events.active.id.chat.title"
-          tagName="h1"
-          values={{ eventId, chatId }}
-        />
+        {userGameRoleState && (
+          <FormattedMessage
+            defaultMessage="Chat for event {eventName} with user {userEmail} that has assigned role: {userRoleName}"
+            id="events.active.id.chat.admin.title"
+            tagName="h1"
+            values={{
+              eventName: event.name,
+              userEmail: userGameRoleState.assignedEmail,
+              userRoleName: userGameRoleState.scenarioRole.role.name,
+            }}
+          />
+        )}
+        {userRole && (
+          <FormattedMessage
+            defaultMessage="Chat for event {eventName}, your assigned role: {userRoleName}"
+            id="events.active.id.chat.user.title"
+            tagName="h1"
+            values={{ eventName: event.name, userRoleName: userRole.name }}
+          />
+        )}
         <div className="h-full flex flex-col-reverse border p-3 space-y-3 overflow-y-auto rounded-small">
           <div ref={messagesEndRef} />
           {messages.map((message: any, index) => (

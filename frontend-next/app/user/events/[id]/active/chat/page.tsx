@@ -4,9 +4,9 @@ import { FormattedMessage, useIntl } from "react-intl";
 import React from "react";
 
 import { useAuth } from "@/providers/firebase-provider";
-import Chat from "@/components/events/chat/chat";
-import useUserEventData from "@/hooks/use-user-data";
 import LoadingOverlay from "@/components/common/loading-overlay";
+import useUserEventData from "@/hooks/use-user-data";
+import Chat from "@/components/events/chat/chat";
 
 const ActiveEventChatPage = ({ params }: any) => {
   const resolvedParams = React.use(params) as { id: string };
@@ -16,7 +16,9 @@ const ActiveEventChatPage = ({ params }: any) => {
   const intl = useIntl();
   const chatId = `${eventId}-${auth.user?.uid}`;
 
-  const { loading, userRole } = useUserEventData(eventId);
+  const { loading, userRole, event } = useUserEventData(eventId);
+
+  const allDataLoaded = event && userRole && !loading;
 
   return (
     <LoadingOverlay
@@ -26,8 +28,8 @@ const ActiveEventChatPage = ({ params }: any) => {
         id: "events.active.chat.page.loading",
       })}
     >
-      {userRole ? (
-        <Chat chatId={chatId} eventId={eventId} />
+      {allDataLoaded ? (
+        <Chat chatId={chatId} event={event} userRole={userRole} />
       ) : (
         <div className="w-full flex justify-center">
           <FormattedMessage

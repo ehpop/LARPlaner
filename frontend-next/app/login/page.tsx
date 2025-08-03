@@ -54,6 +54,8 @@ export default function LoginPage() {
     }
   }, [auth.user]);
 
+  if (auth.user) return null;
+
   return (
     <LoadingOverlay
       isLoading={auth.loading}
@@ -62,7 +64,7 @@ export default function LoginPage() {
         id: "login.loading",
       })}
     >
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-300 dark:bg-gray-900 p-4">
         <Card className="max-w-md w-full p-8 space-y-5 shadow-lg rounded-lg bg-white dark:bg-gray-800">
           <p className="text-center text-3xl font-bold text-gray-900 dark:text-white">
             <FormattedMessage defaultMessage="Login" id="login.title" />

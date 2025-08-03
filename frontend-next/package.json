@@ -24,6 +24,7 @@
     "@heroui/system": "^2.4.19",
     "@heroui/theme": "^2.4.19",
     "@heroui/toast": "^2.0.13",
+    "@iconify/react": "^6.0.0",
     "@react-aria/ssr": "3.9.4",
     "@react-aria/visually-hidden": "3.8.12",
     "@react-stately/data": "^3.13.1",

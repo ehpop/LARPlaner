@@ -14,7 +14,7 @@ import {
   showSuccessToastWithTimeout,
 } from "@/utils/toast";
 import { IAppliedTag } from "@/types/tags.types";
-import { IGameRoleState, IGameSession } from "@/types/game.types";
+import { IGameRoleStateSummary, IGameSession } from "@/types/game.types";
 import InputAppliedTagsWithTable from "@/components/tags/input-applied-tags-with-table";
 import { useUpdateGameSessionRoleState } from "@/services/game/useGames";
 import { getErrorMessage } from "@/utils/error";
@@ -22,17 +22,14 @@ import { getErrorMessage } from "@/utils/error";
 interface EditRoleTagsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaveSuccess: (updatedGame: IGameSession) => void;
-  role: IGameRoleState;
+  role: IGameRoleStateSummary;
   gameId: IGameSession["id"];
 }
 
 export const EditRoleTagsModal = ({
   isOpen,
   onClose,
-  onSaveSuccess,
   role,
-  gameId,
 }: EditRoleTagsModalProps) => {
   const intl = useIntl();
   const [editingTags, setEditingTags] = useState<IAppliedTag[]>(
@@ -44,7 +41,7 @@ export const EditRoleTagsModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      role.appliedTags.map((appliedTag) => appliedTag.tag);
+      setEditingTags(JSON.parse(JSON.stringify(role.appliedTags)));
     }
   }, [role, isOpen]);
 
@@ -57,14 +54,14 @@ export const EditRoleTagsModal = ({
         },
       },
       {
-        onSuccess: (data) => {
+        onSuccess: (_data) => {
           showSuccessToastWithTimeout(
             intl.formatMessage({
               defaultMessage: "Successfully updated characters tags",
               id: "admin.manage-characters.role.tags.updated.successfully",
             }),
           );
-          onSaveSuccess(data);
+          onClose();
         },
         onError: (error) => {
           showErrorToastWithTimeout(getErrorMessage(error));
@@ -90,15 +87,15 @@ export const EditRoleTagsModal = ({
           <>
             <ModalHeader>
               <FormattedMessage
-                defaultMessage="Edit characters tags"
+                defaultMessage="Edit characters tags for role {roleName}"
                 id="game.manageCharacters.editTags.header"
-                values={{ roleId: role.scenarioRoleId }}
+                values={{ roleName: role.scenarioRole.role.name }}
               />
             </ModalHeader>
             <ModalBody>
               <InputAppliedTagsWithTable
                 appliedTags={editingTags}
-                gameId={gameId}
+                gameId={role.gameSessionId}
                 setAppliedTags={setEditingTags}
                 userRoleState={role}
               />

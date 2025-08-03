@@ -155,19 +155,19 @@ const ActiveEventAdminDisplay = ({
             />
           </Button>
           <div className="flex flex-row space-x-1">
-            <Link href={`/admin/game/${event.gameSessionId}`}>
-              <Button color="primary" variant="bordered">
-                <FormattedMessage
-                  defaultMessage="Go to game page"
-                  id="admin.events.id.active.page.goToGame"
-                />
-              </Button>
-            </Link>
             <Link href={`/admin/events/${event.id}/active/chats`}>
               <Button variant="bordered">
                 <FormattedMessage
                   defaultMessage="Go to chats"
                   id="admin.events.id.active.page.chats"
+                />
+              </Button>
+            </Link>
+            <Link href={`/admin/game/${event.gameSessionId}`}>
+              <Button color="primary" variant="bordered">
+                <FormattedMessage
+                  defaultMessage="Go to game page"
+                  id="admin.events.id.active.page.goToGame"
                 />
               </Button>
             </Link>

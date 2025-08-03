@@ -12,7 +12,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useQueryClient } from "@tanstack/react-query";
 import { SortDescriptor } from "@react-types/shared";
 
-import { IGameActionLog, IGameSession } from "@/types/game.types";
+import { IGameActionLogDetailed, IGameSession } from "@/types/game.types";
 import { useGameHistory } from "@/services/game/useGames";
 import { useStomp } from "@/providers/stomp-client-provider";
 import { AdminTableDisplay } from "@/components/table/admin-table-display";
@@ -20,7 +20,7 @@ import { usePagination } from "@/hooks/use-pagination";
 import PaginationControl from "@/components/table/pagination-control";
 
 interface GameHistoryElementProps {
-  gameHistory: IGameActionLog[];
+  gameHistory: IGameActionLogDetailed[];
 }
 
 const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
@@ -38,8 +38,12 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
     }
 
     return [...gameHistory].sort((a, b) => {
-      const first = a[sortDescriptor.column as keyof IGameActionLog] as any;
-      const second = b[sortDescriptor.column as keyof IGameActionLog] as any;
+      const first = a[
+        sortDescriptor.column as keyof IGameActionLogDetailed
+      ] as any;
+      const second = b[
+        sortDescriptor.column as keyof IGameActionLogDetailed
+      ] as any;
 
       let cmp = 0;
 
@@ -61,7 +65,14 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
     usePagination(sortedHistory, itemsPerPage);
 
   const historyTableColumns = [
-    { key: "id", label: "ID" },
+    {
+      key: "actionName",
+      label: intl.formatMessage({
+        id: "admin.admin-game-history.performer.action.name",
+        defaultMessage: "Action Name",
+      }),
+      allowsSorting: true,
+    },
     {
       key: "timestamp",
       label: intl.formatMessage({
@@ -71,18 +82,18 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
       allowsSorting: true,
     },
     {
-      key: "performerRoleId",
+      key: "roleName",
       label: intl.formatMessage({
-        id: "admin.admin-game-history.performer.role.id",
-        defaultMessage: "Performer Role ID",
+        id: "admin.admin-game-history.performer.role",
+        defaultMessage: "Performer Role",
       }),
       allowsSorting: true,
     },
     {
-      key: "targetItemId",
+      key: "targetItemName",
       label: intl.formatMessage({
-        id: "admin.admin-game-history.target.item.id",
-        defaultMessage: "Target Item ID",
+        id: "admin.admin-game-history.target.item.name",
+        defaultMessage: "Target Item Name",
       }),
       allowsSorting: true,
     },
@@ -118,10 +129,10 @@ const GameHistoryElement = ({ gameHistory }: GameHistoryElementProps) => {
 
   const rows = useMemo(() => {
     return currentList.map((historyItem) => ({
-      id: historyItem.id,
+      actionName: historyItem.action.name,
       timestamp: new Date(historyItem.timestamp).toLocaleString(intl.locale),
-      performerRoleId: historyItem.performerRoleId,
-      targetItemId: historyItem.targetItemId,
+      roleName: historyItem.performerRole.scenarioRole.role.name,
+      targetItemName: historyItem.targetItem?.scenarioItem.name,
       success: historyItem.success ? (
         <p className="text-center text-large">✅</p>
       ) : (
