@@ -35,7 +35,7 @@ public class ScenarioMapper {
         .description(entity.getDescription())
         .items(entity.getItems() == null ? Collections.emptyList()
             : entity.getItems().stream()
-                .map(scenarioItemMapper::toDTO)
+                .map(scenarioItemMapper::toDetailedDTO)
                 .collect(Collectors.toList()))
         .roles(entity.getRoles() == null ? Collections.emptyList()
             : entity.getRoles().stream()

@@ -1,7 +1,8 @@
 package com.larplaner.mapper.role;
 
 import com.larplaner.dto.role.RoleRequestDTO;
-import com.larplaner.dto.role.RoleResponseDTO;
+import com.larplaner.dto.role.RoleDetailedResponseDTO;
+import com.larplaner.dto.role.RoleSummaryResponseDTO;
 import com.larplaner.dto.role.UpdateRoleRequestDTO;
 import com.larplaner.mapper.tag.TagMapper;
 import com.larplaner.model.role.Role;
@@ -15,15 +16,24 @@ public class RoleMapper {
 
   private final TagMapper tagMapper;
 
-  public RoleResponseDTO toDTO(Role role) {
+  public RoleDetailedResponseDTO toDetailedDTO(Role role) {
 
-    return RoleResponseDTO.builder()
+    return RoleDetailedResponseDTO.builder()
         .id(role.getId())
         .name(role.getName())
         .description(role.getDescription())
         .tags(role.getTags().stream()
             .map(tagMapper::toDTO)
             .collect(Collectors.toList()))
+        .build();
+  }
+
+  public RoleSummaryResponseDTO toDTO(Role role) {
+
+    return RoleSummaryResponseDTO.builder()
+        .id(role.getId())
+        .name(role.getName())
+        .description(role.getDescription())
         .build();
   }
 

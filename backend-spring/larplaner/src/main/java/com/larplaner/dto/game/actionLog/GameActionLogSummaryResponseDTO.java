@@ -17,23 +17,20 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
-public class GameActionLogResponseDTO extends BaseResponseDTO {
+public class GameActionLogSummaryResponseDTO extends BaseResponseDTO {
 
-  private UUID gameSessionId;
   private UUID actionId;
-
-  private ZonedDateTime timestamp;
-
+  private UUID gameSessionId;
   private UUID performerRoleId;
   private UUID targetItemId;
 
+  private ZonedDateTime timestamp;
   private Boolean success;
+  private String message;
 
   @Default
   private List<TagResponseDTO> appliedTags = new ArrayList<>();
 
   @Default
   private List<TagResponseDTO> removedTags = new ArrayList<>();
-
-  private String message;
 }

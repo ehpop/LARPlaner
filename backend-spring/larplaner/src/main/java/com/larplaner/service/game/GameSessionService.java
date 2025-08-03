@@ -1,8 +1,10 @@
 package com.larplaner.service.game;
 
-import com.larplaner.dto.game.GameSessionResponseDTO;
+import com.larplaner.dto.game.GameSessionDetailedResponseDTO;
 import com.larplaner.dto.game.action.GameActionRequestDTO;
-import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
+import com.larplaner.dto.game.actionLog.GameActionLogDetailedResponseDTO;
+import com.larplaner.dto.game.actionLog.GameActionLogSummaryResponseDTO;
+import com.larplaner.dto.game.roleState.GameRoleStateSummaryResponseDTO;
 import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
 import com.larplaner.dto.scenario.action.ScenarioActionResponseDTO;
 import com.larplaner.dto.scenario.itemAction.ScenarioItemActionResponseDTO;
@@ -13,33 +15,35 @@ import java.util.UUID;
 
 public interface GameSessionService {
 
-  List<GameSessionResponseDTO> getAllGameSessions();
+  List<GameSessionDetailedResponseDTO> getAllGameSessions();
 
-  GameSessionResponseDTO getGameSessionById(UUID id);
+  GameSessionDetailedResponseDTO getGameSessionById(UUID id);
 
-  GameSessionResponseDTO createGameSession(Event event);
+  GameSessionDetailedResponseDTO createGameSession(Event event);
 
   void deleteGameSession(UUID id);
 
-  List<GameActionLogResponseDTO> getAllGameHistory();
+  List<GameActionLogSummaryResponseDTO> getAllGameHistory();
 
-  GameActionLogResponseDTO getGameHistoryById(UUID id);
+  GameActionLogSummaryResponseDTO getGameHistoryById(UUID id);
 
-  List<GameActionLogResponseDTO> getGameHistoryByGameId(UUID gameId);
+  List<GameActionLogDetailedResponseDTO> getGameHistoryByGameId(UUID gameId);
 
-  List<GameActionLogResponseDTO> getUserGameHistoryByGameId(String userId, UUID gameId);
+  List<GameActionLogSummaryResponseDTO> getUserGameHistoryByGameId(String userId, UUID gameId);
 
-  List<GameActionLogResponseDTO> getUserGameHistoryByGameId(UUID gameId);
+  List<GameActionLogSummaryResponseDTO> getUserGameHistoryByGameId(UUID gameId);
 
-  GameActionLogResponseDTO createGameHistory(GameActionLog gameActionLogDTO);
+  GameActionLogSummaryResponseDTO createGameHistory(GameActionLog gameActionLogDTO);
 
-  GameActionLogResponseDTO performAction(UUID id, GameActionRequestDTO actionRequestDTO);
+  GameActionLogSummaryResponseDTO performAction(UUID id, GameActionRequestDTO actionRequestDTO);
 
-  GameSessionResponseDTO updateRoleState(UUID roleStateID,
+  GameSessionDetailedResponseDTO updateRoleState(UUID roleStateID,
       UpdateGameRoleStateRequestDTO requestDTO);
 
   List<ScenarioActionResponseDTO> getAvailableActionsForUser(UUID gameSessionRoleId);
 
   List<ScenarioItemActionResponseDTO> getAvailableItemActionsForUser(UUID gameSessionRoleId,
       UUID itemId);
+
+  GameRoleStateSummaryResponseDTO getUserRoleStateForUserId(UUID gameId, String userId);
 }

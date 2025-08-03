@@ -1,31 +1,55 @@
 package com.larplaner.mapper.game.item;
 
-import com.larplaner.dto.game.itemState.GameItemStateResponseDTO;
-import com.larplaner.mapper.game.action.GameActionLogMapper;
+import static com.larplaner.mapper.common.MapperHelper.getIdSafe;
+
+import com.larplaner.dto.game.itemState.GameItemStateDetailedResponseDTO;
+import com.larplaner.dto.game.itemState.GameItemStateSummaryResponseDTO;
+import com.larplaner.mapper.game.GameSessionMapper;
+import com.larplaner.mapper.game.role.GameRoleStateMapper;
+import com.larplaner.mapper.scenario.ScenarioItemMapper;
 import com.larplaner.model.game.GameItemState;
-import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class GameItemStateMapper {
 
-  private final GameActionLogMapper gameActionLogMapper;
+  private final ScenarioItemMapper scenarioItemMapper;
+  private final GameRoleStateMapper gameRoleStateMapper;
+  private final GameSessionMapper gameSessionMapper;
 
-  public GameItemStateResponseDTO toDTO(GameItemState gameItemState) {
+  public GameItemStateMapper(
+      @Lazy ScenarioItemMapper scenarioItemMapper,
+      @Lazy GameRoleStateMapper gameRoleStateMapper,
+      @Lazy GameSessionMapper gameSessionMapper) {
+    this.scenarioItemMapper = scenarioItemMapper;
+    this.gameRoleStateMapper = gameRoleStateMapper;
+    this.gameSessionMapper = gameSessionMapper;
+  }
 
-    return GameItemStateResponseDTO.builder()
+  public GameItemStateDetailedResponseDTO toDetailedDTO(GameItemState gameItemState) {
+    if (gameItemState == null) {
+      return null;
+    }
+
+    return GameItemStateDetailedResponseDTO.builder()
         .id(gameItemState.getId())
-        .gameSessionId(gameItemState.getGameSession().getId())
-        .scenarioItemId(gameItemState.getScenarioItem().getId())
-        .currentHolderRoleId(
-            gameItemState.getCurrentHolderRole() != null
-                ? gameItemState.getCurrentHolderRole().getId()
-                : null)
-        .actionHistory(gameItemState.getActionHistory().stream()
-            .map(gameActionLogMapper::toDTO)
-            .collect(Collectors.toList()))
+        .gameSession(gameSessionMapper.toDTO(gameItemState.getGameSession()))
+        .scenarioItem(scenarioItemMapper.toDTO(gameItemState.getScenarioItem()))
+        .currentHolderRole(gameRoleStateMapper.toDTO(gameItemState.getCurrentHolderRole()))
+        .build();
+  }
+
+  public GameItemStateSummaryResponseDTO toDTO(GameItemState gameItemState) {
+    if (gameItemState == null) {
+      return null;
+    }
+
+    return GameItemStateSummaryResponseDTO.builder()
+        .id(gameItemState.getId())
+        .gameSessionId(getIdSafe(gameItemState.getGameSession()))
+        .scenarioItem(scenarioItemMapper.toDetailedDTO(gameItemState.getScenarioItem()))
+        .currentHolderRoleId(getIdSafe(gameItemState.getCurrentHolderRole()))
         .build();
   }
 

@@ -1,14 +1,17 @@
 package com.larplaner.service.game.impl;
 
-import com.larplaner.dto.game.GameSessionResponseDTO;
+import com.larplaner.dto.BaseResponseDTO;
+import com.larplaner.dto.game.GameSessionDetailedResponseDTO;
 import com.larplaner.dto.game.action.GameActionRequestDTO;
-import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
-import com.larplaner.dto.game.roleState.GameRoleStateResponseDTO;
+import com.larplaner.dto.game.actionLog.GameActionLogDetailedResponseDTO;
+import com.larplaner.dto.game.actionLog.GameActionLogSummaryResponseDTO;
+import com.larplaner.dto.game.roleState.GameRoleStateSummaryResponseDTO;
 import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
 import com.larplaner.dto.scenario.action.ScenarioActionResponseDTO;
 import com.larplaner.dto.scenario.itemAction.ScenarioItemActionResponseDTO;
 import com.larplaner.mapper.game.GameSessionMapper;
 import com.larplaner.mapper.game.action.GameActionLogMapper;
+import com.larplaner.mapper.game.role.GameRoleStateMapper;
 import com.larplaner.mapper.scenario.ScenarioActionMapper;
 import com.larplaner.mapper.scenario.ScenarioItemActionMapper;
 import com.larplaner.model.action.Action;
@@ -61,24 +64,25 @@ public class GameSessionServiceImpl implements GameSessionService {
   private final ScenarioActionMapper scenarioActionMapper;
   private final ScenarioItemActionMapper scenarioItemActionMapper;
   private final GameItemStateRepository gameItemStateRepository;
+  private final GameRoleStateMapper gameRoleStateMapper;
 
   @Override
-  public List<GameSessionResponseDTO> getAllGameSessions() {
+  public List<GameSessionDetailedResponseDTO> getAllGameSessions() {
     return gameSessionRepository.findAll().stream()
-        .map(gameSessionMapper::toDTO)
+        .map(gameSessionMapper::toDetailedDTO)
         .collect(Collectors.toList());
   }
 
   @Override
-  public GameSessionResponseDTO getGameSessionById(UUID id) {
+  public GameSessionDetailedResponseDTO getGameSessionById(UUID id) {
     return gameSessionRepository.findById(id)
-        .map(gameSessionMapper::toDTO)
+        .map(gameSessionMapper::toDetailedDTO)
         .orElse(null);
   }
 
   @Override
   @Transactional
-  public GameSessionResponseDTO createGameSession(Event event) {
+  public GameSessionDetailedResponseDTO createGameSession(Event event) {
     GameSession gameSession = GameSession.builder()
         .event(event)
         .startTime(ZonedDateTime.now())
@@ -95,7 +99,7 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     GameSession savedGameSession = gameSessionRepository.save(gameSession);
 
-    return gameSessionMapper.toDTO(savedGameSession);
+    return gameSessionMapper.toDetailedDTO(savedGameSession);
   }
 
   private List<GameRoleState> buildAssignedRolesFromEvent(Event event, GameSession gameSession) {
@@ -141,7 +145,7 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public List<GameActionLogResponseDTO> getAllGameHistory() {
+  public List<GameActionLogSummaryResponseDTO> getAllGameHistory() {
     return gameActionLogRepository.findAll()
         .stream()
         .map(gameActionLogMapper::toDTO)
@@ -149,7 +153,7 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public GameActionLogResponseDTO getGameHistoryById(UUID id) {
+  public GameActionLogSummaryResponseDTO getGameHistoryById(UUID id) {
     return gameActionLogRepository
         .findById(id)
         .map(gameActionLogMapper::toDTO)
@@ -157,30 +161,30 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public List<GameActionLogResponseDTO> getGameHistoryByGameId(UUID gameId) {
+  public List<GameActionLogDetailedResponseDTO> getGameHistoryByGameId(UUID gameId) {
     return gameActionLogRepository
         .findByGameSession_Id(gameId)
         .stream()
-        .map(gameActionLogMapper::toDTO)
+        .map(gameActionLogMapper::toDetailedDTO)
         .collect(Collectors.toList());
   }
 
   @Override
-  public List<GameActionLogResponseDTO> getUserGameHistoryByGameId(UUID gameId) {
+  public List<GameActionLogSummaryResponseDTO> getUserGameHistoryByGameId(UUID gameId) {
     return getUserGameHistoryByGameId(SecurityService.getFirebaseToken().getUid(), gameId);
   }
 
   @Override
-  public List<GameActionLogResponseDTO> getUserGameHistoryByGameId(String userId,
+  public List<GameActionLogSummaryResponseDTO> getUserGameHistoryByGameId(String userId,
       UUID gameId) {
-    GameSessionResponseDTO gameSession = getGameSessionById(gameId);
+    GameSessionDetailedResponseDTO gameSession = getGameSessionById(gameId);
     if (gameSession == null) {
       return new ArrayList<>();
     }
 
     UUID userRoleId = gameSession.getAssignedRoles().stream()
         .filter(role -> role.getAssignedUserID().equals(userId))
-        .map(GameRoleStateResponseDTO::getId)
+        .map(BaseResponseDTO::getId)
         .findFirst()
         .orElse(null);
 
@@ -195,11 +199,11 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public GameActionLogResponseDTO createGameHistory(GameActionLog gameActionLog) {
+  public GameActionLogSummaryResponseDTO createGameHistory(GameActionLog gameActionLog) {
     return gameActionLogMapper.toDTO(gameActionLogRepository.save(gameActionLog));
   }
 
-  public GameActionLogResponseDTO performAction(UUID gameSessionId,
+  public GameActionLogSummaryResponseDTO performAction(UUID gameSessionId,
       GameActionRequestDTO gameActionRequestDTO) {
     var game = gameSessionRepository.findById(gameSessionId)
         .orElseThrow(EntityNotFoundException::new);
@@ -299,7 +303,7 @@ public class GameSessionServiceImpl implements GameSessionService {
         .anyMatch(actionToPerform.getRequiredTagsToSucceed()::contains);
   }
 
-  public GameSessionResponseDTO updateRoleState(UUID roleStateID,
+  public GameSessionDetailedResponseDTO updateRoleState(UUID roleStateID,
       UpdateGameRoleStateRequestDTO requestDTO) {
     var userRole = gameRoleStateRepository.findById(roleStateID)
         .orElseThrow(EntityNotFoundException::new);
@@ -323,7 +327,7 @@ public class GameSessionServiceImpl implements GameSessionService {
     userRole.getAppliedTags().addAll(tagsToAdd);
     userRole.getAppliedTags().removeAll(tagsToRemove);
 
-    return gameSessionMapper.toDTO(
+    return gameSessionMapper.toDetailedDTO(
         gameRoleStateRepository.save(userRole).getGameSession()
     );
   }
@@ -359,6 +363,15 @@ public class GameSessionServiceImpl implements GameSessionService {
         .filter(action -> canActionBeDisplayedForUser(gameRoleState, action))
         .map(scenarioItemActionMapper::toDTO)
         .toList();
+  }
+
+  @Override
+  public GameRoleStateSummaryResponseDTO getUserRoleStateForUserId(UUID gameId, String userId) {
+    var foundUserRole = gameRoleStateRepository.findByGameSession_IdAndAssignedUserID(gameId,
+            userId)
+        .orElseThrow(EntityNotFoundException::new);
+
+    return gameRoleStateMapper.toDTO(foundUserRole);
   }
 
   private boolean canActionBeDisplayedForUser(GameRoleState gameRoleState, Action action) {

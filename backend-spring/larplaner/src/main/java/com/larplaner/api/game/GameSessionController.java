@@ -1,8 +1,10 @@
 package com.larplaner.api.game;
 
-import com.larplaner.dto.game.GameSessionResponseDTO;
+import com.larplaner.dto.game.GameSessionDetailedResponseDTO;
 import com.larplaner.dto.game.action.GameActionRequestDTO;
-import com.larplaner.dto.game.actionLog.GameActionLogResponseDTO;
+import com.larplaner.dto.game.actionLog.GameActionLogDetailedResponseDTO;
+import com.larplaner.dto.game.actionLog.GameActionLogSummaryResponseDTO;
+import com.larplaner.dto.game.roleState.GameRoleStateSummaryResponseDTO;
 import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
 import com.larplaner.dto.scenario.action.ScenarioActionResponseDTO;
 import com.larplaner.dto.scenario.itemAction.ScenarioItemActionResponseDTO;
@@ -32,7 +34,7 @@ public interface GameSessionController {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved all game sessions")
   })
   @GetMapping
-  ResponseEntity<List<GameSessionResponseDTO>> getAllGameSessions();
+  ResponseEntity<List<GameSessionDetailedResponseDTO>> getAllGameSessions();
 
   @Operation(summary = "Get game session by ID")
   @ApiResponses(value = {
@@ -40,7 +42,7 @@ public interface GameSessionController {
       @ApiResponse(responseCode = "404", description = "Game session not found")
   })
   @GetMapping("/{id}")
-  ResponseEntity<GameSessionResponseDTO> getGameSessionById(
+  ResponseEntity<GameSessionDetailedResponseDTO> getGameSessionById(
       @Parameter(description = "ID of the game session to retrieve") @PathVariable UUID id);
 
   @Operation(summary = "Delete a game session")
@@ -52,20 +54,13 @@ public interface GameSessionController {
   ResponseEntity<Void> deleteGameSession(
       @Parameter(description = "ID of the game session to delete") @PathVariable UUID id);
 
-  @Operation(summary = "Get all game history")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Successfully retrieved all game history")
-  })
-  @GetMapping("/history")
-  ResponseEntity<List<GameActionLogResponseDTO>> getAllGameHistory();
-
   @Operation(summary = "Get game history by ID")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved game history"),
       @ApiResponse(responseCode = "404", description = "Game history not found")
   })
   @GetMapping("/history/{id}")
-  ResponseEntity<GameActionLogResponseDTO> getGameHistoryById(
+  ResponseEntity<GameActionLogSummaryResponseDTO> getGameHistoryById(
       @Parameter(description = "ID of the game history to retrieve") @PathVariable UUID id);
 
   @Operation(summary = "Get game history by game ID")
@@ -74,7 +69,7 @@ public interface GameSessionController {
       @ApiResponse(responseCode = "404", description = "Game history not found")
   })
   @GetMapping("/history/gameId/{gameId}")
-  ResponseEntity<List<GameActionLogResponseDTO>> getGameHistoryByGameId(
+  ResponseEntity<List<GameActionLogDetailedResponseDTO>> getGameHistoryByGameId(
       @Parameter(description = "ID of the game to retrieve history for") @PathVariable UUID gameId);
 
   @Operation(summary = "Get game history by user ID and game ID")
@@ -83,7 +78,7 @@ public interface GameSessionController {
       @ApiResponse(responseCode = "404", description = "Game history not found")
   })
   @GetMapping("/history/userId/{userId}/gameId/{gameId}")
-  ResponseEntity<List<GameActionLogResponseDTO>> getGameHistoryByUserIdAndGameId(
+  ResponseEntity<List<GameActionLogSummaryResponseDTO>> getGameHistoryByUserIdAndGameId(
       @Parameter(description = "ID of the user to retrieve history for") @PathVariable String userId,
       @Parameter(description = "ID of the game to retrieve history for") @PathVariable UUID gameId);
 
@@ -93,7 +88,7 @@ public interface GameSessionController {
       @ApiResponse(responseCode = "404", description = "Game history not found")
   })
   @GetMapping("/history/user/gameId/{gameId}")
-  ResponseEntity<List<GameActionLogResponseDTO>> getUserGameHistoryByGameId(
+  ResponseEntity<List<GameActionLogSummaryResponseDTO>> getUserGameHistoryByGameId(
       @Parameter(description = "ID of the game to retrieve history for") @PathVariable UUID gameId);
 
   @Operation(summary = "Try to perform action")
@@ -102,7 +97,7 @@ public interface GameSessionController {
       @ApiResponse(responseCode = "404", description = "Game session not found")
   })
   @PostMapping("/{gameSessionId}/perform-action")
-  ResponseEntity<GameActionLogResponseDTO> performActionInGameSession(
+  ResponseEntity<GameActionLogSummaryResponseDTO> performActionInGameSession(
       @Parameter(description = "ID of the game session in which to perform action") @PathVariable UUID gameSessionId,
       @RequestBody @Valid
       GameActionRequestDTO actionRequestDTO);
@@ -114,7 +109,7 @@ public interface GameSessionController {
       @ApiResponse(responseCode = "404", description = "Game session or scenario role not found")
   })
   @PutMapping("/roles/{gameSessionRoleId}/state")
-  ResponseEntity<GameSessionResponseDTO> updateGameSessionRoleState(
+  ResponseEntity<GameSessionDetailedResponseDTO> updateGameSessionRoleState(
       @Parameter(description = "ID of the scenario role whose state is to be updated")
       @PathVariable UUID gameSessionRoleId,
       @RequestBody @Valid
@@ -142,4 +137,17 @@ public interface GameSessionController {
       @Parameter(description = "ID of the item for whom actions will be retrieved")
       @PathVariable
       UUID itemId);
+
+  @Operation(summary = "Get summary info about user Game Role State based on user UID from auth provider")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successfully retrieved user Game Role State"),
+      @ApiResponse(responseCode = "404", description = "Game role state not found")
+  })
+  @GetMapping("/{gameId}/role/user/{userId}")
+  ResponseEntity<GameRoleStateSummaryResponseDTO> getRoleStateForUserId(
+      @Parameter(description = "Game ID in which Game Role State should be")
+      @PathVariable UUID gameId,
+      @Parameter(description = "User UID from auth provider for which Game Role State will be retrieved")
+      @PathVariable String userId
+  );
 }

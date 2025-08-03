@@ -1,7 +1,8 @@
 package com.larplaner.mapper.scenario;
 
+import com.larplaner.dto.scenario.item.ScenarioItemDetailedResponseDTO;
 import com.larplaner.dto.scenario.item.ScenarioItemRequestDTO;
-import com.larplaner.dto.scenario.item.ScenarioItemResponseDTO;
+import com.larplaner.dto.scenario.item.ScenarioItemSummaryResponseDTO;
 import com.larplaner.dto.scenario.item.UpdateScenarioItemRequestDTO;
 import com.larplaner.model.scenario.ScenarioItem;
 import java.util.stream.Collectors;
@@ -14,12 +15,12 @@ public class ScenarioItemMapper {
 
   private final ScenarioItemActionMapper scenarioItemActionMapper;
 
-  public ScenarioItemResponseDTO toDTO(ScenarioItem scenarioItem) {
+  public ScenarioItemDetailedResponseDTO toDetailedDTO(ScenarioItem scenarioItem) {
     if (scenarioItem == null) {
       return null;
     }
 
-    return ScenarioItemResponseDTO
+    return ScenarioItemDetailedResponseDTO
         .builder()
         .id(scenarioItem.getId())
         .scenarioId(scenarioItem.getScenario() != null ? scenarioItem.getScenario().getId() : null)
@@ -28,6 +29,20 @@ public class ScenarioItemMapper {
         .actions(scenarioItem.getActions() != null ? scenarioItem.getActions().stream()
             .map(scenarioItemActionMapper::toDTO)
             .collect(Collectors.toList()) : null)
+        .build();
+  }
+
+  public ScenarioItemSummaryResponseDTO toDTO(ScenarioItem scenarioItem) {
+    if (scenarioItem == null) {
+      return null;
+    }
+
+    return ScenarioItemSummaryResponseDTO
+        .builder()
+        .id(scenarioItem.getId())
+        .scenarioId(scenarioItem.getScenario() != null ? scenarioItem.getScenario().getId() : null)
+        .name(scenarioItem.getName())
+        .description(scenarioItem.getDescription())
         .build();
   }
 

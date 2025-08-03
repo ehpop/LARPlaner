@@ -1,7 +1,7 @@
 package com.larplaner.api.role;
 
 import com.larplaner.dto.role.RoleRequestDTO;
-import com.larplaner.dto.role.RoleResponseDTO;
+import com.larplaner.dto.role.RoleDetailedResponseDTO;
 import com.larplaner.dto.role.UpdateRoleRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +29,7 @@ public interface RoleController {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved all roles")
   })
   @GetMapping
-  ResponseEntity<List<RoleResponseDTO>> getAllRoles();
+  ResponseEntity<List<RoleDetailedResponseDTO>> getAllRoles();
 
   @Operation(summary = "Get role by ID")
   @ApiResponses(value = {
@@ -37,7 +37,7 @@ public interface RoleController {
       @ApiResponse(responseCode = "404", description = "Role not found")
   })
   @GetMapping("/{id}")
-  ResponseEntity<RoleResponseDTO> getRoleById(
+  ResponseEntity<RoleDetailedResponseDTO> getRoleById(
       @Parameter(description = "ID of the role to retrieve") @PathVariable UUID id);
 
   @Operation(summary = "Create a new role")
@@ -46,7 +46,7 @@ public interface RoleController {
       @ApiResponse(responseCode = "400", description = "Invalid input")
   })
   @PostMapping
-  ResponseEntity<RoleResponseDTO> createRole(
+  ResponseEntity<RoleDetailedResponseDTO> createRole(
       @Parameter(description = "Role to create") @Valid @RequestBody RoleRequestDTO roleDTO);
 
   @Operation(summary = "Update an existing role")
@@ -56,7 +56,7 @@ public interface RoleController {
       @ApiResponse(responseCode = "400", description = "Invalid input")
   })
   @PutMapping("/{id}")
-  ResponseEntity<RoleResponseDTO> updateRole(
+  ResponseEntity<RoleDetailedResponseDTO> updateRole(
       @Parameter(description = "ID of the role to update") @PathVariable UUID id,
       @Parameter(description = "Updated role data") @Valid @RequestBody UpdateRoleRequestDTO roleDTO);
 

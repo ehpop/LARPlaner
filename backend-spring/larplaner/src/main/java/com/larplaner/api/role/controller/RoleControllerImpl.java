@@ -2,7 +2,7 @@ package com.larplaner.api.role.controller;
 
 import com.larplaner.api.role.RoleController;
 import com.larplaner.dto.role.RoleRequestDTO;
-import com.larplaner.dto.role.RoleResponseDTO;
+import com.larplaner.dto.role.RoleDetailedResponseDTO;
 import com.larplaner.dto.role.UpdateRoleRequestDTO;
 import com.larplaner.service.role.RoleService;
 import java.util.List;
@@ -23,28 +23,28 @@ public class RoleControllerImpl implements RoleController {
 
   @Override
   @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-  public ResponseEntity<List<RoleResponseDTO>> getAllRoles() {
+  public ResponseEntity<List<RoleDetailedResponseDTO>> getAllRoles() {
     return ResponseEntity.ok(roleService.getAllRoles());
   }
 
   @Override
   @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToRole(#id)")
-  public ResponseEntity<RoleResponseDTO> getRoleById(UUID id) {
-    RoleResponseDTO role = roleService.getRoleById(id);
+  public ResponseEntity<RoleDetailedResponseDTO> getRoleById(UUID id) {
+    RoleDetailedResponseDTO role = roleService.getRoleById(id);
     return role != null
         ? ResponseEntity.ok(role)
         : ResponseEntity.notFound().build();
   }
 
   @Override
-  public ResponseEntity<RoleResponseDTO> createRole(RoleRequestDTO roleDTO) {
+  public ResponseEntity<RoleDetailedResponseDTO> createRole(RoleRequestDTO roleDTO) {
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(roleService.createRole(roleDTO));
   }
 
   @Override
-  public ResponseEntity<RoleResponseDTO> updateRole(UUID id, UpdateRoleRequestDTO roleDTO) {
-    RoleResponseDTO updatedRole = roleService.updateRole(id, roleDTO);
+  public ResponseEntity<RoleDetailedResponseDTO> updateRole(UUID id, UpdateRoleRequestDTO roleDTO) {
+    RoleDetailedResponseDTO updatedRole = roleService.updateRole(id, roleDTO);
     return updatedRole != null
         ? ResponseEntity.ok(updatedRole)
         : ResponseEntity.notFound().build();

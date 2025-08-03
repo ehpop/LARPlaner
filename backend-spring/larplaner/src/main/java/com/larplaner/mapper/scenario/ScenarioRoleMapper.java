@@ -1,8 +1,10 @@
 package com.larplaner.mapper.scenario;
 
+import com.larplaner.dto.scenario.role.ScenarioRoleDetailedResponseDTO;
 import com.larplaner.dto.scenario.role.ScenarioRoleRequestDTO;
 import com.larplaner.dto.scenario.role.ScenarioRoleResponseDTO;
 import com.larplaner.dto.scenario.role.UpdateScenarioRoleRequestDTO;
+import com.larplaner.mapper.role.RoleMapper;
 import com.larplaner.model.scenario.ScenarioRole;
 import com.larplaner.repository.role.RoleRepository;
 import org.springframework.stereotype.Component;
@@ -11,9 +13,11 @@ import org.springframework.stereotype.Component;
 public class ScenarioRoleMapper {
 
   private final RoleRepository roleRepository;
+  private final RoleMapper roleMapper;
 
-  public ScenarioRoleMapper(RoleRepository roleRepository) {
+  public ScenarioRoleMapper(RoleRepository roleRepository, RoleMapper roleMapper) {
     this.roleRepository = roleRepository;
+    this.roleMapper = roleMapper;
   }
 
   /**
@@ -27,6 +31,24 @@ public class ScenarioRoleMapper {
     return ScenarioRoleResponseDTO.builder()
         .id(entity.getId())
         .roleId(entity.getRole() != null ? entity.getRole().getId() : null)
+        .scenarioId(entity.getScenario() != null ? entity.getScenario().getId() : null)
+        .descriptionForGM(entity.getDescriptionForGM())
+        .descriptionForOwner(entity.getDescriptionForOwner())
+        .descriptionForOthers(entity.getDescriptionForOthers())
+        .build();
+  }
+
+  /**
+   * Maps a ScenarioRole entity to a ScenarioRoleResponseDTO.
+   */
+  public ScenarioRoleDetailedResponseDTO toDetailedDTO(ScenarioRole entity) {
+    if (entity == null) {
+      return null;
+    }
+
+    return ScenarioRoleDetailedResponseDTO.builder()
+        .id(entity.getId())
+        .role(roleMapper.toDTO(entity.getRole()))
         .scenarioId(entity.getScenario() != null ? entity.getScenario().getId() : null)
         .descriptionForGM(entity.getDescriptionForGM())
         .descriptionForOwner(entity.getDescriptionForOwner())

@@ -1,15 +1,7 @@
 package com.larplaner.service.role.impl;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.larplaner.dto.role.RoleDetailedResponseDTO;
 import com.larplaner.dto.role.RoleRequestDTO;
-import com.larplaner.dto.role.RoleResponseDTO;
 import com.larplaner.dto.role.UpdateRoleRequestDTO;
 import com.larplaner.exception.EntityCouldNotBeDeleted;
 import com.larplaner.mapper.role.RoleMapper;
@@ -19,9 +11,14 @@ import com.larplaner.repository.role.RoleRepository;
 import com.larplaner.repository.scenario.ScenarioRoleRepository;
 import com.larplaner.service.role.RoleService;
 import com.larplaner.service.tag.helper.TagHelper;
-
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,33 +30,33 @@ public class RoleServiceImpl implements RoleService {
   private final ScenarioRoleRepository scenarioRoleRepository;
 
   @Override
-  public List<RoleResponseDTO> getAllRoles() {
+  public List<RoleDetailedResponseDTO> getAllRoles() {
     return roleRepository.findAll().stream()
-        .map(roleMapper::toDTO)
+        .map(roleMapper::toDetailedDTO)
         .collect(Collectors.toList());
   }
 
   @Override
-  public RoleResponseDTO getRoleById(UUID id) {
+  public RoleDetailedResponseDTO getRoleById(UUID id) {
     Role role = roleRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Role not found with id: " + id));
-    return roleMapper.toDTO(role);
+    return roleMapper.toDetailedDTO(role);
   }
 
   @Override
   @Transactional
-  public RoleResponseDTO createRole(RoleRequestDTO roleDTO) {
+  public RoleDetailedResponseDTO createRole(RoleRequestDTO roleDTO) {
     Role role = roleMapper.toEntity(roleDTO);
 
     List<Tag> tagsToAssociate = roleTagHelper.processTags(roleDTO.getTags());
     role.setTags(tagsToAssociate);
 
-    return roleMapper.toDTO(roleRepository.save(role));
+    return roleMapper.toDetailedDTO(roleRepository.save(role));
   }
 
   @Override
   @Transactional
-  public RoleResponseDTO updateRole(UUID id, UpdateRoleRequestDTO roleDTO) {
+  public RoleDetailedResponseDTO updateRole(UUID id, UpdateRoleRequestDTO roleDTO) {
     Role existingRole = roleRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Role not found with id: " + id));
 
@@ -68,7 +65,7 @@ public class RoleServiceImpl implements RoleService {
     List<Tag> tagsToAssociate = roleTagHelper.processTags(roleDTO.getTags());
     existingRole.setTags(tagsToAssociate);
 
-    return roleMapper.toDTO(roleRepository.save(existingRole));
+    return roleMapper.toDetailedDTO(roleRepository.save(existingRole));
   }
 
   @Override

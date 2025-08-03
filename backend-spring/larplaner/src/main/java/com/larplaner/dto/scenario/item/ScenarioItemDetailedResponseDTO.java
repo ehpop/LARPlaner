@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
-public class ScenarioItemResponseDTO extends BaseResponseDTO {
+public class ScenarioItemDetailedResponseDTO extends BaseResponseDTO {
 
   private UUID scenarioId;
   private String name;
