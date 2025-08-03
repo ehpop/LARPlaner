@@ -156,6 +156,7 @@ const ItemForm = ({ control, index, remove, isBeingEdited }: ItemFormProps) => {
           }) + itemData?.name
         }
         qrCodeData={itemData?.id || ""}
+        savedFileName={`item-${itemData?.name || ""}-code`}
         onOpenChange={onOpenChange}
       />
     </div>

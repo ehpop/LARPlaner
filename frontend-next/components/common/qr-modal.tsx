@@ -1,4 +1,4 @@
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import {
   Button,
   Modal,
@@ -42,12 +42,11 @@ export const QrModal = ({
       }
 
       const pngDataUrl = await toPng(element);
-      const base64Data = pngDataUrl.split(",")[1];
       const filename = sanitizeFilename(
-        savedFileName || `qr-code-${new Date()}.png`,
+        savedFileName || `qr-code-${new Date().getTime()}.png`,
       );
 
-      saveAs(base64Data, filename);
+      saveAs(pngDataUrl, filename);
     } catch (error) {
       showErrorToastWithTimeout(
         intl.formatMessage({
@@ -99,10 +98,7 @@ export const QrModal = ({
             </ModalBody>
             <ModalFooter className="flex flex-row justify-between gap-2">
               <Button color="danger" variant="bordered" onPress={onClose}>
-                {intl.formatMessage({
-                  id: "common.close",
-                  defaultMessage: "Close",
-                })}
+                <FormattedMessage defaultMessage="Close" id="common.close" />
               </Button>
 
               <Button
@@ -112,10 +108,10 @@ export const QrModal = ({
                 variant="bordered"
                 onPress={() => handleDownloadPressed()}
               >
-                {intl.formatMessage({
-                  id: "common.download",
-                  defaultMessage: "Download",
-                })}
+                <FormattedMessage
+                  defaultMessage="Download"
+                  id="common.download"
+                />
               </Button>
             </ModalFooter>
           </>
