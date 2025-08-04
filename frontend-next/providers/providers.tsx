@@ -10,7 +10,6 @@ import { ToastProvider } from "@heroui/toast";
 import FirebaseProvider from "@/providers/firebase-provider";
 import ReactQueryProvider from "@/providers/react-query-provider";
 import { LocaleProvider } from "@/providers/locale-provider";
-import { StompClientProvider } from "@/providers/stomp-client-provider";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -26,9 +25,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
       <NextThemesProvider {...themeProps}>
         <LocaleProvider>
           <FirebaseProvider>
-            <ReactQueryProvider>
-              <StompClientProvider>{children}</StompClientProvider>
-            </ReactQueryProvider>
+            <ReactQueryProvider>{children}</ReactQueryProvider>
           </FirebaseProvider>
         </LocaleProvider>
       </NextThemesProvider>

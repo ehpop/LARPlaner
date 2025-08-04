@@ -50,9 +50,12 @@ const UpcomingEventContent = ({
   const intl = useIntl();
   const router = useRouter();
 
-  const { data: roles, isLoading: loadingRoles, isError, error } = useRoles();
-  const updateEventStatus = useUpdateEventStatus();
   const { data: emails, isLoading: loadingEmails } = useAllUserEmails();
+  const { data: roles, isLoading: loadingRoles, isError, error } = useRoles();
+
+  const emailSet: Set<string> = new Set(emails);
+
+  const updateEventStatus = useUpdateEventStatus();
 
   const handleStartEvent = () => {
     updateEventStatus.mutate(
@@ -74,8 +77,6 @@ const UpcomingEventContent = ({
     );
   };
 
-  const emailSet: Set<string> = new Set(emails);
-
   if (isError) {
     return (
       <div className="w-full flex justify-center">
@@ -90,6 +91,7 @@ const UpcomingEventContent = ({
         <UpcomingEventAdminDisplay
           emails={emailSet}
           event={event}
+          isPending={updateEventStatus.isPending}
           roles={roles}
           scenario={scenario}
           onStartEvent={handleStartEvent}
@@ -105,12 +107,14 @@ const UpcomingEventAdminDisplay = ({
   scenario,
   roles,
   onStartEvent,
+  isPending,
 }: {
   emails: Set<string>;
   event: IEvent;
   scenario: IScenario;
   roles: IRole[];
   onStartEvent: () => void;
+  isPending?: boolean;
 }) => {
   const intl = useIntl();
 
@@ -118,6 +122,8 @@ const UpcomingEventAdminDisplay = ({
     (assignment) =>
       assignment.assignedEmail && emails.has(assignment.assignedEmail),
   );
+
+  console.log(event.assignedRoles);
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -213,7 +219,8 @@ const UpcomingEventAdminDisplay = ({
             <div>
               <Button
                 color="success"
-                isDisabled={!canActivateEvent}
+                isDisabled={!canActivateEvent || isPending}
+                isLoading={isPending}
                 variant="bordered"
                 onPress={() => onStartEvent()}
               >

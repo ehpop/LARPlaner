@@ -5,7 +5,10 @@ export const ButtonPanel = ({
   isBeingEdited,
   isSaveButtonTypeSubmit,
   isSaveDisabled,
+  isSaveLoading = false,
   isEditDisabled = false,
+  isDeleteDisabled = false,
+  isDeleteLoading = false,
   onEditClicked,
   onCancelEditClicked,
   onDeleteClicked,
@@ -13,7 +16,10 @@ export const ButtonPanel = ({
   isBeingEdited: boolean;
   isSaveButtonTypeSubmit: boolean;
   isSaveDisabled: boolean;
+  isSaveLoading?: boolean;
   isEditDisabled?: boolean;
+  isDeleteLoading?: boolean;
+  isDeleteDisabled?: boolean;
   onEditClicked: () => void;
   onCancelEditClicked: () => void;
   onDeleteClicked: () => void;
@@ -26,6 +32,7 @@ export const ButtonPanel = ({
       <Button
         color="success"
         isDisabled={isSaveDisabled}
+        isLoading={isSaveLoading}
         size="lg"
         type={isSaveButtonTypeSubmit ? "submit" : "button"}
       >
@@ -37,6 +44,8 @@ export const ButtonPanel = ({
     <div className="space-x-3">
       <Button
         color="danger"
+        isDisabled={isDeleteDisabled}
+        isLoading={isDeleteLoading}
         size="lg"
         onPress={() => {
           onDeleteClicked();

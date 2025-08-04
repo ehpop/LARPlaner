@@ -21,6 +21,7 @@ import {
 import { TagsProvider } from "@/providers/tags-provider";
 import { emptyRole } from "@/types/initial-types";
 import { getErrorMessage } from "@/utils/error";
+import HidableSection from "@/components/common/hidable-section";
 
 export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const intl = useIntl();
@@ -29,7 +30,6 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
   const isNewRole = !initialRole;
 
   const [isBeingEdited, setIsBeingEdited] = useState(false);
-  const [showTags, setShowTags] = useState(true);
   const [lastSavedRole, setLastSavedRole] = useState(initialRole);
 
   const {
@@ -200,52 +200,48 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
         />
 
         <div className="w-full min-h-full border p-3 space-y-3">
-          <div className="w-full flex flex-row justify-between">
-            <p className="text-xl font-bold">
-              <FormattedMessage
-                defaultMessage="Character's tags:"
-                id="role.id.page.display.tags"
+          <HidableSection
+            section={
+              <Controller
+                control={control}
+                name="tags"
+                render={({ field }) => (
+                  <InputTagsWithTable
+                    addedTags={field.value || []}
+                    description={intl.formatMessage({
+                      defaultMessage: "Required tags to display action",
+                      id: "scenarios.new.page.requiredTagsToDisplayActionDescription",
+                    })}
+                    inputLabel={intl.formatMessage({
+                      defaultMessage: "Required tags to display action",
+                      id: "scenarios.new.page.input",
+                    })}
+                    isDisabled={!isNewRole && !isBeingEdited}
+                    placeholder={intl.formatMessage({
+                      defaultMessage: "Enter tag name",
+                      id: "role.display.tag.name.placeholder",
+                    })}
+                    setAddedTags={field.onChange}
+                  />
+                )}
               />
-            </p>
-            <Button
-              size="sm"
-              variant="bordered"
-              onPress={() => setShowTags(!showTags)}
-            >
-              {showTags ? "-" : "+"}
-            </Button>
-          </div>
-          {showTags && (
-            <Controller
-              control={control}
-              name="tags"
-              render={({ field }) => (
-                <InputTagsWithTable
-                  addedTags={field.value || []}
-                  description={intl.formatMessage({
-                    defaultMessage: "Required tags to display action",
-                    id: "scenarios.new.page.requiredTagsToDisplayActionDescription",
-                  })}
-                  inputLabel={intl.formatMessage({
-                    defaultMessage: "Required tags to display action",
-                    id: "scenarios.new.page.input",
-                  })}
-                  isDisabled={!isNewRole && !isBeingEdited}
-                  placeholder={intl.formatMessage({
-                    defaultMessage: "Enter tag name",
-                    id: "role.display.tag.name.placeholder",
-                  })}
-                  setAddedTags={field.onChange}
+            }
+            titleElement={
+              <p className="text-xl font-bold">
+                <FormattedMessage
+                  defaultMessage="Character's tags:"
+                  id="role.id.page.display.tags"
                 />
-              )}
-            />
-          )}
+              </p>
+            }
+          />
         </div>
 
         {isNewRole ? (
           <div className="w-full flex justify-end space-x-3">
             <Button
               color="success"
+              isDisabled={isSaving}
               isLoading={isSaving}
               size="lg"
               type="submit"
@@ -257,8 +253,11 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
           <div className="w-full flex justify-end">
             <ButtonPanel
               isBeingEdited={isBeingEdited}
+              isDeleteDisabled={isDeleting || isSaving}
+              isDeleteLoading={isDeleting}
               isSaveButtonTypeSubmit={true}
               isSaveDisabled={!isDirty || isSaving}
+              isSaveLoading={isSaving}
               onCancelEditClicked={onOpenCancel}
               onDeleteClicked={onOpenDelete}
               onEditClicked={() => setIsBeingEdited(true)}

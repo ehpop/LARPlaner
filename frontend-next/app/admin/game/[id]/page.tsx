@@ -11,6 +11,7 @@ import useEventAndScenario from "@/hooks/event/use-event";
 import AdminGameHistory from "@/components/game/admin/admin-game-history";
 import ManageCharacters from "@/components/game/admin/manage-characters/manage-characters";
 import { useGameSession } from "@/services/game/useGames";
+import { StompClientProvider } from "@/providers/stomp-client-provider";
 
 const ActiveAdminGamePage = ({ params }: any) => {
   const resolvedParams = React.use(params) as { id: string };
@@ -30,26 +31,28 @@ const ActiveAdminGamePage = ({ params }: any) => {
   }
 
   return (
-    <div className="w-full min-h-screen flex justify-center">
-      <LoadingOverlay
-        isLoading={isLoading}
-        label={intl.formatMessage({
-          defaultMessage: "Loading game...",
-          id: "game.admin.id.page.display.loading",
-        })}
-      >
-        {allDataLoaded ? (
-          <ActiveAdminGameDisplay game={game} />
-        ) : (
-          <div className="w-full flex justify-center">
-            <FormattedMessage
-              defaultMessage="Cannot load game data or user is not assigned to this game."
-              id="game.admin.id.page.display.cannotLoad"
-            />
-          </div>
-        )}
-      </LoadingOverlay>
-    </div>
+    <StompClientProvider>
+      <div className="w-full min-h-screen flex justify-center">
+        <LoadingOverlay
+          isLoading={isLoading}
+          label={intl.formatMessage({
+            defaultMessage: "Loading game...",
+            id: "game.admin.id.page.display.loading",
+          })}
+        >
+          {allDataLoaded ? (
+            <ActiveAdminGameDisplay game={game} />
+          ) : (
+            <div className="w-full flex justify-center">
+              <FormattedMessage
+                defaultMessage="Cannot load game data or user is not assigned to this game."
+                id="game.admin.id.page.display.cannotLoad"
+              />
+            </div>
+          )}
+        </LoadingOverlay>
+      </div>
+    </StompClientProvider>
   );
 };
 

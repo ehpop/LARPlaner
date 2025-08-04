@@ -196,7 +196,7 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
   }, [currentPage, setCurrentPage, totalPages]);
 
   return (
-    <div className="w-full h-[80vh] flex flex-col justify-top p-3 border space-y-5">
+    <div className="w-full h-[85vh] flex flex-col justify-top p-3 border space-y-5">
       <div className="w-full flex justify-center">
         <h1 className="text-2xl">
           <FormattedMessage defaultMessage="Events" id="events.title" />
@@ -205,7 +205,6 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
       <div className="w-full h-full flex flex-col justify-between space-y-3">
         <div className="flex flex-col space-y-3">
           <AdminTableDisplay
-            bottomContent={bottomContent}
             columns={columns}
             isCompact={true}
             rows={rows}
@@ -215,6 +214,7 @@ const EventsDisplayAdmin = ({ eventsList }: { eventsList: IEvent[] }) => {
             onSortChange={setSortDescriptor}
           />
         </div>
+        {bottomContent}
       </div>
     </div>
   );

@@ -54,6 +54,7 @@ const HistoricEventAdminPage = ({ params }: any) => {
         return (
           <HistoricEventAdminDisplay
             event={event}
+            isPending={deleteEventMutation.isPending}
             scenario={scenario}
             onDeleteEvent={handleDeleteEvent}
           />
@@ -67,10 +68,12 @@ const HistoricEventAdminDisplay = ({
   event,
   scenario,
   onDeleteEvent,
+  isPending,
 }: {
   event: IEvent;
   scenario: IScenario;
   onDeleteEvent: () => void;
+  isPending?: boolean;
 }) => {
   const intl = useIntl();
 
@@ -126,7 +129,13 @@ const HistoricEventAdminDisplay = ({
           </div>
         </CardBody>
         <CardFooter className="mt-5 flex flex-row justify-between">
-          <Button color="danger" variant="bordered" onPress={onOpenDelete}>
+          <Button
+            color="danger"
+            isDisabled={isPending}
+            isLoading={isPending}
+            variant="bordered"
+            onPress={onOpenDelete}
+          >
             <FormattedMessage
               defaultMessage="Delete Event"
               id="admin.events.id.historic.page.deleteEvent"

@@ -379,23 +379,27 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
           <div className="w-full flex justify-end">
             <Button
               color="success"
+              isDisabled={isSaving}
               isLoading={isSaving}
               size="lg"
               type="submit"
             >
-              {intl.formatMessage({
-                defaultMessage: "Save",
-                id: "events.page.display.save",
-              })}
+              <FormattedMessage
+                defaultMessage="Save"
+                id="events.page.display.save"
+              />
             </Button>
           </div>
         ) : (
           <div className="w-full flex justify-end">
             <ButtonPanel
               isBeingEdited={isBeingEdited}
+              isDeleteDisabled={isDeleting || isSaving}
+              isDeleteLoading={isDeleting}
               isEditDisabled={initialEvent.status !== "upcoming"}
               isSaveButtonTypeSubmit={true}
               isSaveDisabled={!isDirty || isSaving}
+              isSaveLoading={isSaving}
               onCancelEditClicked={onOpenCancel}
               onDeleteClicked={onOpenDelete}
               onEditClicked={() => setIsBeingEdited(true)}
@@ -406,6 +410,8 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
     </form>
   );
 
+  console.log("Assigned roles in event form: ", lastSavedEvent?.assignedRoles);
+
   return (
     <LoadingOverlay
       isLoading={isSaving || isDeleting || isLoading}
@@ -415,10 +421,15 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
               id: "events.id.page.saving",
               defaultMessage: "Saving event...",
             })
-          : intl.formatMessage({
-              id: "events.id.page.deleting",
-              defaultMessage: "Deleting event...",
-            })
+          : isDeleting
+            ? intl.formatMessage({
+                id: "events.id.page.deleting",
+                defaultMessage: "Deleting event...",
+              })
+            : intl.formatMessage({
+                id: "events.id.page.loading",
+                defaultMessage: "Loading event...",
+              })
       }
     >
       {form}

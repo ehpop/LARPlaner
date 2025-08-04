@@ -7,8 +7,8 @@ import { CardBody, CardHeader } from "@heroui/card";
 import React from "react";
 import { useRouter } from "next/navigation";
 
-import { IEvent, IEventPersisted } from "@/types/event.types";
-import { IScenario, IScenarioPersisted } from "@/types/scenario.types";
+import { IEventPersisted } from "@/types/event.types";
+import { IScenarioPersisted } from "@/types/scenario.types";
 import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
@@ -38,6 +38,12 @@ const ActiveEventContent = ({
   const intl = useIntl();
   const router = useRouter();
 
+  const {
+    onOpen: onOpenArchive,
+    isOpen: isOpenArchive,
+    onOpenChange: onOpenArchiveChange,
+  } = useDisclosure();
+
   const updateEventStatus = useUpdateEventStatus();
 
   const handleArchiveEvent = () => {
@@ -60,32 +66,6 @@ const ActiveEventContent = ({
       },
     );
   };
-
-  return (
-    <ActiveEventAdminDisplay
-      event={event}
-      scenario={scenario}
-      onArchiveEvent={handleArchiveEvent}
-    />
-  );
-};
-
-const ActiveEventAdminDisplay = ({
-  event,
-  scenario,
-  onArchiveEvent,
-}: {
-  event: IEvent;
-  scenario: IScenario;
-  onArchiveEvent: () => void;
-}) => {
-  const intl = useIntl();
-
-  const {
-    onOpen: onOpenArchive,
-    isOpen: isOpenArchive,
-    onOpenChange: onOpenArchiveChange,
-  } = useDisclosure();
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -146,6 +126,8 @@ const ActiveEventAdminDisplay = ({
         <CardFooter className="mt-5 flex flex-row justify-between">
           <Button
             color="danger"
+            isDisabled={event.status === "historic"}
+            isLoading={updateEventStatus.isPending}
             variant="bordered"
             onPress={() => onOpenArchive()}
           >
@@ -174,7 +156,7 @@ const ActiveEventAdminDisplay = ({
           </div>
         </CardFooter>
         <ConfirmActionModal
-          handleOnConfirm={() => onArchiveEvent()}
+          handleOnConfirm={() => handleArchiveEvent()}
           isOpen={isOpenArchive}
           prompt={intl.formatMessage({
             defaultMessage:

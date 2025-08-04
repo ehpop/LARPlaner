@@ -148,25 +148,23 @@ const RolesDisplayAdmin = ({ rolesList }: { rolesList: IRole[] }) => {
   }, [currentPage, setCurrentPage, totalPages]);
 
   return (
-    <div className="w-full h-[80vh] flex flex-col justify-top p-3 border space-y-5">
+    <div className="w-full h-[85vh] flex flex-col justify-top p-3 border space-y-5">
       <div className="w-full flex justify-center">
         <h1 className="text-2xl">
           <FormattedMessage defaultMessage="Roles" id="roles.title" />
         </h1>
       </div>
       <div className="w-full h-full flex flex-col justify-between space-y-3">
-        <div className="flex flex-col space-y-3">
-          <AdminTableDisplay
-            isCompact
-            bottomContent={bottomContent}
-            columns={columns}
-            rows={rows}
-            sortDescriptor={sortDescriptor}
-            topContent={topContent}
-            onRowClick={handleRowClick}
-            onSortChange={setSortDescriptor}
-          />
-        </div>
+        <AdminTableDisplay
+          isCompact
+          columns={columns}
+          rows={rows}
+          sortDescriptor={sortDescriptor}
+          topContent={topContent}
+          onRowClick={handleRowClick}
+          onSortChange={setSortDescriptor}
+        />
+        {bottomContent}
       </div>
     </div>
   );

@@ -53,7 +53,7 @@ public class Event extends BaseEntity {
   @JoinColumn(name = "scenario_id")
   private Scenario scenario;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name = "game_session_id")
   private GameSession gameSession;
 

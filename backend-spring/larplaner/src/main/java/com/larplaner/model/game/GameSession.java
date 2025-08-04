@@ -34,7 +34,7 @@ public class GameSession extends BaseEntity {
   private ZonedDateTime startTime;
   private ZonedDateTime endTime;
 
-  @OneToOne(mappedBy = "gameSession")
+  @OneToOne(mappedBy = "gameSession", cascade = CascadeType.ALL)
   private Event event;
 
   @OneToMany(mappedBy = "gameSession", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

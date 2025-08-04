@@ -14,7 +14,10 @@ import ActionsModal from "@/components/game/user/actions-modal";
 import UserGameHistory from "@/components/game/user/user-game-history";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import { useGameSession } from "@/services/game/useGames";
-import { useStomp } from "@/providers/stomp-client-provider";
+import {
+  StompClientProvider,
+  useStomp,
+} from "@/providers/stomp-client-provider";
 
 const ActiveGamePage = ({ params }: any) => {
   const resolvedParams = React.use(params) as { id: string };
@@ -34,26 +37,28 @@ const ActiveGamePage = ({ params }: any) => {
   }
 
   return (
-    <div className="w-full min-h-screen flex justify-center">
-      <LoadingOverlay
-        isLoading={isLoading}
-        label={intl.formatMessage({
-          defaultMessage: "Loading game data...",
-          id: "game.id.page.display.isLoading",
-        })}
-      >
-        {allDataLoaded ? (
-          <ActiveGameDisplay game={game} />
-        ) : (
-          <div className="w-full flex justify-center">
-            <FormattedMessage
-              defaultMessage="Cannot load game data or user is not assigned to this game."
-              id="game.id.page.cannotLoad"
-            />
-          </div>
-        )}
-      </LoadingOverlay>
-    </div>
+    <StompClientProvider>
+      <div className="w-full min-h-screen flex justify-center">
+        <LoadingOverlay
+          isLoading={isLoading}
+          label={intl.formatMessage({
+            defaultMessage: "Loading game data...",
+            id: "game.id.page.display.isLoading",
+          })}
+        >
+          {allDataLoaded ? (
+            <ActiveGameDisplay game={game} />
+          ) : (
+            <div className="w-full flex justify-center">
+              <FormattedMessage
+                defaultMessage="Cannot load game data or user is not assigned to this game."
+                id="game.id.page.cannotLoad"
+              />
+            </div>
+          )}
+        </LoadingOverlay>
+      </div>
+    </StompClientProvider>
   );
 };
 
