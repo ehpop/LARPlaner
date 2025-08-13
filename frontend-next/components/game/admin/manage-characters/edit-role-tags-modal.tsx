@@ -41,7 +41,7 @@ export const EditRoleTagsModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      setEditingTags(JSON.parse(JSON.stringify(role.appliedTags)));
+      setEditingTags(role.appliedTags);
     }
   }, [role, isOpen]);
 

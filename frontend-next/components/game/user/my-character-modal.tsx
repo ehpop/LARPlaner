@@ -115,7 +115,7 @@ const AppliedTagListItem = ({ appliedTag }: AppliedTagListItemProps) => {
                     minute="numeric"
                     month="long"
                     second="numeric"
-                    value={appliedToUserAt.toString()}
+                    value={appliedToUserAt.toDate()}
                     year="numeric"
                   />
                 ),

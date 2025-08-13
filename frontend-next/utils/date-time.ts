@@ -1,10 +1,4 @@
-import {
-  fromDate,
-  getLocalTimeZone,
-  parseAbsolute,
-  parseZonedDateTime,
-  ZonedDateTime,
-} from "@internationalized/date";
+import { fromDate, ZonedDateTime } from "@internationalized/date";
 
 import { IAppliedTag } from "@/types/tags.types";
 
@@ -102,22 +96,11 @@ export const isTagExpired = (
 ): boolean => {
   const { tag, appliedToUserAt } = appliedTag;
 
-  //TODO: Fix this shit
-  const appliedToUser =
-    typeof appliedToUserAt.add !== "function"
-      ? parseAbsolute(
-          appliedToUserAt.toString().replace(/(\.\d{3})\d+/, "$1"),
-          getLocalTimeZone(),
-        )
-      : parseZonedDateTime(
-          appliedToUserAt.toString().replace(/(\.\d{3})\d+/, "$1"),
-        );
-
   if (!tag.expiresAfterMinutes || tag.expiresAfterMinutes <= 0) {
     return false;
   }
 
-  const expirationTime = appliedToUser.add({
+  const expirationTime = appliedToUserAt.add({
     minutes: tag.expiresAfterMinutes,
   });
 

@@ -1,7 +1,7 @@
 import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { ButtonPanel } from "@/components/buttons/button-pannel";
@@ -23,8 +23,8 @@ import {
   useUpdateScenario,
 } from "@/services/scenarios/useScenarios";
 import { useRoles } from "@/services/roles/useRoles";
-import { emptyScenario } from "@/types/initial-types";
 import { getErrorMessage } from "@/utils/error";
+import { emptyScenario } from "@/types/initial-types";
 
 export default function ScenarioForm({
   initialScenario,
@@ -44,15 +44,16 @@ export default function ScenarioForm({
   const [isBeingEdited, setIsBeingEdited] = useState(isNewScenario);
   const [lastSavedScenario, setLastSavedScenario] = useState(initialScenario);
 
+  const methods = useForm<IScenario>({
+    defaultValues: initialScenario || emptyScenario,
+  });
   const {
     control,
     handleSubmit,
     reset,
     watch,
     formState: { errors, isDirty },
-  } = useForm<IScenario>({
-    defaultValues: lastSavedScenario || emptyScenario,
-  });
+  } = { ...methods };
 
   const watchedScenarioName = watch("name");
 
@@ -117,184 +118,189 @@ export default function ScenarioForm({
     });
   };
 
+  const handleCancelClicked = () => {
+    if (isDirty) {
+      // User made changes, confirm if he wants to quit
+      onOpenCancel();
+    } else {
+      // User didn't make changes, change proceed to confirm action
+      handleConfirmCancel();
+    }
+  };
+
   const handleConfirmCancel = () => {
-    reset(initialScenario);
+    reset(lastSavedScenario);
     setIsBeingEdited(false);
   };
 
   const form = (
     <TagsProvider>
-      <form
-        className="w-full flex justify-center"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="w-full space-y-3 border p-3">
-          <div className="w-full flex justify-center">
-            <p className="text-3xl" id="add-event-modal">
-              {isNewScenario ? (
-                <FormattedMessage
-                  defaultMessage={"Add new scenario"}
-                  id={"scenarios.new.page.addNewScenario"}
-                />
-              ) : (
-                <FormattedMessage
-                  defaultMessage='Scenario "{scenarioName}"'
-                  id="scenarios.new.page.editScenario"
-                  values={{ scenarioName: watchedScenarioName }}
+      <FormProvider {...methods}>
+        <form
+          className="w-full flex justify-center"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <div className="w-full space-y-3 border p-3">
+            <div className="w-full flex justify-center">
+              <p className="text-3xl" id="add-event-modal">
+                {isNewScenario ? (
+                  <FormattedMessage
+                    defaultMessage={"Add new scenario"}
+                    id={"scenarios.new.page.addNewScenario"}
+                  />
+                ) : (
+                  <FormattedMessage
+                    defaultMessage='Scenario "{scenarioName}"'
+                    id="scenarios.new.page.editScenario"
+                    values={{ scenarioName: watchedScenarioName }}
+                  />
+                )}
+              </p>
+            </div>
+
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  isRequired
+                  className="w-full"
+                  errorMessage={errors.name?.message}
+                  isDisabled={!isBeingEdited}
+                  isInvalid={!!errors.name}
+                  label={intl.formatMessage({
+                    defaultMessage: "Scenario name",
+                    id: "scenarios.new.page.scenarioName",
+                  })}
+                  placeholder={intl.formatMessage({
+                    defaultMessage: "Enter scenario name",
+                    id: "scenarios.new.page.insertScenarioName",
+                  })}
+                  size="lg"
+                  variant="underlined"
                 />
               )}
-            </p>
-          </div>
-
-          <Controller
-            control={control}
-            name="name"
-            render={({ field }) => (
-              <Input
-                {...field}
-                isRequired
-                className="w-full"
-                errorMessage={errors.name?.message}
-                isDisabled={!isBeingEdited}
-                isInvalid={!!errors.name}
-                label={intl.formatMessage({
-                  defaultMessage: "Scenario name",
-                  id: "scenarios.new.page.scenarioName",
-                })}
-                placeholder={intl.formatMessage({
-                  defaultMessage: "Enter scenario name",
-                  id: "scenarios.new.page.insertScenarioName",
-                })}
-                size="lg"
-                variant="underlined"
-              />
-            )}
-            rules={{
-              required: intl.formatMessage({
-                defaultMessage: "Scenario name is required",
-                id: "scenarios.new.page.scenarioName.required",
-              }),
-            }}
-          />
-
-          <Controller
-            control={control}
-            name="description"
-            render={({ field }) => (
-              <Textarea
-                {...field}
-                isRequired
-                className="w-full"
-                errorMessage={errors.description?.message}
-                isDisabled={!isBeingEdited}
-                isInvalid={!!errors.description}
-                label={intl.formatMessage({
-                  defaultMessage: "Scenario description",
-                  id: "scenarios.new.page.scenarioDescription",
-                })}
-                placeholder={intl.formatMessage({
-                  defaultMessage: "Enter scenario description",
-                  id: "scenarios.new.page.insertScenarioDescription",
-                })}
-                size="lg"
-                variant="underlined"
-              />
-            )}
-            rules={{
-              required: intl.formatMessage({
-                defaultMessage: "Scenario description is required",
-                id: "scenarios.new.page.scenarioDescription.required",
-              }),
-            }}
-          />
-
-          <div className="w-full border p-3 space-y-3">
-            <HidableSection
-              section={
-                <ScenarioRolesForm
-                  availableRoles={allRoles || []}
-                  control={control}
-                  isBeingEdited={isBeingEdited}
-                />
-              }
-              titleElement={
-                <p className="text-xl">
-                  <FormattedMessage
-                    defaultMessage="Roles in scenario"
-                    id="scenarios.new.page.rolesInScenario"
-                  />
-                </p>
-              }
+              rules={{
+                required: intl.formatMessage({
+                  defaultMessage: "Scenario name is required",
+                  id: "scenarios.new.page.scenarioName.required",
+                }),
+              }}
             />
-          </div>
 
-          <div className="w-full border p-3 space-y-3">
-            <HidableSection
-              section={
-                <ScenarioItemsForm
-                  control={control}
-                  isBeingEdited={isBeingEdited}
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  isRequired
+                  className="w-full"
+                  errorMessage={errors.description?.message}
+                  isDisabled={!isBeingEdited}
+                  isInvalid={!!errors.description}
+                  label={intl.formatMessage({
+                    defaultMessage: "Scenario description",
+                    id: "scenarios.new.page.scenarioDescription",
+                  })}
+                  placeholder={intl.formatMessage({
+                    defaultMessage: "Enter scenario description",
+                    id: "scenarios.new.page.insertScenarioDescription",
+                  })}
+                  size="lg"
+                  variant="underlined"
                 />
-              }
-              titleElement={
-                <p className="text-xl">
-                  <FormattedMessage
-                    defaultMessage="Items in scenario"
-                    id="scenarios.new.page.itemsInScenario"
-                  />
-                </p>
-              }
+              )}
+              rules={{
+                required: intl.formatMessage({
+                  defaultMessage: "Scenario description is required",
+                  id: "scenarios.new.page.scenarioDescription.required",
+                }),
+              }}
             />
-          </div>
 
-          <div className="w-full border p-3 space-y-3">
-            <HidableSection
-              section={
-                <ActionsListForm
-                  basePath={`actions`}
-                  control={control}
-                  isBeingEdited={isBeingEdited}
-                />
-              }
-              titleElement={
-                <p className="text-xl">
-                  <FormattedMessage
-                    defaultMessage="Actions in scenario"
-                    id="scenarios.new.page.actionsInScenario"
+            <div className="w-full border p-3 space-y-3">
+              <HidableSection
+                section={
+                  <ScenarioRolesForm
+                    availableRoles={allRoles || []}
+                    isBeingEdited={isBeingEdited}
                   />
-                </p>
-              }
-            />
-          </div>
-
-          {isNewScenario ? (
-            <div className="w-full flex justify-end">
-              <Button
-                color="success"
-                isLoading={isSaving}
-                size="lg"
-                type="submit"
-              >
-                <FormattedMessage
-                  defaultMessage="Save"
-                  id="scenarios.new.page.save"
-                />
-              </Button>
-            </div>
-          ) : (
-            <div className="w-full flex justify-end">
-              <ButtonPanel
-                isBeingEdited={isBeingEdited}
-                isSaveButtonTypeSubmit={true}
-                isSaveDisabled={!isDirty || isSaving}
-                onCancelEditClicked={onOpenCancel}
-                onDeleteClicked={onOpenDelete}
-                onEditClicked={() => setIsBeingEdited(true)}
+                }
+                titleElement={
+                  <p className="text-xl">
+                    <FormattedMessage
+                      defaultMessage="Roles in scenario"
+                      id="scenarios.new.page.rolesInScenario"
+                    />
+                  </p>
+                }
               />
             </div>
-          )}
-        </div>
-      </form>
+
+            <div className="w-full border p-3 space-y-3">
+              <HidableSection
+                section={<ScenarioItemsForm isBeingEdited={isBeingEdited} />}
+                titleElement={
+                  <p className="text-xl">
+                    <FormattedMessage
+                      defaultMessage="Items in scenario"
+                      id="scenarios.new.page.itemsInScenario"
+                    />
+                  </p>
+                }
+              />
+            </div>
+
+            <div className="w-full border p-3 space-y-3">
+              <HidableSection
+                section={
+                  <ActionsListForm
+                    basePath={`actions`}
+                    isBeingEdited={isBeingEdited}
+                  />
+                }
+                titleElement={
+                  <p className="text-xl">
+                    <FormattedMessage
+                      defaultMessage="Actions in scenario"
+                      id="scenarios.new.page.actionsInScenario"
+                    />
+                  </p>
+                }
+              />
+            </div>
+
+            {isNewScenario ? (
+              <div className="w-full flex justify-end">
+                <Button
+                  color="success"
+                  isLoading={isSaving}
+                  size="lg"
+                  type="submit"
+                >
+                  <FormattedMessage
+                    defaultMessage="Save"
+                    id="scenarios.new.page.save"
+                  />
+                </Button>
+              </div>
+            ) : (
+              <div className="w-full flex justify-end">
+                <ButtonPanel
+                  isBeingEdited={isBeingEdited}
+                  isSaveButtonTypeSubmit={true}
+                  isSaveDisabled={!isDirty || isSaving}
+                  onCancelEditClicked={handleCancelClicked}
+                  onDeleteClicked={onOpenDelete}
+                  onEditClicked={() => setIsBeingEdited(true)}
+                />
+              </div>
+            )}
+          </div>
+        </form>
+      </FormProvider>
     </TagsProvider>
   );
 

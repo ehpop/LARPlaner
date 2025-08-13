@@ -1,75 +1,32 @@
 "use client";
 
 import { FormattedMessage, useIntl } from "react-intl";
-import { Card } from "@heroui/react";
-import { CardBody, CardHeader } from "@heroui/card";
+import { Card, CardBody, CardHeader } from "@heroui/react";
 import React from "react";
 
-import LoadingOverlay from "@/components/common/loading-overlay";
 import { IGameSession } from "@/types/game.types";
+import { useGameSession } from "@/services/game/useGames";
 import useEventAndScenario from "@/hooks/event/use-event";
+import {
+  StompClientProvider,
+  useStomp,
+} from "@/providers/stomp-client-provider";
+import LoadingOverlay from "@/components/common/loading-overlay";
 import AdminGameHistory from "@/components/game/admin/admin-game-history";
 import ManageCharacters from "@/components/game/admin/manage-characters/manage-characters";
-import { useGameSession } from "@/services/game/useGames";
-import { StompClientProvider } from "@/providers/stomp-client-provider";
-
-const ActiveAdminGamePage = ({ params }: any) => {
-  const resolvedParams = React.use(params) as { id: string };
-  const gameId = resolvedParams.id;
-
-  const intl = useIntl();
-  const { data: game, isLoading, isError, error } = useGameSession(gameId);
-
-  const allDataLoaded = game && !isLoading;
-
-  if (isError) {
-    return (
-      <div className="w-full flex justify-center">
-        <p className="text-danger">{error?.message}</p>
-      </div>
-    );
-  }
-
-  return (
-    <StompClientProvider>
-      <div className="w-full min-h-screen flex justify-center">
-        <LoadingOverlay
-          isLoading={isLoading}
-          label={intl.formatMessage({
-            defaultMessage: "Loading game...",
-            id: "game.admin.id.page.display.loading",
-          })}
-        >
-          {allDataLoaded ? (
-            <ActiveAdminGameDisplay game={game} />
-          ) : (
-            <div className="w-full flex justify-center">
-              <FormattedMessage
-                defaultMessage="Cannot load game data or user is not assigned to this game."
-                id="game.admin.id.page.display.cannotLoad"
-              />
-            </div>
-          )}
-        </LoadingOverlay>
-      </div>
-    </StompClientProvider>
-  );
-};
-
-export default ActiveAdminGamePage;
 
 const ActiveAdminGameDisplay = ({ game }: { game: IGameSession }) => {
   const { event, scenario, loading } = useEventAndScenario(game.eventId);
 
-  const allDataLoaded = event && scenario && !loading;
+  const allEventDataLoaded = event && scenario && !loading;
 
-  if (!allDataLoaded) {
+  if (!allEventDataLoaded) {
     return (
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center p-6">
         <p>
           <FormattedMessage
-            defaultMessage="Cannot load event data or user is not assigned to this event."
-            id="admin.game.id.page.display.cannotLoad"
+            defaultMessage="Loading event details..."
+            id="admin.game.id.page.display.loadingEvent"
           />
         </p>
       </div>
@@ -77,7 +34,7 @@ const ActiveAdminGameDisplay = ({ game }: { game: IGameSession }) => {
   }
 
   const ActionMenuElement = (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center pt-4">
       <div className="sm:w-3/5 w-4/5 flex flex-col justify-between space-y-3">
         <ManageCharacters event={event} gameId={game.id} />
         <AdminGameHistory game={game} />
@@ -92,8 +49,8 @@ const ActiveAdminGameDisplay = ({ game }: { game: IGameSession }) => {
           <div className="w-full flex flex-row items-center justify-between">
             <p className="text-2xl font-bold text-center">
               <FormattedMessage
-                defaultMessage="Game"
-                id="game.id.active.title"
+                defaultMessage="Game Management"
+                id="game.admin.id.active.title"
               />
             </p>
             <div className="flex flex-row space-x-1">
@@ -112,14 +69,14 @@ const ActiveAdminGameDisplay = ({ game }: { game: IGameSession }) => {
             <FormattedMessage
               defaultMessage="Event: {eventName}"
               id="events.id.active.eventName"
-              values={{ eventName: event?.name }}
+              values={{ eventName: event.name }}
             />
           </p>
           <p className="text-lg text-gray-600 dark:text-gray-400">
             <FormattedMessage
               defaultMessage="Scenario: {scenarioName}"
               id="events.id.active.scenarioName"
-              values={{ scenarioName: scenario?.name }}
+              values={{ scenarioName: scenario.name }}
             />
           </p>
           {ActionMenuElement}
@@ -128,3 +85,76 @@ const ActiveAdminGameDisplay = ({ game }: { game: IGameSession }) => {
     </div>
   );
 };
+
+const AdminStompConnectionGate = ({ game }: { game: IGameSession }) => {
+  const { isConnected } = useStomp();
+  const intl = useIntl();
+
+  if (!isConnected) {
+    return (
+      <LoadingOverlay
+        isLoading={true}
+        label={intl.formatMessage({
+          defaultMessage: "Connecting to game server...",
+          id: "game.id.page.display.isConnecting",
+        })}
+      >
+        <div className="w-full flex justify-center p-6">
+          <p>
+            <FormattedMessage
+              defaultMessage="Connecting to game server..."
+              id="game.id.page.display.isConnecting"
+            />
+          </p>
+        </div>
+      </LoadingOverlay>
+    );
+  }
+
+  return <ActiveAdminGameDisplay game={game} />;
+};
+
+const ActiveAdminGamePage = ({ params }: any) => {
+  const resolvedParams = React.use(params) as { id: string };
+  const gameId = resolvedParams.id;
+
+  const intl = useIntl();
+  const { data: game, isLoading, isError, error } = useGameSession(gameId);
+
+  const isGameDataReady = game && !isLoading;
+
+  if (isError) {
+    return (
+      <div className="w-full flex justify-center p-6">
+        <p className="text-danger">{error?.message}</p>
+      </div>
+    );
+  }
+
+  return (
+    <StompClientProvider>
+      <div className="w-full min-h-screen flex justify-center">
+        <LoadingOverlay
+          isLoading={isLoading}
+          label={intl.formatMessage({
+            defaultMessage: "Loading game...",
+            id: "game.admin.id.page.display.loading",
+          })}
+        >
+          {isGameDataReady ? (
+            <AdminStompConnectionGate game={game} />
+          ) : (
+            <div className="w-full flex justify-center p-6">
+              <FormattedMessage
+                defaultMessage="Cannot load game data or user is not an admin for this game."
+                id="game.admin.id.page.display.cannotLoad"
+              />
+            </div>
+          )}
+        </LoadingOverlay>
+      </div>
+    </StompClientProvider>
+  );
+};
+
+export default ActiveAdminGamePage;

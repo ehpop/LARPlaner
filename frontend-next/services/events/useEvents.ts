@@ -6,10 +6,7 @@ import {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import {
-  convertEventToPostDto,
-  convertGetDtoToEvent,
-} from "@/services/converter/events-converter";
+import { convertEventToPostDto } from "@/services/converter/events-converter";
 import { createCrudHooks } from "@/services/generic/generic-hook-factory";
 import {
   IEvent,
@@ -19,11 +16,12 @@ import {
   IEventStatus,
 } from "@/types/event.types";
 import { api } from "@/services/axios";
+import { mapEvent } from "@/types/zod/event";
 
 const eventsConfig = {
   entityName: "events",
   baseUrl: "/events",
-  convertGetDtoToEntity: convertGetDtoToEvent,
+  convertGetDtoToEntity: mapEvent,
   convertEntityToPostDto: convertEventToPostDto,
 };
 
@@ -48,7 +46,7 @@ export const useEventForGameId = (
     queryFn: async () => {
       const { data } = await api.get<IEventGetDTO>(`/events/game/${gameId}`);
 
-      return convertGetDtoToEvent(data);
+      return mapEvent(data);
     },
     enabled: !!gameId,
   });
@@ -74,7 +72,7 @@ export const useUpdateEventStatus = (): UseMutationResult<
         { status },
       );
 
-      return convertGetDtoToEvent(data);
+      return mapEvent(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: eventsQueryKeys.all });

@@ -26,17 +26,18 @@ const ActiveGamePage = ({ params }: any) => {
   const intl = useIntl();
   const { data: game, isLoading, isError, error } = useGameSession(gameId);
 
-  const allDataLoaded = game && !isLoading;
+  const isGameDataReady = game && !isLoading;
 
   if (isError) {
     return (
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center p-6">
         <p className="text-danger">{error?.message}</p>
       </div>
     );
   }
 
   return (
+    // The provider wraps any component that will need the Stomp client.
     <StompClientProvider>
       <div className="w-full min-h-screen flex justify-center">
         <LoadingOverlay
@@ -46,10 +47,10 @@ const ActiveGamePage = ({ params }: any) => {
             id: "game.id.page.display.isLoading",
           })}
         >
-          {allDataLoaded ? (
-            <ActiveGameDisplay game={game} />
+          {isGameDataReady ? (
+            <StompConnectionGate game={game} />
           ) : (
-            <div className="w-full flex justify-center">
+            <div className="w-full flex justify-center p-6">
               <FormattedMessage
                 defaultMessage="Cannot load game data or user is not assigned to this game."
                 id="game.id.page.cannotLoad"
@@ -64,24 +65,51 @@ const ActiveGamePage = ({ params }: any) => {
 
 export default ActiveGamePage;
 
+const StompConnectionGate = ({ game }: { game: IGameSession }) => {
+  const { isConnected } = useStomp();
+  const intl = useIntl();
+
+  if (!isConnected) {
+    return (
+      <LoadingOverlay
+        isLoading={true}
+        label={intl.formatMessage({
+          defaultMessage: "Connecting to game server...",
+          id: "game.id.page.display.isConnecting",
+        })}
+      >
+        <div className="w-full flex justify-center p-6">
+          <FormattedMessage
+            defaultMessage="Connecting to game server..."
+            id="game.id.page.display.connecting.message"
+          />
+        </div>
+      </LoadingOverlay>
+    );
+  }
+
+  return <ActiveGameDisplay game={game} />;
+};
+
 const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
-  const { event, scenario, loading } = useEventAndScenario(game.eventId);
-
-  const allDataLoaded = event && scenario && !loading;
-
-  const { client: stompClient, isConnected } = useStomp();
+  const {
+    event,
+    scenario,
+    loading: isEventLoading,
+  } = useEventAndScenario(game.eventId);
+  const { client: stompClient } = useStomp(); // We can safely get the client now.
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!stompClient || !stompClient.active || !isConnected) {
+    if (!stompClient?.active) {
       return;
     }
 
+    console.log("Subscribing to /user/topic/game/role");
     const subscription = stompClient.subscribe(
       `/user/topic/game/role`,
       (_message) => {
-        console.log("Received message for game role state");
-
+        console.log("Received message for game role state, refetching query.");
         queryClient.refetchQueries({
           queryKey: ["game", "detail", game.id],
         });
@@ -89,17 +117,20 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
     );
 
     return () => {
+      console.log("Unsubscribing from /user/topic/game/role");
       subscription.unsubscribe();
     };
-  }, [stompClient, isConnected, queryClient, game.id, game.eventId]);
+  }, [stompClient, queryClient, game.id]);
+
+  const allDataLoaded = event && scenario && !isEventLoading;
 
   if (!allDataLoaded) {
     return (
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center p-6">
         <p>
           <FormattedMessage
-            defaultMessage="Cannot load event data or user is not assigned to this event."
-            id="game.id.page.display.cannotLoad"
+            defaultMessage="Loading event details..."
+            id="game.id.page.display.loadingEvent"
           />
         </p>
       </div>
@@ -107,7 +138,7 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
   }
 
   const ActionMenuElement = (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center pt-4">
       <div className="sm:w-3/5 w-4/5 flex flex-col justify-between space-y-3">
         <MyCharacterModal game={game} />
         <ActionsModal game={game} />
@@ -144,14 +175,14 @@ const ActiveGameDisplay = ({ game }: { game: IGameSession }) => {
             <FormattedMessage
               defaultMessage="Event: {eventName}"
               id="events.id.active.eventName"
-              values={{ eventName: event?.name }}
+              values={{ eventName: event.name }}
             />
           </p>
           <p className="text-lg text-gray-600 dark:text-gray-400">
             <FormattedMessage
               defaultMessage="Scenario: {scenarioName}"
               id="events.id.active.scenarioName"
-              values={{ scenarioName: scenario?.name }}
+              values={{ scenarioName: scenario.name }}
             />
           </p>
           {ActionMenuElement}

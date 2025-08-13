@@ -2,6 +2,7 @@ import { getLocalTimeZone, now } from "@internationalized/date";
 
 import { IRole } from "@/types/roles.types";
 import {
+  IAction,
   IScenario,
   IScenarioAction,
   IScenarioItem,
@@ -44,4 +45,19 @@ export const emptyEvent: IEvent = {
   description: "",
   gameSessionId: null,
   assignedRoles: [],
+};
+
+export const emptyAction: IAction = {
+  name: "",
+  description: "",
+  messageOnSuccess: "",
+  messageOnFailure: "",
+  requiredTagsToDisplay: [],
+  requiredTagsToSucceed: [],
+  forbiddenTagsToDisplay: [],
+  forbiddenTagsToSucceed: [],
+  tagsToApplyOnSuccess: [],
+  tagsToApplyOnFailure: [],
+  tagsToRemoveOnSuccess: [],
+  tagsToRemoveOnFailure: [],
 };

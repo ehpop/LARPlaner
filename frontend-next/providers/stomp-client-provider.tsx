@@ -1,8 +1,12 @@
+"use client";
+
 import React, {
   createContext,
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from "react";
 import { Client } from "@stomp/stompjs";
@@ -10,7 +14,8 @@ import SockJS from "sockjs-client";
 
 import { useAuth } from "@/providers/firebase-provider";
 
-const wsBaseUrl = "https://localhost:8443/ws";
+const wsBaseUrl =
+  process.env.NEXT_PUBLIC_WS_BASE_URL || "https://localhost:8443/ws";
 
 interface StompContextType {
   client: Client | null;
@@ -28,68 +33,86 @@ export const useStomp = (): StompContextType => {
 
 export const StompClientProvider = ({ children }: { children: ReactNode }) => {
   const auth = useAuth();
-  const [stompClient, setStompClient] = useState<Client | null>(null);
+
+  const clientRef = useRef<Client | null>(null);
+
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const connect = async () => {
-      if (!auth.user) {
-        if (stompClient) {
-          stompClient.deactivate();
-        }
-
-        return;
+    if (!auth.user) {
+      if (clientRef.current?.active) {
+        console.log("STOMP: User logged out, deactivating client.");
+        clientRef.current.deactivate();
       }
 
+      return;
+    }
+
+    const setupAndConnect = async () => {
       try {
-        const token = await auth.user.getIdToken();
-        const client = new Client({
-          webSocketFactory: () => {
-            const url = process.env.NEXT_PUBLIC_WS_BASE_URL || wsBaseUrl;
+        const token = await auth.user?.getIdToken();
 
-            return new SockJS(url);
-          },
-          connectHeaders: {
-            Authorization: `Bearer ${token}`,
-          },
-          reconnectDelay: 5000,
-          debug: (str: any) => {
-            console.log("STOMP DEBUG:", str);
-          },
-          onConnect: (frame) => {
-            console.log("Connected to STOMP server:", frame);
-            setIsConnected(true);
-          },
-          onStompError: (frame) => {
-            console.error("Broker reported error: " + frame.headers["message"]);
-            console.error("Additional details: " + frame.body);
-            setIsConnected(false);
-          },
-          onDisconnect: () => {
-            console.log("STOMP client disconnected");
-            setIsConnected(false);
-          },
-        });
+        if (!clientRef.current) {
+          const newClient = new Client({
+            webSocketFactory: () => {
+              return new SockJS(wsBaseUrl);
+            },
+            connectHeaders: {
+              Authorization: `Bearer ${token}`,
+            },
+            reconnectDelay: 5000,
+            debug: (str: any) => {
+              console.log("STOMP DEBUG:", str);
+            },
+            onConnect: (frame) => {
+              console.log("STOMP: Connected to server.", frame);
+              setIsConnected(true);
+            },
+            onStompError: (frame) => {
+              console.error(
+                "STOMP: Broker reported error: " + frame.headers["message"],
+              );
+              console.error("STOMP: Additional details: " + frame.body);
+              setIsConnected(false);
+            },
+            onDisconnect: () => {
+              console.log("STOMP: Client disconnected.");
+              setIsConnected(false);
+              clientRef.current = null;
+            },
+          });
 
-        client.activate();
-        setStompClient(client);
+          clientRef.current = newClient;
+        }
+
+        if (!clientRef.current.active) {
+          clientRef.current.activate();
+        }
       } catch (error) {
-        console.error("Failed to connect to STOMP server", error);
-        setIsConnected(false);
+        console.error("STOMP: Failed to get auth token for connection.", error);
       }
     };
 
-    connect();
+    setupAndConnect();
 
     return () => {
-      if (!stompClient) return;
-      stompClient.deactivate();
-      console.log("STOMP client deactivated");
+      if (clientRef.current?.active) {
+        console.log("STOMP: Cleaning up client on effect change or unmount.");
+        clientRef.current.deactivate();
+      }
     };
   }, [auth.user]);
 
+  const value = useMemo(
+    () => ({
+      client: clientRef.current,
+      isConnected,
+    }),
+    [isConnected],
+  );
+
   return (
-    <StompClientContext.Provider value={{ client: stompClient, isConnected }}>
+    <StompClientContext.Provider value={value}>
       {children}
     </StompClientContext.Provider>
   );

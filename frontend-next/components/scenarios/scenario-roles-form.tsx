@@ -1,7 +1,7 @@
 import { Button } from "@heroui/react";
 import React, { useMemo } from "react";
 import { FormattedMessage } from "react-intl";
-import { Control, useFieldArray, useWatch } from "react-hook-form";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import { RoleItem } from "@/components/scenarios/role-item-display";
 import { IScenario } from "@/types/scenario.types";
@@ -9,16 +9,15 @@ import { IRole } from "@/types/roles.types";
 import { emptyScenarioRole } from "@/types/initial-types";
 
 interface ScenarioRolesFormProps {
-  control: Control<IScenario>;
   availableRoles: IRole[];
   isBeingEdited?: boolean;
 }
 
 export const ScenarioRolesForm = ({
-  control,
   availableRoles,
   isBeingEdited,
 }: ScenarioRolesFormProps) => {
+  const { control } = useFormContext<IScenario>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "roles",
@@ -34,6 +33,10 @@ export const ScenarioRolesForm = ({
   };
 
   const disabledRoleIds = useMemo(() => {
+    if (!watchedRoles) {
+      return new Set<string>();
+    }
+
     return new Set(watchedRoles.map((role) => role.roleId as string));
   }, [watchedRoles]);
 
@@ -54,7 +57,6 @@ export const ScenarioRolesForm = ({
             <RoleItem
               key={field.id}
               availableRoles={availableRoles}
-              control={control}
               disabledRoleIds={disabledRoleIds}
               index={index}
               isBeingEdited={isBeingEdited || false}

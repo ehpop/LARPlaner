@@ -3,7 +3,7 @@
 import { ReactNode, useMemo } from "react";
 import { Key } from "@react-types/shared";
 
-import { ITag } from "@/types/tags.types";
+import { ITag, ITagPersisted } from "@/types/tags.types";
 import TagInputSection from "@/components/tags/common/tag-input-section";
 import TagsDisplayTable from "@/components/tags/common/tags-display-table";
 
@@ -18,7 +18,7 @@ interface TagsManagerProps<T> {
 
   itemToTag: (item: T) => ITag;
   itemToKey: (item: T) => Key;
-  createItemFromTag: (tag: ITag) => T;
+  createItemFromTag: (tag: ITagPersisted) => T;
 
   columns: Column[];
   renderCell: (item: T, columnKey: Key) => ReactNode;
@@ -42,7 +42,7 @@ const TagsManager = <T,>({
   disabledRowKeys,
   ...inputProps
 }: TagsManagerProps<T>) => {
-  const handleTagAdd = (tag: ITag) => {
+  const handleTagAdd = (tag: ITagPersisted) => {
     const newItem = createItemFromTag(tag);
 
     setItems([...items, newItem]);

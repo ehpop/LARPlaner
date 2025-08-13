@@ -108,6 +108,16 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
     }
   };
 
+  const handleCancelClicked = () => {
+    if (isDirty) {
+      // User made changes, confirm if he wants to quit
+      onOpenCancel();
+    } else {
+      // User didn't make changes, change proceed to confirm action
+      handleConfirmCancel();
+    }
+  };
+
   const handleConfirmCancel = () => {
     reset(lastSavedEvent);
     setIsBeingEdited(false);
@@ -400,7 +410,7 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
               isSaveButtonTypeSubmit={true}
               isSaveDisabled={!isDirty || isSaving}
               isSaveLoading={isSaving}
-              onCancelEditClicked={onOpenCancel}
+              onCancelEditClicked={handleCancelClicked}
               onDeleteClicked={onOpenDelete}
               onEditClicked={() => setIsBeingEdited(true)}
             />
@@ -409,8 +419,6 @@ export default function EventForm({ initialEvent }: { initialEvent?: IEvent }) {
       </div>
     </form>
   );
-
-  console.log("Assigned roles in event form: ", lastSavedEvent?.assignedRoles);
 
   return (
     <LoadingOverlay

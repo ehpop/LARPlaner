@@ -5,15 +5,13 @@ import {
   Textarea,
 } from "@heroui/react";
 import { useMemo, useState } from "react";
-import { Control, Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { IRole } from "@/types/roles.types";
-import { IScenario } from "@/types/scenario.types";
 import HidableSection from "@/components/common/hidable-section";
 
 interface RoleItemProps {
-  control: Control<IScenario>;
   index: number;
   remove: (index: number) => void;
   availableRoles: IRole[];
@@ -22,7 +20,6 @@ interface RoleItemProps {
 }
 
 export const RoleItem = ({
-  control,
   index,
   remove,
   availableRoles,
@@ -30,6 +27,7 @@ export const RoleItem = ({
   disabledRoleIds,
 }: RoleItemProps) => {
   const intl = useIntl();
+  const { control } = useFormContext();
 
   const [filterText, setFilterText] = useState("");
 

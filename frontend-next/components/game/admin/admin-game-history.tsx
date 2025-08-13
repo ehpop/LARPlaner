@@ -199,7 +199,7 @@ const AdminGameHistory = ({ game }: AdminGameHistoryProps) => {
     const subscription = stompClient.subscribe(
       `/topic/game/${game.id}/action`,
       () => {
-        refetchGameHistory;
+        refetchGameHistory();
       },
     );
 

@@ -38,10 +38,6 @@ const ManageCharacters = ({
     const subscription = stompClient.subscribe(
       `/topic/game/${gameId}/action`,
       (_message) => {
-        console.log(
-          "Received message that user performed action. Refetching game data.",
-        );
-
         queryClient.refetchQueries({
           queryKey: ["game", "detail", gameId],
         });

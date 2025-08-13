@@ -1,28 +1,31 @@
 import { Button, Input, Textarea, useDisclosure } from "@heroui/react";
-import { Control, Controller, useFieldArray, useWatch } from "react-hook-form";
+import {
+  Controller,
+  useFieldArray,
+  useFormContext,
+  useWatch,
+} from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { QrModal } from "@/components/common/qr-modal";
 import ActionsListForm from "@/components/scenarios/actions-list-form";
-import { IScenario } from "@/types/scenario.types";
 import HidableSection from "@/components/common/hidable-section";
 import { emptyScenarioItem } from "@/types/initial-types";
 
 interface ItemFormProps {
-  control: Control<IScenario>;
   index: number;
   remove: (index: number) => void;
   isBeingEdited: boolean;
 }
 
 interface ScenarioItemsFormProps {
-  control: Control<IScenario>;
   isBeingEdited?: boolean;
 }
 
-const ItemForm = ({ control, index, remove, isBeingEdited }: ItemFormProps) => {
+const ItemForm = ({ index, remove, isBeingEdited }: ItemFormProps) => {
   const intl = useIntl();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { control } = useFormContext();
 
   const itemData = useWatch({
     control,
@@ -98,7 +101,6 @@ const ItemForm = ({ control, index, remove, isBeingEdited }: ItemFormProps) => {
                 section={
                   <ActionsListForm
                     basePath={`items.${index}.actions`}
-                    control={control}
                     isBeingEdited={isBeingEdited}
                   />
                 }
@@ -163,10 +165,8 @@ const ItemForm = ({ control, index, remove, isBeingEdited }: ItemFormProps) => {
   );
 };
 
-const ScenarioItemsForm = ({
-  control,
-  isBeingEdited,
-}: ScenarioItemsFormProps) => {
+const ScenarioItemsForm = ({ isBeingEdited }: ScenarioItemsFormProps) => {
+  const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items",
@@ -191,7 +191,6 @@ const ScenarioItemsForm = ({
         fields.map((field, index) => (
           <ItemForm
             key={field.id}
-            control={control}
             index={index}
             isBeingEdited={isBeingEdited || false}
             remove={remove}

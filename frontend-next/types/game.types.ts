@@ -1,3 +1,5 @@
+import { ZonedDateTime } from "@internationalized/date";
+
 import { IEvent } from "@/types/event.types";
 import {
   IAction,
@@ -5,7 +7,11 @@ import {
   IScenarioItemPersisted,
   IScenarioRole,
 } from "@/types/scenario.types";
-import { IAppliedTag, ITag } from "@/types/tags.types";
+import {
+  IAppliedTag,
+  IAppliedTagApiResponseDTO,
+  ITag,
+} from "@/types/tags.types";
 
 /**
  * A summary of a role, without its tags.
@@ -29,6 +35,28 @@ export type IScenarioRoleDetailed = {
   descriptionForOwner: string;
   descriptionForOthers: string;
 };
+
+// --- API Response DTOs (Raw data from the server with string dates) ---
+
+export type IGameRoleStateSummaryApiResponseDTO = {
+  id: string;
+  gameSessionId: string;
+  scenarioRole: IScenarioRoleDetailed;
+  assignedEmail: string;
+  assignedUserID: string;
+  appliedTags: IAppliedTagApiResponseDTO[];
+};
+
+export type IGameSessionApiResponseDTO = {
+  id: string;
+  eventId: IEvent["id"];
+  startTime: string;
+  endTime: string | null;
+  assignedRoles: IGameRoleStateSummaryApiResponseDTO[];
+  items: IGameItemStateSummary[];
+};
+
+// --- Application Domain Models (Transformed, ready-to-use data with ZonedDateTime) ---
 
 /**
  * Represents the state of a specific role assigned to a user within a game session.
@@ -62,8 +90,8 @@ export type IGameItemStateSummary = {
 export type IGameSession = {
   id: string;
   eventId: IEvent["id"];
-  startTime: string;
-  endTime: string | null;
+  startTime: ZonedDateTime;
+  endTime: ZonedDateTime | null;
   assignedRoles: IGameRoleStateSummary[];
   items: IGameItemStateSummary[];
 };
@@ -87,7 +115,6 @@ export type IGameActionLogSummary = {
   removedTags: ITag[];
 };
 
-// You may also need a detailed version for certain endpoints like /api/game/history/gameId/{gameId}
 /**
  * A detailed log of an action, expanding on related objects.
  * Corresponds to GameActionLogDetailedResponseDTO
@@ -109,6 +136,8 @@ export type IGameActionLogDetailed = {
   appliedTags: ITag[];
   removedTags: ITag[];
 };
+
+// --- API Request Payloads (Outgoing data) ---
 
 /**
  * The payload for performing an action in a game session.

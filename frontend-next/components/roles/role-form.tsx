@@ -102,6 +102,16 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
     });
   };
 
+  const handleCancelClicked = () => {
+    if (isDirty) {
+      // User made changes, confirm if he wants to quit
+      onOpenCancel();
+    } else {
+      // User didn't make changes, change proceed to confirm action
+      handleConfirmCancel();
+    }
+  };
+
   const handleConfirmCancel = () => {
     reset(lastSavedRole);
     setIsBeingEdited(false);
@@ -258,7 +268,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
               isSaveButtonTypeSubmit={true}
               isSaveDisabled={!isDirty || isSaving}
               isSaveLoading={isSaving}
-              onCancelEditClicked={onOpenCancel}
+              onCancelEditClicked={handleCancelClicked}
               onDeleteClicked={onOpenDelete}
               onEditClicked={() => setIsBeingEdited(true)}
             />

@@ -28,9 +28,17 @@ export type ITagPostDTO = IPostDTO & {
   expiresAfterMinutes?: number;
 };
 
-export type IAppliedTag = {
+export type IAppliedTagApiResponseDTO = {
   id?: string;
   tag: ITag;
+  userEmail: string;
+  userID: string;
+  appliedToUserAt: string;
+};
+
+export type IAppliedTag = {
+  id?: string;
+  tag: ITagPersisted;
   userEmail: string;
   userID: string;
   appliedToUserAt: ZonedDateTime;

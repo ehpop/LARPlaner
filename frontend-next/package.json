@@ -43,6 +43,7 @@
     "html5-qrcode": "^2.3.8",
     "intl-messageformat": "^10.5.0",
     "jszip": "^3.10.1",
+    "lodash-es": "^4.17.21",
     "lucide-react": "^0.453.0",
     "next": "15.2.4",
     "next-app-template": "file:",
@@ -55,12 +56,14 @@
     "react-swiper": "^0.1.5",
     "sockjs-client": "^1.6.1",
     "swiper": "^11.2.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@formatjs/cli": "^6.2.4",
     "@next/eslint-plugin-next": "^14.2.13",
     "@types/file-saver": "^2.0.7",
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "20.5.7",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",

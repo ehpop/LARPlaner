@@ -10,9 +10,9 @@ import {
 import { Key } from "@react-types/shared";
 import { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 
-import { ITag } from "@/types/tags.types";
+import { ITag, ITagPersisted } from "@/types/tags.types";
 import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
@@ -30,7 +30,7 @@ const initialNewTagState: INewTagForm = {
 };
 
 interface TagInputSectionProps {
-  onTagAdd: (tag: ITag) => void;
+  onTagAdd: (tag: ITagPersisted) => void;
   disabledKeys: Set<string>;
   inputLabel: string;
   description?: string;
@@ -44,7 +44,6 @@ const TagInputSection = ({
   description,
   placeholder,
 }: TagInputSectionProps) => {
-  const intl = useIntl();
   const {
     control,
     handleSubmit,
@@ -103,7 +102,7 @@ const TagInputSection = ({
     };
 
     createAllTagsMutation.mutate([payload], {
-      onSuccess: (createdTags) => {
+      onSuccess: (createdTags: ITagPersisted[]) => {
         if (createdTags.length === 0) {
           showErrorToastWithTimeout("No tags were created");
           reset();

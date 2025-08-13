@@ -36,7 +36,7 @@ export const useDeleteTag = TagsHooks.useDelete;
 export const tagsQueryKeys = TagsHooks.queryKeys;
 
 export const useCreateAllTags = (): UseMutationResult<
-  ITag[],
+  ITagPersisted[],
   Error,
   Omit<ITag, "id">[]
 > => {
