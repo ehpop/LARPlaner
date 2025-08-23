@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GameItemStateRepository extends JpaRepository<GameItemState, UUID> {
 
-  Optional<GameItemState> findByScenarioItemId(UUID id);
+  Optional<GameItemState> findByGameSessionIdAndScenarioItemId(UUID gameSessionId, UUID scenarioItemId);
 }

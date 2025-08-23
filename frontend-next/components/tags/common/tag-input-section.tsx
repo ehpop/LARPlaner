@@ -81,18 +81,24 @@ const TagInputSection = ({
     }
   }
 
+  const addTag = (tag: ITagPersisted | undefined) => {
+    if (!tag) {
+      return;
+    }
+
+    onTagAdd(tag);
+    setTagsFilterText("");
+    setTimeout(() => setSelectedKey(null), 0);
+    showSuccessToastWithTimeout(
+      "Successfully added existing tag: " + tag.value,
+    );
+  };
+
   const handleAddExistingTag = (key: Key) => {
     setSelectedKey(key);
     const tagToAdd = allTags && allTags.find((tag) => tag.id === key);
 
-    if (tagToAdd) {
-      onTagAdd(tagToAdd);
-      setTagsFilterText("");
-      setTimeout(() => setSelectedKey(null), 0);
-      showSuccessToastWithTimeout(
-        "Successfully added existing tag: " + tagToAdd.value,
-      );
-    }
+    addTag(tagToAdd);
   };
 
   const handleCreateNewTag = async (data: INewTagForm) => {
@@ -111,12 +117,12 @@ const TagInputSection = ({
         }
         const newTag = createdTags[0];
 
-        onTagAdd(newTag);
+        addTag(newTag);
+        refetchTags();
         reset();
         showSuccessToastWithTimeout(
           "Successfully added new tag: " + newTag.value,
         );
-        refetchTags();
       },
       onError: (error) => {
         showErrorToastWithTimeout(getErrorMessage(error));

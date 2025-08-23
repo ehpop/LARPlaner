@@ -509,6 +509,7 @@ function ActionsListForm({ basePath, isBeingEdited }: ActionsListFormProps) {
                     render={({ field, fieldState }) => (
                       <Textarea
                         {...field}
+                        isRequired
                         errorMessage={fieldState.error?.message}
                         isDisabled={!isBeingEdited}
                         isInvalid={!!fieldState.error}

@@ -42,10 +42,28 @@ export type IScenarioPersisted = {
   actions: IScenarioActionPersisted[];
 };
 
+export type IScenarioDetailedPersisted = {
+  id: string;
+  name: string;
+  description: string;
+  roles: IScenarioRoleDetailedPersisted[];
+  items: IScenarioItemPersisted[];
+  actions: IScenarioActionPersisted[];
+};
+
 export type IScenarioRole = {
   id?: string;
   roleId?: IRole["id"];
   scenarioId?: IScenario["id"];
+  descriptionForGM: string;
+  descriptionForOwner: string;
+  descriptionForOthers: string;
+};
+
+export type IScenarioRoleDetailedPersisted = {
+  id: string;
+  role: IRolePersisted;
+  scenarioId: IScenario["id"];
   descriptionForGM: string;
   descriptionForOwner: string;
   descriptionForOthers: string;

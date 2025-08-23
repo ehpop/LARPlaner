@@ -1,5 +1,6 @@
 package com.larplaner.api.scenario;
 
+import com.larplaner.dto.scenario.ScenarioDetailedResponseDTO;
 import com.larplaner.dto.scenario.ScenarioRequestDTO;
 import com.larplaner.dto.scenario.ScenarioResponseDTO;
 import com.larplaner.dto.scenario.UpdateScenarioRequestDTO;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +41,14 @@ public interface ScenarioController {
   @GetMapping("/{id}")
   ResponseEntity<ScenarioResponseDTO> getScenarioById(
       @Parameter(description = "ID of the scenario to retrieve") @PathVariable UUID id);
+
+  @Operation(summary = "Get detailed scenario by ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Successfully retrieved scenario"),
+      @ApiResponse(responseCode = "404", description = "Scenario not found")
+  })
+  @GetMapping("/{id}/detailed")
+  ResponseEntity<ScenarioDetailedResponseDTO> getDetailedScenarioById(@PathVariable UUID id);
 
   @Operation(summary = "Create a new scenario")
   @ApiResponses(value = {

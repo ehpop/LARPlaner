@@ -18,7 +18,7 @@ import { MINUTE } from "@/utils/date-time";
 
 type EntityWithId = { id: string };
 
-const DEFAULT_STALE_TIME = 90 * MINUTE;
+export const DEFAULT_STALE_TIME = 90 * MINUTE;
 
 interface CrudHookConfig<E extends EntityWithId, G, P>
   extends CrudApiConfig<E, G, P> {

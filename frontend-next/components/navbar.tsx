@@ -168,6 +168,7 @@ export const Navbar = () => {
 
   const languageSelect = (
     <Select
+      disallowEmptySelection
       aria-label={intl.formatMessage({
         id: "components.navbar.select.language",
         defaultMessage: "Select language",

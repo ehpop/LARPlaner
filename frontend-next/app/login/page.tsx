@@ -64,9 +64,9 @@ export default function LoginPage() {
         id: "login.loading",
       })}
     >
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-300 dark:bg-gray-900 p-4">
-        <Card className="max-w-md w-full p-8 space-y-5 shadow-lg rounded-lg bg-white dark:bg-gray-800">
-          <p className="text-center text-3xl font-bold text-gray-900 dark:text-white">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-300 dark:bg-zinc-900 p-4">
+        <Card className="max-w-md w-full p-8 space-y-5 shadow-lg rounded-lg bg-white dark:bg-zinc-800">
+          <p className="text-center text-3xl font-bold text-zinc-900 dark:text-white">
             <FormattedMessage defaultMessage="Login" id="login.title" />
           </p>
           <form className="space-y-4" onSubmit={handleSubmit}>
@@ -83,6 +83,7 @@ export default function LoginPage() {
               })}
               type="email"
               value={email}
+              variant="bordered"
               onChange={handleEmailChange}
             />
             <Input
@@ -98,6 +99,7 @@ export default function LoginPage() {
               })}
               type="password"
               value={password}
+              variant="bordered"
               onChange={handlePasswordChange}
             />
             {error && (
@@ -122,7 +124,7 @@ export default function LoginPage() {
           </form>
 
           <Button
-            className="w-full mt-4 bg-white border border-gray-300 text-gray-900 rounded-lg py-2 px-4 flex items-center justify-center space-x-3 shadow hover:bg-gray-50 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
+            className="w-full mt-4 bg-white border border-zinc-300 text-zinc-900 rounded-lg py-2 px-4 flex items-center justify-center space-x-3 shadow hover:bg-zinc-50 transition-colors dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-600"
             onPress={() => handleLogIn(googleAuthProvider)}
           >
             <Image
@@ -139,7 +141,7 @@ export default function LoginPage() {
             </span>
           </Button>
           <Button
-            className="w-full mt-4 bg-white border border-gray-300 text-gray-900 rounded-lg py-2 px-4 flex items-center justify-center space-x-3 shadow hover:bg-gray-50 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
+            className="w-full mt-4 bg-white border border-zinc-300 text-zinc-900 rounded-lg py-2 px-4 flex items-center justify-center space-x-3 shadow hover:bg-zinc-50 transition-colors dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-600"
             onPress={() => handleLogIn(githubAuthProvider)}
           >
             <Image
@@ -156,7 +158,7 @@ export default function LoginPage() {
             </span>
           </Button>
 
-          <div className="flex justify-between items-center mt-4 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex justify-between items-center mt-4 text-sm text-zinc-600 dark:text-zinc-400">
             <Link href={"/login/signup"} size="sm" underline="focus">
               <FormattedMessage defaultMessage="Sign up" id="login.signup" />
             </Link>

@@ -1,5 +1,6 @@
 package com.larplaner.service.scenario.impl;
 
+import com.larplaner.dto.scenario.ScenarioDetailedResponseDTO;
 import com.larplaner.dto.scenario.ScenarioRequestDTO;
 import com.larplaner.dto.scenario.ScenarioResponseDTO;
 import com.larplaner.dto.scenario.UpdateScenarioRequestDTO;
@@ -12,6 +13,7 @@ import com.larplaner.dto.scenario.itemAction.UpdateScenarioItemActionRequestDTO;
 import com.larplaner.dto.scenario.role.ScenarioRoleRequestDTO;
 import com.larplaner.dto.scenario.role.UpdateScenarioRoleRequestDTO;
 import com.larplaner.exception.EntityCouldNotBeDeleted;
+import com.larplaner.exception.EntityCouldNotBeEdited;
 import com.larplaner.mapper.scenario.ScenarioActionMapper;
 import com.larplaner.mapper.scenario.ScenarioItemActionMapper;
 import com.larplaner.mapper.scenario.ScenarioItemMapper;
@@ -37,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -81,6 +84,13 @@ public class ScenarioServiceImpl implements ScenarioService {
   }
 
   @Override
+  public ScenarioDetailedResponseDTO getDetailedScenarioById(UUID id) {
+    return scenarioRepository.findById(id)
+        .map(scenarioMapper::toDetailedDTO)
+        .orElseThrow(() -> new EntityNotFoundException("Scenario not found with id: " + id));
+  }
+
+  @Override
   @Transactional
   public ScenarioResponseDTO createScenario(ScenarioRequestDTO scenarioDTO) {
     Scenario scenario = scenarioMapper.toEntity(scenarioDTO);
@@ -114,7 +124,8 @@ public class ScenarioServiceImpl implements ScenarioService {
   }
 
   private void updateEventAssignedRoles(Scenario updatedScenario) {
-    List<Event> eventsThatShouldHaveRolesUpdated = eventRepository.findAllByScenario_IdAndStatus(updatedScenario.getId(),
+    List<Event> eventsThatShouldHaveRolesUpdated = eventRepository.findAllByScenario_IdAndStatus(
+        updatedScenario.getId(),
         EventStatusEnum.UPCOMING);
 
     eventsThatShouldHaveRolesUpdated.forEach(event -> {
@@ -212,6 +223,7 @@ public class ScenarioServiceImpl implements ScenarioService {
   private void processScenarioRoles(Scenario existingScenario,
       List<UpdateScenarioRoleRequestDTO> roles) {
     if (Objects.isNull(roles) || roles.isEmpty()) {
+      checkIfRolesCanBeAddedOrDeleted(existingScenario);
       deleteScenarioRoles(existingScenario, existingScenario.getRoles());
       return;
     }
@@ -233,9 +245,23 @@ public class ScenarioServiceImpl implements ScenarioService {
 
     var rolesToDelete = scenarioRoleRepository.findAllById(existingRolesIds);
 
+    if (!rolesToDelete.isEmpty() || !rolesToAdd.isEmpty()) {
+      checkIfRolesCanBeAddedOrDeleted(existingScenario);
+    }
+
     createScenarioRoles(existingScenario, rolesToAdd);
     updateScenarioRoles(existingScenario, rolesToUpdate);
     deleteScenarioRoles(existingScenario, rolesToDelete);
+  }
+
+  private void checkIfRolesCanBeAddedOrDeleted(Scenario existingScenario) {
+    Optional<Event> activeEventWithThisScenario = eventRepository
+        .findAllByScenario_IdAndStatus(existingScenario.getId(), EventStatusEnum.ACTIVE)
+        .stream().findAny();
+    if (activeEventWithThisScenario.isPresent()) {
+      throw new EntityCouldNotBeEdited(
+          "Scenario roles can not be added/deleted, because there is active event that is referencing this scenario.");
+    }
   }
 
   private void updateScenarioRoles(Scenario existingScenario,

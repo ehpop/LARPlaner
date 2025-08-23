@@ -45,9 +45,9 @@ export default function PasswordResetPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-      <Card className="max-w-md w-full p-8 space-y-5 shadow-lg rounded-lg bg-white dark:bg-gray-800">
-        <p className="text-center text-3xl font-bold text-gray-900 dark:text-white">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-100 dark:bg-zinc-900 p-4">
+      <Card className="max-w-md w-full p-8 space-y-5 shadow-lg rounded-lg bg-white dark:bg-zinc-800">
+        <p className="text-center text-3xl font-bold text-zinc-900 dark:text-white">
           <FormattedMessage
             defaultMessage="Reset Password"
             id="passwordReset.title"
@@ -77,6 +77,7 @@ export default function PasswordResetPage() {
             })}
             type="email"
             value={email}
+            variant="bordered"
             onChange={handleEmailChange}
           />
           <Button
@@ -96,7 +97,7 @@ export default function PasswordResetPage() {
             )}
           </Button>
         </form>
-        <div className="flex justify-between items-center mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex justify-between items-center mt-4 text-sm text-zinc-600 dark:text-zinc-400">
           <Link href={"/login"} size="sm" underline="focus">
             <FormattedMessage defaultMessage="Log in" id="reset.login" />
           </Link>

@@ -1,19 +1,9 @@
 import { CardBody, CardHeader } from "@heroui/card";
-import {
-  Button,
-  Card,
-  CardFooter,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@heroui/react";
+import { Button, Card, CardFooter } from "@heroui/react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useState } from "react";
 
 import { IScenarioAction, IScenarioItemAction } from "@/types/scenario.types";
-import { IGameSession } from "@/types/game.types";
+import { IGameActionLogSummary, IGameSession } from "@/types/game.types";
 import { useAuth } from "@/providers/firebase-provider";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import { showErrorToastWithTimeout } from "@/utils/toast";
@@ -23,16 +13,14 @@ import { getErrorMessage } from "@/utils/error";
 const Action = ({
   game,
   action,
-  afterActionPerformed,
+  onActionPerformed,
 }: {
   game: IGameSession;
   action: IScenarioAction | IScenarioItemAction;
-  afterActionPerformed?: () => void;
+  onActionPerformed: (actionResult: IGameActionLogSummary) => void;
 }) => {
   const auth = useAuth();
   const intl = useIntl();
-  const [isActionResultModalOpen, setIsActionResultModalOpen] = useState(false);
-  const [actionResultMessage, setActionResultMessage] = useState("");
 
   const userRole = game.assignedRoles.find(
     (ar) => ar.assignedUserID === auth.user?.uid,
@@ -63,8 +51,7 @@ const Action = ({
       },
       {
         onSuccess: (data) => {
-          setIsActionResultModalOpen(true);
-          setActionResultMessage(data.message);
+          onActionPerformed(data);
         },
         onError: (error) => {
           showErrorToastWithTimeout(getErrorMessage(error));
@@ -72,44 +59,6 @@ const Action = ({
       },
     );
   };
-
-  const ActionResultModalElement = (
-    <Modal
-      isOpen={isActionResultModalOpen}
-      placement="center"
-      onOpenChange={(isOpen) => {
-        setIsActionResultModalOpen(isOpen);
-        if (afterActionPerformed) {
-          afterActionPerformed();
-        }
-      }}
-    >
-      <ModalContent>
-        <ModalHeader>
-          <FormattedMessage
-            defaultMessage="Action result"
-            id="action.actionResult"
-          />
-        </ModalHeader>
-        <ModalBody>
-          <p>{actionResultMessage}</p>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            variant="bordered"
-            onPress={() => {
-              setIsActionResultModalOpen(false);
-              if (afterActionPerformed) {
-                afterActionPerformed();
-              }
-            }}
-          >
-            <FormattedMessage defaultMessage="Close" id="common.close" />
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
 
   return (
     <LoadingOverlay isLoading={isPending || auth.loading}>
@@ -133,7 +82,6 @@ const Action = ({
           </Button>
         </CardFooter>
       </Card>
-      {ActionResultModalElement}
     </LoadingOverlay>
   );
 };

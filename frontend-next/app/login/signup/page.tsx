@@ -86,9 +86,9 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-      <Card className="max-w-md w-full p-8 space-y-5 shadow-lg rounded-lg bg-white dark:bg-gray-800">
-        <p className="text-center text-3xl font-bold text-gray-900 dark:text-white">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-100 dark:bg-zinc-900 p-4">
+      <Card className="max-w-md w-full p-8 space-y-5 shadow-lg rounded-lg bg-white dark:bg-zinc-800">
+        <p className="text-center text-3xl font-bold text-zinc-900 dark:text-white">
           <FormattedMessage defaultMessage="Sign Up" id="signup.title" />
         </p>
         {error && (
@@ -110,6 +110,7 @@ export default function SignUpPage() {
               defaultMessage: "Enter your display name",
             })}
             value={displayName}
+            variant="bordered"
             onChange={handleDisplayNameChange}
           />
           <Input
@@ -125,6 +126,7 @@ export default function SignUpPage() {
             })}
             type="email"
             value={email}
+            variant="bordered"
             onChange={handleEmailChange}
           />
           <Input
@@ -140,6 +142,7 @@ export default function SignUpPage() {
             })}
             type="password"
             value={password}
+            variant="bordered"
             onChange={handlePasswordChange}
           />
           <Input
@@ -155,6 +158,7 @@ export default function SignUpPage() {
             })}
             type="password"
             value={passwordConfirm}
+            variant="bordered"
             onChange={handlePasswordConfirmChange}
           />
           <Button
@@ -173,7 +177,7 @@ export default function SignUpPage() {
             {loading && <Spinner color="primary" label="Signing up..." />}
           </div>
         </form>
-        <div className="flex justify-between items-center mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex justify-between items-center mt-4 text-sm text-zinc-600 dark:text-zinc-400">
           <Link href={"/login"} size="sm" underline="focus">
             <FormattedMessage defaultMessage="Log in" id="signup.login" />
           </Link>

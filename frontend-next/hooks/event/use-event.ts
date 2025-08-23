@@ -2,7 +2,7 @@ import { useIntl } from "react-intl";
 import { useEffect, useState } from "react";
 
 import { useEvent } from "@/services/events/useEvents";
-import { useScenario } from "@/services/scenarios/useScenarios";
+import { useDetailedScenario } from "@/services/scenarios/useScenarios";
 import { showErrorMessage } from "@/hooks/utils";
 import { IEvent } from "@/types/event.types";
 
@@ -20,7 +20,7 @@ const useEventAndScenario = (id: IEvent["id"]) => {
     isLoading: scenarioLoading,
     error: scenarioError,
     refetch: refetchScenario,
-  } = useScenario(event?.scenarioId);
+  } = useDetailedScenario(event?.scenarioId);
 
   const loading = eventLoading || scenarioLoading;
 

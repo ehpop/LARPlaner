@@ -10,9 +10,11 @@ import com.larplaner.dto.game.roleState.UpdateGameRoleStateRequestDTO;
 import com.larplaner.dto.scenario.action.ScenarioActionResponseDTO;
 import com.larplaner.dto.scenario.itemAction.ScenarioItemActionResponseDTO;
 import com.larplaner.mapper.tag.AppliedTagMapper;
+import com.larplaner.model.tag.AppliedTag;
 import com.larplaner.repository.game.GameRoleStateRepository;
 import com.larplaner.service.game.GameSessionService;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -103,7 +105,9 @@ public class GameSessionControllerImpl implements GameSessionController {
     messagingTemplate.convertAndSend(
         String.format("/topic/game/%s/action/byUserId/%s", actionResult.getGameSessionId(),
             SecurityContextHolder.getContext().getAuthentication().getName()),
-        gameSessionRole.getAppliedTags().stream().map(appliedTagMapper::toDTO).toList());
+        gameSessionRole.getAppliedTags().stream()
+            .sorted(Comparator.comparing(AppliedTag::getAppliedToUserAt).reversed())
+            .map(appliedTagMapper::toDTO).toList());
     return ResponseEntity.ok(actionResult);
   }
 

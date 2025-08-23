@@ -1,8 +1,8 @@
-import { ReactNode, useState } from "react";
+"use client";
+
+import { useState } from "react";
 import {
   Button,
-  Card,
-  CardBody,
   Modal,
   ModalBody,
   ModalContent,
@@ -11,6 +11,7 @@ import {
   Spinner,
 } from "@heroui/react";
 import { FormattedDate, FormattedMessage, useIntl } from "react-intl";
+import { ClockIcon, SparklesIcon } from "@heroicons/react/24/solid";
 
 import { IGameRoleStateSummary, IGameSession } from "@/types/game.types";
 import useGameRole from "@/hooks/use-game-role";
@@ -26,12 +27,9 @@ const MyCharacterModal = ({ game }: { game: IGameSession }) => {
     eventId: game.eventId,
   });
 
-  const handleOpen = () => setIsModalOpen(true);
-  const handleClose = () => setIsModalOpen(false);
-
   return (
     <>
-      <Button variant="bordered" onPress={handleOpen}>
+      <Button w-full variant="bordered" onPress={() => setIsModalOpen(true)}>
         <FormattedMessage
           defaultMessage="My character"
           id="game.myCharacterModal.button.label"
@@ -41,25 +39,27 @@ const MyCharacterModal = ({ game }: { game: IGameSession }) => {
         isOpen={isModalOpen}
         placement="center"
         scrollBehavior="inside"
-        size="2xl"
+        size="3xl"
         onOpenChange={setIsModalOpen}
       >
-        <ModalContent>
-          <ModalHeader>
-            {role ? (
-              <FormattedMessage
-                defaultMessage="Details for character: {characterName}"
-                id="game.myCharacterModal.title"
-                values={{ characterName: role.name }}
-              />
-            ) : (
-              <FormattedMessage
-                defaultMessage="An error occured"
-                id="game.myCharacterModal.title.error"
-              />
-            )}
+        <ModalContent className="bg-white dark:bg-zinc-900">
+          <ModalHeader className="border-b border-zinc-200 dark:border-zinc-800">
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+              {role ? (
+                <FormattedMessage
+                  defaultMessage="Character Details: {characterName}"
+                  id="game.myCharacterModal.title"
+                  values={{ characterName: role.name }}
+                />
+              ) : (
+                <FormattedMessage
+                  defaultMessage="Character Details"
+                  id="game.myCharacterModal.title.generic"
+                />
+              )}
+            </h2>
           </ModalHeader>
-          <ModalBody>
+          <ModalBody className="p-6">
             <MyCharacterModalBody
               gameRoleState={gameRoleState}
               loading={loading}
@@ -67,8 +67,8 @@ const MyCharacterModal = ({ game }: { game: IGameSession }) => {
               scenarioRole={scenarioRole}
             />
           </ModalBody>
-          <ModalFooter>
-            <Button color="danger" variant="bordered" onPress={handleClose}>
+          <ModalFooter className="border-t border-zinc-200 dark:border-zinc-800">
+            <Button variant="light" onPress={() => setIsModalOpen(false)}>
               <FormattedMessage defaultMessage="Close" id="common.close" />
             </Button>
           </ModalFooter>
@@ -78,61 +78,115 @@ const MyCharacterModal = ({ game }: { game: IGameSession }) => {
   );
 };
 
-export default MyCharacterModal;
+const MyCharacterModalBody = ({
+  loading,
+  role,
+  scenarioRole,
+  gameRoleState,
+}: {
+  loading: boolean;
+  role: IRole | null;
+  scenarioRole?: IScenarioRole | null;
+  gameRoleState?: IGameRoleStateSummary | null;
+}) => {
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center items-center h-48">
+        <Spinner />
+      </div>
+    );
+  }
 
-interface AppliedTagListItemProps {
-  appliedTag: IAppliedTag;
-}
+  if (!role || !scenarioRole || !gameRoleState) {
+    return (
+      <div className="w-full flex justify-center items-center h-48">
+        <p className="text-zinc-500 dark:text-zinc-400">
+          <FormattedMessage
+            defaultMessage="Cannot load character data."
+            id="game.myCharacterModal.error.noData"
+          />
+        </p>
+      </div>
+    );
+  }
 
-const AppliedTagListItem = ({ appliedTag }: AppliedTagListItemProps) => {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          <FormattedMessage
+            defaultMessage="Your Description"
+            id="game.myCharacterModal.descriptionTitle"
+          />
+        </h3>
+        <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+          {scenarioRole.descriptionForOwner}
+        </p>
+      </div>
+
+      <hr className="border-zinc-200 dark:border-zinc-800" />
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          <FormattedMessage
+            defaultMessage="Active Tags"
+            id="game.myCharacterModal.activeTagsTitle"
+          />
+        </h3>
+        {gameRoleState.appliedTags.length > 0 ? (
+          <div className="space-y-3">
+            {gameRoleState.appliedTags.map((appliedTag) => (
+              <AppliedTagListItem key={appliedTag.id} appliedTag={appliedTag} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-zinc-500 dark:text-zinc-400 italic">
+            <FormattedMessage
+              defaultMessage="You have no active tags."
+              id="game.myCharacterModal.noActiveTags"
+            />
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const AppliedTagListItem = ({ appliedTag }: { appliedTag: IAppliedTag }) => {
   const intl = useIntl();
   const { tag, appliedToUserAt } = appliedTag;
 
-  if (!tag) {
-    return null;
-  }
+  if (!tag) return null;
 
   const isExpiring =
     tag.expiresAfterMinutes !== undefined && tag.expiresAfterMinutes > 0;
 
   return (
-    <li key={appliedTag.id} className="py-5">
-      <div className="flex items-center space-x-4">
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-base font-semibold text-gray-800 dark:text-gray-100">
-            {tag.value}
-          </p>
-          <p className="truncate text-sm text-gray-600 dark:text-gray-300">
-            <FormattedMessage
-              defaultMessage="Applied on {appliedDate}"
-              id="game.myCharacterModal.appliedByOn"
-              values={{
-                appliedDate: (
-                  <FormattedDate
-                    key={`${appliedTag.id}-${appliedTag.appliedToUserAt}`}
-                    day="numeric"
-                    hour="numeric"
-                    minute="numeric"
-                    month="long"
-                    second="numeric"
-                    value={appliedToUserAt.toDate()}
-                    year="numeric"
-                  />
-                ),
-              }}
-            />
-          </p>
-        </div>
-        <div className="inline-flex items-center space-x-2">
+    <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 space-y-3">
+      <div className="flex justify-between items-start gap-4">
+        <p className="font-medium text-zinc-800 dark:text-zinc-200">
+          {tag.value}
+        </p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 flex-shrink-0 pt-1">
+          <FormattedDate
+            hour="numeric"
+            minute="numeric"
+            value={appliedToUserAt.toDate()}
+          />
+        </p>
+      </div>
+      {(tag.isUnique || isExpiring) && (
+        <div className="flex items-center gap-2">
           {tag.isUnique && (
             <MobileTooltip
               content={intl.formatMessage({
                 id: "tag.unique.tooltip",
-                defaultMessage: "This tag is unique",
+                defaultMessage: "This tag is unique.",
               })}
             >
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
-                ✅ <FormattedMessage defaultMessage="Unique" id="tag.unique" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                <SparklesIcon className="h-4 w-4" />
+                <FormattedMessage defaultMessage="Unique" id="tag.unique" />
               </span>
             </MobileTooltip>
           )}
@@ -140,92 +194,19 @@ const AppliedTagListItem = ({ appliedTag }: AppliedTagListItemProps) => {
             <MobileTooltip
               content={intl.formatMessage({
                 id: "tag.expiring.tooltip",
-                defaultMessage: "This tag expires",
+                defaultMessage: "This tag expires over time.",
               })}
             >
-              <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-1 text-xs font-semibold text-orange-600">
-                ⌛{" "}
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                <ClockIcon className="h-4 w-4" />
                 <FormattedMessage defaultMessage="Expiring" id="tag.expiring" />
               </span>
             </MobileTooltip>
           )}
         </div>
-      </div>
-    </li>
+      )}
+    </div>
   );
 };
 
-interface MyCharacterModalBodyProps {
-  loading: boolean;
-  role: IRole | null;
-  scenarioRole?: IScenarioRole | null;
-  gameRoleState?: IGameRoleStateSummary | null;
-}
-
-const CenteredContent = ({ children }: { children: ReactNode }) => (
-  <div className="w-full flex justify-center">{children}</div>
-);
-
-const MyCharacterModalBody = ({
-  loading,
-  role,
-  scenarioRole,
-  gameRoleState,
-}: MyCharacterModalBodyProps) => {
-  if (loading) {
-    return (
-      <CenteredContent>
-        <Spinner />
-      </CenteredContent>
-    );
-  }
-
-  if (!role || !scenarioRole || !gameRoleState) {
-    return (
-      <CenteredContent>
-        <p>
-          <FormattedMessage
-            defaultMessage="Cannot load role data."
-            id="game.myCharacterModal.error.noData"
-          />
-        </p>
-      </CenteredContent>
-    );
-  }
-
-  return (
-    <Card>
-      <CardBody>
-        <p className="text-2xl mb-2">
-          <FormattedMessage
-            defaultMessage="Role: {roleName}"
-            id="game.myCharacterModal.role"
-            values={{ roleName: role.name }}
-          />
-        </p>
-        <p className="text-medium mb-2">
-          <FormattedMessage
-            defaultMessage="Description: {scenarioRoleName}"
-            id="game.myCharacterModal.scenarioRole"
-            values={{
-              scenarioRoleName: scenarioRole.descriptionForOwner,
-            }}
-          />
-        </p>
-        <p className="text-large mt-2 mb-2">
-          <FormattedMessage
-            defaultMessage="Active tags for your character:"
-            id="game.myCharacterModal.actionsAvailable"
-          />
-        </p>
-        <div className="flow-root">
-          <ul className="divide-y divide-gray-100">
-            {gameRoleState.appliedTags.map((appliedTag) => (
-              <AppliedTagListItem key={appliedTag.id} appliedTag={appliedTag} />
-            ))}
-          </ul>
-        </div>
-      </CardBody>
-    </Card>
-  );
-};
+export default MyCharacterModal;

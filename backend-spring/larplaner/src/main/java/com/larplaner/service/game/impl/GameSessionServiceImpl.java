@@ -214,8 +214,8 @@ public class GameSessionServiceImpl implements GameSessionService {
         .findFirst().orElseThrow(EntityNotFoundException::new);
 
     var targetItem = Objects.nonNull(gameActionRequestDTO.getTargetItemId())
-        ? gameItemStateRepository.findByScenarioItemId(gameActionRequestDTO.getTargetItemId())
-        .orElseThrow(EntityNotFoundException::new)
+        ? gameItemStateRepository.findByGameSessionIdAndScenarioItemId(gameSessionId,
+            gameActionRequestDTO.getTargetItemId()).orElseThrow(EntityNotFoundException::new)
         : null;
 
     var actionToPerform = Objects.isNull(gameActionRequestDTO.getTargetItemId())
@@ -300,7 +300,7 @@ public class GameSessionServiceImpl implements GameSessionService {
   private boolean doesUserHaveAnyForbiddenTags(GameRoleState userRole, Action actionToPerform) {
     return userRole.getAllActiveTags()
         .stream()
-        .anyMatch(actionToPerform.getRequiredTagsToSucceed()::contains);
+        .anyMatch(actionToPerform.getForbiddenTagsToSucceed()::contains);
   }
 
   public GameSessionDetailedResponseDTO updateRoleState(UUID roleStateID,

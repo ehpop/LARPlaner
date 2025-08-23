@@ -8,7 +8,7 @@ import { useTags } from "@/services/tags/useTags";
 interface ITagsContext {
   allTags: ITagPersisted[] | undefined;
   isLoading: boolean;
-  refetchTags: () => void;
+  refetchTags: () => Promise<any>;
   isError: boolean;
   error: Error | null;
 }

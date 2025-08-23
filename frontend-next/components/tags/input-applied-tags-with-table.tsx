@@ -11,6 +11,7 @@ import { isTagExpired } from "@/utils/date-time";
 import { useCurrentTime } from "@/hooks/common/use-current-time";
 import { useStomp } from "@/providers/stomp-client-provider";
 import ConfirmActionModal from "@/components/buttons/confirm-action-modal";
+import { mapAppliedTag } from "@/types/zod/tag";
 
 const InputAppliedTagsWithTable = ({
   userRoleState,
@@ -138,8 +139,12 @@ const InputAppliedTagsWithTable = ({
     const subscription = stompClient.subscribe(
       `/topic/game/${gameId}/action/byUserId/${userRoleState.assignedUserID}`,
       (message) => {
-        console.log("Received message: ", JSON.parse(message.body));
-        setReceivedTags(JSON.parse(message.body));
+        console.log("Received message: ", message.body);
+        setReceivedTags(
+          JSON.parse(message.body).map((tag: IAppliedTag) =>
+            mapAppliedTag(tag),
+          ),
+        );
         onOpenUpdateTagsViewModal();
       },
     );

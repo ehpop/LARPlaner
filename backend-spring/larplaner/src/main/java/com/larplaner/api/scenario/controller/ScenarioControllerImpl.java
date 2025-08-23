@@ -1,6 +1,7 @@
 package com.larplaner.api.scenario.controller;
 
 import com.larplaner.api.scenario.ScenarioController;
+import com.larplaner.dto.scenario.ScenarioDetailedResponseDTO;
 import com.larplaner.dto.scenario.ScenarioRequestDTO;
 import com.larplaner.dto.scenario.ScenarioResponseDTO;
 import com.larplaner.dto.scenario.UpdateScenarioRequestDTO;
@@ -32,6 +33,15 @@ public class ScenarioControllerImpl implements ScenarioController {
   @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToScenario(#id)")
   public ResponseEntity<ScenarioResponseDTO> getScenarioById(UUID id) {
     ScenarioResponseDTO scenario = scenarioService.getScenarioById(id);
+    return scenario != null
+        ? ResponseEntity.ok(scenario)
+        : ResponseEntity.notFound().build();
+  }
+
+  @Override
+  @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToScenario(#id)")
+  public ResponseEntity<ScenarioDetailedResponseDTO> getDetailedScenarioById(UUID id) {
+    ScenarioDetailedResponseDTO scenario = scenarioService.getDetailedScenarioById(id);
     return scenario != null
         ? ResponseEntity.ok(scenario)
         : ResponseEntity.notFound().build();

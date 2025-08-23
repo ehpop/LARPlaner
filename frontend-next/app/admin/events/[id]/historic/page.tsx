@@ -3,13 +3,13 @@
 import React from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useRouter } from "next/navigation";
-import { Link } from "@heroui/link";
 import {
   Button,
   Card,
   CardBody,
   CardFooter,
   CardHeader,
+  Link,
   useDisclosure,
 } from "@heroui/react";
 
@@ -33,7 +33,7 @@ const HistoricEventAdminPage = ({ params }: any) => {
     <EventPageWrapper expectedStatus="historic" params={params}>
       {({ event, scenario }) => {
         const handleDeleteEvent = async () => {
-          if (!event || !event.id) return;
+          if (!event?.id) return;
 
           deleteEventMutation.mutate(event.id, {
             onSuccess: () => {
@@ -84,51 +84,76 @@ const HistoricEventAdminDisplay = ({
   } = useDisclosure();
 
   return (
-    <div className="w-full flex flex-col items-center p-6">
-      <Card className="w-full max-w-2xl shadow-lg">
-        <CardHeader>
-          <div className="w-full flex flex-row items-center justify-between">
-            <p className="text-2xl font-bold">
+    <div className="w-full flex flex-col items-center p-4 sm:p-6 lg:p-8">
+      <Card className="w-full max-w-3xl shadow-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+        <CardHeader className="border-b border-zinc-200 dark:border-zinc-800">
+          <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
               <FormattedMessage
-                defaultMessage="Event: {eventName}"
-                id="admin.events.id.historic.page.eventName"
+                defaultMessage="Archived Event: {eventName}"
+                id="admin.events.id.historic.page.title"
                 values={{ eventName: event.name }}
               />
-            </p>
-            <div className="flex flex-row space-x-1 items-center">
-              <p>
+            </h1>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-zinc-500 dark:text-zinc-400">
                 <FormattedMessage
-                  defaultMessage="Status: "
+                  defaultMessage="Status:"
                   id="events.id.historic.status"
                 />
-              </p>
-              <p className="font-semibold text-gray-500">{event.status}</p>
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 px-3 py-1 font-medium text-zinc-700 dark:text-zinc-300">
+                {event.status}
+              </span>
             </div>
           </div>
         </CardHeader>
-        <CardBody className="w-full flex flex-col items-center space-y-5">
-          <div className="w-4/5 flex flex-row justify-between items-center">
-            <p className="text-lg">Scenario: {scenario.name}</p>
-            <Link href={`/admin/scenarios/${scenario.id}`}>
-              <Button variant="bordered">
-                <FormattedMessage
-                  defaultMessage="Display scenario"
-                  id="admin.events.id.historic.page.displayScenario"
-                />
-              </Button>
-            </Link>
-          </div>
-          <div className="w-4/5 flex flex-row justify-between items-center">
-            <p className="text-lg">
-              <FormattedMessage
-                defaultMessage="Characters in game:"
-                id="admin.events.id.historic.page.charactersInGame"
-              />
-            </p>
-            <p className="text-lg font-mono">{scenario.roles.length}</p>
+        <CardBody className="space-y-6 p-6">
+          {/* Details Section */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+              <FormattedMessage defaultMessage="Details" id="global.details" />
+            </h2>
+            <div className="divide-y divide-zinc-200 dark:divide-zinc-800 border-y border-zinc-200 dark:border-zinc-800">
+              <div className="flex justify-between items-center p-3">
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  <FormattedMessage
+                    defaultMessage="Scenario:"
+                    id="admin.events.id.historic.page.scenarioLabel"
+                  />
+                </span>
+                <div className="flex items-center gap-4">
+                  <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                    {scenario.name}
+                  </span>
+                  <Button
+                    as={Link}
+                    href={`/admin/scenarios/${scenario.id}`}
+                    size="sm"
+                    variant="bordered"
+                  >
+                    <FormattedMessage
+                      defaultMessage="Display scenario"
+                      id="admin.events.id.historic.page.displayScenario"
+                    />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex justify-between items-center p-3">
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  <FormattedMessage
+                    defaultMessage="Characters in game:"
+                    id="admin.events.id.historic.page.charactersInGame"
+                  />
+                </span>
+                <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                  {scenario.roles.length}
+                </span>
+              </div>
+            </div>
           </div>
         </CardBody>
-        <CardFooter className="mt-5 flex flex-row justify-between">
+        <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 border-t border-zinc-200 dark:border-zinc-800">
           <Button
             color="danger"
             isDisabled={isPending}
@@ -141,40 +166,44 @@ const HistoricEventAdminDisplay = ({
               id="admin.events.id.historic.page.deleteEvent"
             />
           </Button>
-          <div className="flex flex-row space-x-2">
-            <Link href={`/admin/game/${event.gameSessionId}`}>
-              <Button color="primary" variant="bordered">
-                <FormattedMessage
-                  defaultMessage="Review Game"
-                  id="admin.events.id.historic.page.reviewGame"
-                />
-              </Button>
-            </Link>
-            <Link href={`/admin/events/${event.id}/historic/chats`}>
-              <Button variant="bordered">
-                <FormattedMessage
-                  defaultMessage="Review Chats"
-                  id="admin.events.id.historic.page.reviewChats"
-                />
-              </Button>
-            </Link>
+          <div className="flex items-center gap-3">
+            <Button
+              as={Link}
+              href={`/admin/events/${event.id}/historic/chats`}
+              variant="light"
+            >
+              <FormattedMessage
+                defaultMessage="Review Chats"
+                id="admin.events.id.historic.page.reviewChats"
+              />
+            </Button>
+            <Button
+              as={Link}
+              color="primary"
+              href={`/admin/game/${event.gameSessionId}`}
+            >
+              <FormattedMessage
+                defaultMessage="Review Game"
+                id="admin.events.id.historic.page.reviewGame"
+              />
+            </Button>
           </div>
         </CardFooter>
-        <ConfirmActionModal
-          handleOnConfirm={onDeleteEvent}
-          isOpen={isOpenDelete}
-          prompt={intl.formatMessage({
-            defaultMessage:
-              "Are you sure you want to permanently delete this event and all its associated data? This action cannot be reversed.",
-            id: "admin.events.id.historic.page.deleteEvent.prompt",
-          })}
-          title={intl.formatMessage({
-            defaultMessage: "Delete Historic Event",
-            id: "admin.events.id.historic.page.deleteEvent.title",
-          })}
-          onOpenChange={onOpenDeleteChange}
-        />
       </Card>
+      <ConfirmActionModal
+        handleOnConfirm={onDeleteEvent}
+        isOpen={isOpenDelete}
+        prompt={intl.formatMessage({
+          defaultMessage:
+            "Are you sure you want to permanently delete this event and all its associated data? This action cannot be reversed.",
+          id: "admin.events.id.historic.page.deleteEvent.prompt",
+        })}
+        title={intl.formatMessage({
+          defaultMessage: "Delete Historic Event",
+          id: "admin.events.id.historic.page.deleteEvent.title",
+        })}
+        onOpenChange={onOpenDeleteChange}
+      />
     </div>
   );
 };

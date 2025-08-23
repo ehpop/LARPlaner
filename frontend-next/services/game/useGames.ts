@@ -100,7 +100,6 @@ export const useUserGameHistory = (
     queryFn: async () => {
       const { data } = await api.get(`/game/history/user/gameId/${gameId}`);
 
-      // TODO: If IGameActionLogSummary needs date parsing, add a Zod schema here too
       return data;
     },
     enabled: !!gameId,

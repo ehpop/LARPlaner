@@ -189,21 +189,48 @@ public class EventServiceImpl implements EventService {
     Map<UUID, AssignedRole> currentRolesMap = event.getAssignedRoles().stream()
         .collect(Collectors.toMap(BaseEntity::getId, Function.identity()));
 
+    log.debug("Current event roles:");
+    currentRolesMap.forEach((id, role) -> {
+      log.debug("ID = {}, role = {}, assignedEmail = {}", id, role.getScenarioRole().getRole().getName(), role.getAssignedEmail());
+    });
+
     Set<UUID> requestedIdsToModify = eventDTO.getAssignedRoles().stream()
         .map(AssignedRoleUpdateRequestDTO::getId)
         .collect(Collectors.toSet());
 
+    log.debug("IDs in request:");
+    requestedIdsToModify.forEach((id) -> {
+      log.debug("ID = {}", id);
+    });
+
     event.getAssignedRoles()
         .removeIf(assignedRole -> !requestedIdsToModify.contains(assignedRole.getId()));
 
+    log.debug("After delete event roles:");
+    currentRolesMap.forEach((id, role) -> {
+      log.debug("ID = {}, role = {}, assignedEmail = {}", id, role.getScenarioRole().getRole().getName(), role.getAssignedEmail());
+    });
+
+    log.debug("logic for existing roles:");
     eventDTO.getAssignedRoles().forEach(dto -> {
+      log.debug("Looking for id = {}", dto.getId());
       AssignedRole existingRole = currentRolesMap.get(dto.getId());
+      log.debug("exisitingRole = {}", existingRole);
       if (existingRole != null) {
+        log.debug("ExistingRole email WAS {}, role = {}, roleID = {}", existingRole.getAssignedEmail(), existingRole.getScenarioRole().getRole().getName(), existingRole.getScenarioRole().getId());
         existingRole.setAssignedEmail(dto.getAssignedEmail());
+        log.debug("ExistingRole email set to {}, roleID = {}", dto.getAssignedEmail(), dto.getScenarioRoleId());
       } else {
         event.addAssignedRoleToEvent(assignedRoleMapper.toEntity(dto));
+        log.debug("Added new Assigned Email with ");
       }
     });
+
+    log.debug("After WHOLE LOGIC event roles:");
+    currentRolesMap.forEach((id, role) -> {
+      log.debug("ID = {}, role = {}, assignedEmail = {}", id, role.getScenarioRole().getRole().getName(), role.getAssignedEmail());
+    });
+
   }
 
   //TODO: Might extract counting logic and check if any id/roleId/email is duplicate

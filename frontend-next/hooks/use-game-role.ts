@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import { useAuth } from "@/providers/firebase-provider";
 import { IGameSession } from "@/types/game.types";
 import useEventAndScenario from "@/hooks/event/use-event";
-import { useRole } from "@/services/roles/useRoles";
 import { useGameSession } from "@/services/game/useGames";
 
 /**
@@ -53,12 +52,13 @@ const useGameRole = ({
     };
   }, [game, event, scenario, user]);
 
-  const { data: role, isLoading: isRoleLoading } = useRole(
-    scenarioRole?.roleId,
-  );
+  const role = useMemo(() => {
+    if (!scenarioRole) return null;
 
-  const loading =
-    authLoading || isGameLoading || isEventAndScenarioLoading || isRoleLoading;
+    return scenarioRole.role;
+  }, [scenarioRole]);
+
+  const loading = authLoading || isGameLoading || isEventAndScenarioLoading;
 
   return { role: role ?? null, scenarioRole, gameRoleState, loading };
 };

@@ -3,7 +3,6 @@ import { useIntl } from "react-intl";
 
 import { useAuth } from "@/providers/firebase-provider";
 import useEventAndScenario from "@/hooks/event/use-event";
-import { useRole } from "@/services/roles/useRoles";
 import { showErrorMessage } from "@/hooks/utils";
 import { IEvent } from "@/types/event.types";
 
@@ -33,22 +32,16 @@ const useUserEventData = (id: IEvent["id"]) => {
     );
   }, [scenario, assignedRole]);
 
-  const {
-    data: userRole,
-    isLoading: roleLoading,
-    error: roleError,
-  } = useRole(userScenarioRole?.roleId);
+  const userRole = useMemo(() => {
+    if (!userScenarioRole) return null;
 
-  const loading = authLoading || eventAndScenarioLoading || roleLoading;
+    return userScenarioRole.role;
+  }, [userScenarioRole]);
+
+  const loading = authLoading || eventAndScenarioLoading;
 
   useEffect(() => {
     if (loading) {
-      return;
-    }
-
-    if (roleError) {
-      showErrorMessage(roleError.message);
-
       return;
     }
 
@@ -67,17 +60,16 @@ const useUserEventData = (id: IEvent["id"]) => {
             defaultMessage: "User's role not found in scenario.",
           }),
         );
+      } else if (!userScenarioRole.role) {
+        showErrorMessage(
+          intl.formatMessage({
+            id: "events.page.display.error.noRole",
+            defaultMessage: "User's role not found in scenario.",
+          }),
+        );
       }
     }
-  }, [
-    loading,
-    event,
-    scenario,
-    assignedRole,
-    userScenarioRole,
-    roleError,
-    intl,
-  ]);
+  }, [loading, event, scenario, assignedRole, userScenarioRole, intl]);
 
   return {
     event,
@@ -85,7 +77,6 @@ const useUserEventData = (id: IEvent["id"]) => {
     userScenarioRole,
     userRole,
     loading,
-    error: roleError,
   };
 };
 

@@ -5,14 +5,14 @@ import { FormattedMessage, useIntl } from "react-intl";
 import useEventAndScenario from "@/hooks/event/use-event";
 import LoadingOverlay from "@/components/common/loading-overlay";
 import { IEventPersisted, IEventStatus } from "@/types/event.types";
-import { IScenarioPersisted } from "@/types/scenario.types";
+import { IScenarioDetailedPersisted } from "@/types/scenario.types";
 
 interface EventPageWrapperProps {
   params: any;
   expectedStatus: IEventStatus;
   children: (data: {
     event: IEventPersisted;
-    scenario: IScenarioPersisted;
+    scenario: IScenarioDetailedPersisted;
   }) => React.ReactNode;
 }
 

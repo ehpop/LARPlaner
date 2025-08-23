@@ -18,6 +18,12 @@ module.exports = {
         "custom-light-gradient": "linear-gradient(0deg, #fafafa, #f4f4f4)",
         "custom-dark-gradient": "linear-gradient(0deg, #000000, #080808)",
       },
+      screens: {
+        xs: "480px",
+        "2xs": "320px",
+        "3xs": "240px",
+        "4xs": "160px",
+      },
     },
   },
   darkMode: "class",

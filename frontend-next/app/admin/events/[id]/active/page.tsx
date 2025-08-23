@@ -1,14 +1,20 @@
 "use client";
 
 import { FormattedMessage, useIntl } from "react-intl";
-import { Link } from "@heroui/link";
-import { Button, Card, CardFooter, useDisclosure } from "@heroui/react";
-import { CardBody, CardHeader } from "@heroui/card";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Link,
+  useDisclosure,
+} from "@heroui/react";
 import React from "react";
 import { useRouter } from "next/navigation";
 
 import { IEventPersisted } from "@/types/event.types";
-import { IScenarioPersisted } from "@/types/scenario.types";
+import { IScenarioDetailedPersisted } from "@/types/scenario.types";
 import {
   showErrorToastWithTimeout,
   showSuccessToastWithTimeout,
@@ -33,7 +39,7 @@ const ActiveEventContent = ({
   scenario,
 }: {
   event: IEventPersisted;
-  scenario: IScenarioPersisted;
+  scenario: IScenarioDetailedPersisted;
 }) => {
   const intl = useIntl();
   const router = useRouter();
@@ -58,7 +64,7 @@ const ActiveEventContent = ({
             }),
           );
 
-          router.push(`/admin/events/${event.id}/hitoric`);
+          router.push(`/admin/events/${event.id}/historic`);
         },
         onError: (error) => {
           showErrorToastWithTimeout(getErrorMessage(error));
@@ -68,108 +74,136 @@ const ActiveEventContent = ({
   };
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <div className="w-full flex flex-row justify-between">
-            <p>
+    <div className="w-full flex flex-col items-center p-4 sm:p-6 lg:p-8">
+      <Card className="w-full max-w-3xl shadow-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+        <CardHeader className="border-b border-zinc-200 dark:border-zinc-800">
+          <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
               <FormattedMessage
-                defaultMessage="Event: {eventName}"
-                id="admin.events.id.active.page.eventName"
-                values={{ eventName: event.name }}
+                defaultMessage="Event Management"
+                id="admin.events.id.active.page.title"
               />
-            </p>
-            <div className="flex flex-row space-x-1">
-              <p>
+            </h1>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-zinc-500 dark:text-zinc-400">
                 <FormattedMessage
-                  defaultMessage="Status: "
+                  defaultMessage="Status:"
                   id="events.id.active.status"
                 />
-              </p>
-              <p className="text-success">{event.status}</p>
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 dark:bg-green-900/50 px-3 py-1 font-medium text-green-800 dark:text-green-300">
+                {event.status}
+              </span>
             </div>
           </div>
         </CardHeader>
-        <CardBody className="w-full items-center space-y-5">
-          <div className="w-3/5 flex flex-row justify-between items-center">
-            <p className="text-xl">{event.name}</p>
-            <Link href={`/admin/events/${event.id}`}>
-              <Button variant="bordered">
-                <FormattedMessage
-                  defaultMessage="Display event"
-                  id="admin.events.id.active.page.displayEvent"
-                />
-              </Button>
-            </Link>
-          </div>
-          <div className="w-3/5 flex flex-row justify-between items-center">
-            <p className="text-xl">{scenario.name}</p>
-            <Link href={`/admin/scenarios/${scenario.id}`}>
-              <Button variant="bordered">
-                <FormattedMessage
-                  defaultMessage="Display scenario"
-                  id="admin.events.id.active.page.displayScenario"
-                />
-              </Button>
-            </Link>
-          </div>
-          <div className="w-3/5 flex flex-row justify-between items-center">
-            <p className="text-xl">
-              <FormattedMessage
-                defaultMessage="Characters in game:"
-                id="admin.events.id.active.page.charactersInGame"
-              />
-            </p>
-            <p className="text-xl">{scenario.roles.length}</p>
+
+        <CardBody className="space-y-6 p-6">
+          {/* Event Details Section */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+              <FormattedMessage defaultMessage="Details" id="global.details" />
+            </h2>
+            <div className="divide-y divide-zinc-200 dark:divide-zinc-800 border-y border-zinc-200 dark:border-zinc-800">
+              <div className="flex justify-between items-center p-3">
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  {event.name}
+                </span>
+                <Button
+                  as={Link}
+                  href={`/admin/events/${event.id}`}
+                  size="sm"
+                  variant="bordered"
+                >
+                  <FormattedMessage
+                    defaultMessage="Display event"
+                    id="admin.events.id.active.page.displayEvent"
+                  />
+                </Button>
+              </div>
+              <div className="flex justify-between items-center p-3">
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  {scenario.name}
+                </span>
+                <Button
+                  as={Link}
+                  href={`/admin/scenarios/${scenario.id}`}
+                  size="sm"
+                  variant="bordered"
+                >
+                  <FormattedMessage
+                    defaultMessage="Display scenario"
+                    id="admin.events.id.active.page.displayScenario"
+                  />
+                </Button>
+              </div>
+              <div className="flex justify-between items-center p-3">
+                <span className="text-zinc-600 dark:text-zinc-400">
+                  <FormattedMessage
+                    defaultMessage="Characters in game:"
+                    id="admin.events.id.active.page.charactersInGame"
+                  />
+                </span>
+                <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                  {scenario.roles.length}
+                </span>
+              </div>
+            </div>
           </div>
         </CardBody>
-        <CardFooter className="mt-5 flex flex-row justify-between">
+
+        <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 border-t border-zinc-200 dark:border-zinc-800">
           <Button
             color="danger"
             isDisabled={event.status === "historic"}
             isLoading={updateEventStatus.isPending}
             variant="bordered"
-            onPress={() => onOpenArchive()}
+            onPress={onOpenArchive}
           >
             <FormattedMessage
               defaultMessage="Archive event"
               id="admin.events.id.active.page.archiveEvent"
             />
           </Button>
-          <div className="flex flex-row space-x-1">
-            <Link href={`/admin/events/${event.id}/active/chats`}>
-              <Button variant="bordered">
-                <FormattedMessage
-                  defaultMessage="Go to chats"
-                  id="admin.events.id.active.page.chats"
-                />
-              </Button>
-            </Link>
-            <Link href={`/admin/game/${event.gameSessionId}`}>
-              <Button color="primary" variant="bordered">
-                <FormattedMessage
-                  defaultMessage="Go to game page"
-                  id="admin.events.id.active.page.goToGame"
-                />
-              </Button>
-            </Link>
+          <div className="flex items-center gap-3">
+            <Button
+              as={Link}
+              href={`/admin/events/${event.id}/active/chats`}
+              variant="light"
+            >
+              <FormattedMessage
+                defaultMessage="Go to chats"
+                id="admin.events.id.active.page.chats"
+              />
+            </Button>
+            <Button
+              as={Link}
+              color="primary"
+              href={`/admin/game/${event.gameSessionId}`}
+            >
+              <FormattedMessage
+                defaultMessage="Go to game page"
+                id="admin.events.id.active.page.goToGame"
+              />
+            </Button>
           </div>
         </CardFooter>
-        <ConfirmActionModal
-          handleOnConfirm={() => handleArchiveEvent()}
-          isOpen={isOpenArchive}
-          prompt={intl.formatMessage({
-            defaultMessage:
-              "Are you sure you want to archive this event? This action will stop the game and it can not be reversed.",
-            id: "admin.events.id.active.page.archiveEvent.prompt",
-          })}
-          title={intl.formatMessage({
-            defaultMessage: "Archive active event",
-            id: "admin.events.id.active.page.archiveEvent.title",
-          })}
-          onOpenChange={onOpenArchiveChange}
-        />
       </Card>
+
+      <ConfirmActionModal
+        handleOnConfirm={handleArchiveEvent}
+        isOpen={isOpenArchive}
+        prompt={intl.formatMessage({
+          defaultMessage:
+            "Are you sure you want to archive this event? This action will stop the game and it cannot be reversed.",
+          id: "admin.events.id.active.page.archiveEvent.prompt",
+        })}
+        title={intl.formatMessage({
+          defaultMessage: "Archive active event",
+          id: "admin.events.id.active.page.archiveEvent.title",
+        })}
+        onOpenChange={onOpenArchiveChange}
+      />
     </div>
   );
 };
