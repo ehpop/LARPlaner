@@ -78,7 +78,7 @@ export const AdminTableDisplay = ({
         {rows.map((row) => (
           <TableRow
             key={row.id}
-            className="cursor-pointer hover:dark:bg-stone-700 hover:bg-stone-300 hover:shadow-md transition-all"
+            className="cursor-pointer hover:dark:bg-zinc-700 hover:bg-zinc-300 hover:shadow-md transition-all"
             onClick={() => {
               if (onRowClick !== undefined) {
                 onRowClick(row);

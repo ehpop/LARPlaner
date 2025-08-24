@@ -11,189 +11,221 @@ import {
   where,
 } from "@firebase/firestore";
 import { User } from "@firebase/auth";
-import { Input, Select, SelectItem } from "@heroui/react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Input,
+  Select,
+  SelectItem,
+  Spinner,
+} from "@heroui/react";
+import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/outline";
 
 import { useAuth } from "@/providers/firebase-provider";
 import { db } from "@/config/firebase";
-import LoadingOverlay from "@/components/common/loading-overlay";
 import ChatWindow, { IChat } from "@/components/events/chat/chat-window";
+import { IEventPersisted } from "@/types/event.types";
+import { useEvent } from "@/services/events/useEvents";
 
-const ActiveEventAdminChatsPage = ({ params }: any) => {
-  const resolvedParams = React.use(params) as { id: string };
-  const eventId = resolvedParams.id;
-  const auth = useAuth();
-  const intl = useIntl();
-
-  const [loading, setLoading] = useState(true);
+// Custom hook to encapsulate Firestore chat subscription
+const useEventChats = (eventId?: string) => {
   const [chats, setChats] = useState<IChat[]>([]);
-
-  const chatsRef = collection(db, "chats");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (auth.loading) return;
+    if (!eventId) {
+      setIsLoading(false);
+
+      return;
+    }
+
+    const chatsRef = collection(db, "chats");
+    const q = query(
+      chatsRef,
+      where("eventId", "==", eventId),
+      orderBy("lastUpdatedAt", "desc"),
+      limit(100),
+    );
 
     const unsubscribe = onSnapshot(
-      query(
-        chatsRef,
-        where("eventId", "==", eventId),
-        orderBy("lastUpdatedAt", "desc"),
-        limit(100),
-      ),
+      q,
       (snapshot) => {
         const newChats = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
-        }));
+        })) as IChat[];
 
         setChats(newChats);
-        setLoading(false);
+        setIsLoading(false);
+      },
+      (err) => {
+        console.error("Error fetching chats:", err);
+        setError(err);
+        setIsLoading(false);
       },
     );
 
     return () => unsubscribe();
-  }, [auth.loading, eventId]);
+  }, [eventId]);
+
+  return { chats, isLoading, error };
+};
+
+const ActiveEventAdminChatsPage = ({ params }: any) => {
+  const resolvedParams = React.use(params) as { id: string };
+  const eventId = resolvedParams.id;
+  const { user, loading: isAuthLoading } = useAuth();
+
+  const {
+    data: event,
+    isLoading: isEventLoading,
+    isError: isEventError,
+    error: eventError,
+  } = useEvent(eventId);
+
+  const {
+    chats,
+    isLoading: isChatsLoading,
+    error: chatsError,
+  } = useEventChats(event?.id);
+
+  const isLoading = isAuthLoading || isEventLoading || isChatsLoading;
+  const isError = isEventError || chatsError;
+  const errorMessage = eventError?.message || chatsError?.message;
 
   return (
-    <LoadingOverlay
-      isLoading={loading}
-      label={intl.formatMessage({
-        defaultMessage: "Loading chats...",
-        id: "admin.events.id.active.chats.loading",
-      })}
-    >
-      {chats && auth.user && (
-        <ChatDisplay chats={chats} currentUser={auth.user} eventId={eventId} />
+    <div className="w-full min-h-screen bg-zinc-50 dark:bg-zinc-950 p-4 sm:p-6 lg:p-8">
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <Spinner label="Loading chats..." />
+        </div>
+      ) : isError ? (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-red-600 dark:text-red-400">{errorMessage}</p>
+        </div>
+      ) : event && user ? (
+        <ChatDisplay chats={chats} currentUser={user} event={event} />
+      ) : (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-zinc-500 dark:text-zinc-400">
+            <FormattedMessage
+              defaultMessage="Could not load event data."
+              id="admin.events.id.active.chats.loadError"
+            />
+          </p>
+        </div>
       )}
-    </LoadingOverlay>
+    </div>
   );
 };
 
 const ChatDisplay = ({
   chats,
   currentUser,
-  eventId,
+  event,
 }: {
   chats: IChat[];
   currentUser: User;
-  eventId: string;
+  event: IEventPersisted;
 }) => {
   const intl = useIntl();
   const [filterText, setFilterText] = useState("");
   const [sortBy, setSortBy] = useState<string>("newest");
 
   const displayedChats = useMemo(() => {
-    let filtered = chats;
+    let filtered = filterText
+      ? chats.filter((chat) =>
+          chat.userData?.displayName
+            ?.toLowerCase()
+            .includes(filterText.toLowerCase()),
+        )
+      : chats;
 
-    if (filterText) {
-      const lowerCaseFilter = filterText.toLowerCase();
-
-      filtered = chats.filter((chat) => {
-        const partsOfUsername = chat.userData?.displayName
-          ?.toLowerCase()
-          .split(" ");
-
-        if (!partsOfUsername) return false;
-
-        return partsOfUsername.some((part) => part.startsWith(lowerCaseFilter));
-      });
-    }
-
-    let sorted = [...filtered];
     const getTime = (chat: IChat) => chat.lastUpdatedAt?.toMillis() ?? 0;
 
-    if (sortBy === "newest") {
-      sorted.sort((a, b) => getTime(b) - getTime(a));
-    } else if (sortBy === "oldest") {
-      sorted.sort((a, b) => getTime(a) - getTime(b));
-    }
-
-    return sorted;
+    return [...filtered].sort((a, b) =>
+      sortBy === "newest" ? getTime(b) - getTime(a) : getTime(a) - getTime(b),
+    );
   }, [chats, filterText, sortBy]);
 
   return (
-    <div className="w-full flex flex-col border rounded-lg shadow-sm p-4 md:p-6 bg-white dark:bg-stone-900">
-      <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-0">
-          <FormattedMessage
-            defaultMessage="Chats for Event {eventId}"
-            id="admin.events.id.active.chats.title"
-            values={{ eventId }}
-          />
-        </h2>
-        {chats.length > 0 && (
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <Input
-              className="max-w-xs"
-              placeholder={intl.formatMessage({
-                defaultMessage: "Filter chats...",
-                id: "admin.events.id.active.chats.filterPlaceholder",
-              })}
-              type="text"
-              value={filterText}
-              onChange={(e) => setFilterText(e.target.value)}
+    <Card className="w-full max-w-5xl mx-auto shadow-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+      <CardHeader className="border-b border-zinc-200 dark:border-zinc-800">
+        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4">
+          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+            <FormattedMessage
+              defaultMessage="Event Chats: {eventName}"
+              id="admin.events.id.active.chats.title"
+              values={{ eventName: event.name }}
             />
-            <Select
-              aria-label={intl.formatMessage({
-                defaultMessage: "Sort chats",
-                id: "admin.events.id.active.chats.sortLabel",
-              })}
-              className="w-full sm:w-[180px]"
-              placeholder={intl.formatMessage({
-                defaultMessage: "Sort by",
-                id: "admin.events.id.active.chats.sortByPlaceholder",
-              })}
-              selectedKeys={new Set([sortBy])}
-              onSelectionChange={(keys) => {
-                const selectedKey = Array.from(keys)[0];
-
-                if (selectedKey !== undefined) {
-                  setSortBy(String(selectedKey));
+          </h1>
+          {chats.length > 0 && (
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <Input
+                placeholder={intl.formatMessage({
+                  defaultMessage: "Filter by user...",
+                  id: "admin.events.id.active.chats.filterPlaceholder",
+                })}
+                value={filterText}
+                onChange={(e) => setFilterText(e.target.value)}
+              />
+              <Select
+                aria-label={intl.formatMessage({
+                  defaultMessage: "Sort chats",
+                  id: "admin.events.id.active.chats.sortLabel",
+                })}
+                className="w-full sm:w-full"
+                selectedKeys={new Set([sortBy])}
+                onSelectionChange={(keys) =>
+                  setSortBy(Array.from(keys)[0] as string)
                 }
-              }}
-            >
-              <SelectItem key="newest">
-                {intl.formatMessage({
-                  defaultMessage: "Newest First",
-                  id: "admin.events.id.active.chats.sortNewest",
-                })}
-              </SelectItem>
-              <SelectItem key="oldest">
-                {intl.formatMessage({
-                  defaultMessage: "Oldest First",
-                  id: "admin.events.id.active.chats.sortOldest",
-                })}
-              </SelectItem>
-            </Select>
-          </div>
-        )}
-      </div>
-
-      {displayedChats.length > 0 ? (
-        <div className="w-full space-y-4">
-          {displayedChats.map((chat) => (
-            <ChatWindow key={chat.id} chat={chat} currentUser={currentUser} />
-          ))}
-        </div>
-      ) : (
-        <div className="w-full flex justify-center items-center p-6 text-gray-500 dark:text-gray-400">
-          {filterText ? (
-            <p>
-              <FormattedMessage
-                defaultMessage="No chats match your filter."
-                id="admin.events.id.active.chats.noFilterMatch"
-              />
-            </p>
-          ) : (
-            <p>
-              <FormattedMessage
-                defaultMessage="No chats found for this event."
-                id="admin.events.id.active.chats.noChats"
-              />
-            </p>
+              >
+                <SelectItem key="newest">
+                  {intl.formatMessage({
+                    defaultMessage: "Newest First",
+                    id: "admin.events.id.active.chats.sortNewest",
+                  })}
+                </SelectItem>
+                <SelectItem key="oldest">
+                  {intl.formatMessage({
+                    defaultMessage: "Oldest First",
+                    id: "admin.events.id.active.chats.sortOldest",
+                  })}
+                </SelectItem>
+              </Select>
+            </div>
           )}
         </div>
-      )}
-    </div>
+      </CardHeader>
+      <CardBody className="p-4 sm:p-6">
+        {displayedChats.length > 0 ? (
+          <div className="w-full space-y-4">
+            {displayedChats.map((chat) => (
+              <ChatWindow key={chat.id} chat={chat} currentUser={currentUser} />
+            ))}
+          </div>
+        ) : (
+          <div className="w-full flex flex-col justify-center items-center text-center p-10 space-y-3">
+            <ChatBubbleOvalLeftEllipsisIcon className="h-12 w-12 text-zinc-400 dark:text-zinc-600" />
+            <p className="font-medium text-zinc-600 dark:text-zinc-400">
+              {filterText ? (
+                <FormattedMessage
+                  defaultMessage="No chats match your filter."
+                  id="admin.events.id.active.chats.noFilterMatch"
+                />
+              ) : (
+                <FormattedMessage
+                  defaultMessage="No chats found for this event yet."
+                  id="admin.events.id.active.chats.noChats"
+                />
+              )}
+            </p>
+          </div>
+        )}
+      </CardBody>
+    </Card>
   );
 };
 

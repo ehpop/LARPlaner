@@ -63,6 +63,16 @@ const UserGameHistory = ({ game }: { game: IGameSession }) => {
                 {error.message}
               </p>
             )}
+            {(!gameHistory || gameHistory.length === 0) && (
+              <div className="mt-5 mb-5">
+                <p className="text-center">
+                  <FormattedMessage
+                    defaultMessage="You haven't performed any actions yet"
+                    id="userGameHistory.empty"
+                  />
+                </p>
+              </div>
+            )}
             {gameHistory && (
               <div className="flex flex-col-reverse space-y-4 space-y-reverse">
                 {gameHistory.map((historyItem) => (

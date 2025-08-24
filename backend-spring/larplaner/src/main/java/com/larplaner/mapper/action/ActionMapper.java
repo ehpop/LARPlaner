@@ -13,10 +13,12 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ActionMapper {
 
   private final TagMapper tagMapper;
@@ -74,6 +76,7 @@ public class ActionMapper {
         .forbiddenTagsToDisplay(tagHelper.processTags(dto.getForbiddenTagsToDisplay()))
         .forbiddenTagsToSucceed(tagHelper.processTags(dto.getForbiddenTagsToSucceed()))
         .tagsToApplyOnFailure(tagHelper.processTags(dto.getTagsToApplyOnFailure()))
+        .tagsToApplyOnSuccess(tagHelper.processTags(dto.getTagsToApplyOnSuccess()))
         .tagsToRemoveOnSuccess(tagHelper.processTags(dto.getTagsToRemoveOnSuccess()))
         .tagsToRemoveOnFailure(tagHelper.processTags(dto.getTagsToRemoveOnFailure()))
         .build();

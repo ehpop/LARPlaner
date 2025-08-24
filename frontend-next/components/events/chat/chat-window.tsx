@@ -36,7 +36,7 @@ const ChatWindow = ({
   return (
     <Link
       aria-label={`Chat with ${chat.userData?.displayName}`}
-      className="block dark:hover:bg-stone-900 hover:bg-stone-300 hover:opacity-80 cursor-pointer"
+      className="block dark:hover:bg-zinc-950 hover:bg-zinc-300 hover:opacity-80 cursor-pointer"
       href={`/admin/events/${chat.eventId}/active/chats/${chat.id}`}
     >
       <div className="w-full max-w-full flex flex-row justify-start items-start border space-x-3 p-3">
@@ -61,14 +61,14 @@ const ChatWindow = ({
             <h2 className="text-lg font-bold truncate">
               {chat.userData?.displayName}
             </h2>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-zinc-500">
               {chat.lastUpdatedAt && getTimeOrDate(chat.lastUpdatedAt.toDate())}
             </span>
           </div>
 
           <div className="w-full flex items-center space-x-1">
             {currentUser.email === chat.lastMessage?.userEmail && (
-              <span className="text-gray-600">
+              <span className="text-zinc-600">
                 {intl.formatMessage({
                   defaultMessage: "You: ",
                   id: "admin.events.id.active.chats.you",

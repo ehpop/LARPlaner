@@ -81,7 +81,10 @@ const ActiveEventDisplay = ({
                 id="events.id.active.scenarioName"
                 values={{
                   scenarioName: (
-                    <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                    <span
+                      key={crypto.randomUUID()}
+                      className="font-medium text-zinc-800 dark:text-zinc-200"
+                    >
                       {scenario.name}
                     </span>
                   ),
@@ -130,7 +133,7 @@ const ActiveEventDisplay = ({
           <Button
             as={Link}
             href={`/user/events/${event.id}/active/chat`}
-            variant="light"
+            variant="bordered"
           >
             <FormattedMessage
               defaultMessage="Write to admins"

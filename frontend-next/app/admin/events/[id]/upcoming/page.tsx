@@ -153,7 +153,7 @@ const UpcomingEventAdminDisplay = ({
               <FormattedMessage defaultMessage="Details" id="global.details" />
             </h2>
             <div className="divide-y divide-zinc-200 dark:divide-zinc-800 border-y border-zinc-200 dark:border-zinc-800">
-              <div className="flex justify-between items-center p-3">
+              <div className="flex flex-col xs:flex-row justify-between items-center p-3">
                 <span className="text-zinc-600 dark:text-zinc-400">
                   {event.name}
                 </span>
@@ -169,7 +169,7 @@ const UpcomingEventAdminDisplay = ({
                   />
                 </Button>
               </div>
-              <div className="flex justify-between items-center p-3">
+              <div className="flex flex-col xs:flex-row justify-between items-center p-3">
                 <span className="text-zinc-600 dark:text-zinc-400">
                   {scenario.name}
                 </span>
@@ -205,9 +205,9 @@ const UpcomingEventAdminDisplay = ({
                 return (
                   <div
                     key={scenarioRole.role.id}
-                    className="flex justify-between items-center p-3"
+                    className="flex flex-col sm:flex-row justify-between items-center p-1 sm:p-3"
                   >
-                    <p className="font-medium text-zinc-800 dark:text-zinc-200">
+                    <p className="text-xs sm:text-medium font-medium text-zinc-800 dark:text-zinc-200">
                       {scenarioRole.role.name}
                     </p>
                     <AssignedEmail
@@ -223,7 +223,7 @@ const UpcomingEventAdminDisplay = ({
           </div>
         </CardBody>
 
-        <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 border-t border-zinc-200 dark:border-zinc-800">
+        <CardFooter className="flex flex-col xs:flex-row justify-between items-center gap-4 p-4 border-t border-zinc-200 dark:border-zinc-800">
           <DownloadAllItemsQrCodes scenario={scenario} />
           <Tooltip
             content={intl.formatMessage({
@@ -265,7 +265,7 @@ const AssignedEmail = ({
   if (!email) {
     return (
       <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-        <span className="font-medium">
+        <span className="text-xs sm:text-medium font-medium">
           <FormattedMessage
             defaultMessage="Not assigned ❌"
             id="admin.events.id.upcoming.page.notAssigned"
@@ -280,7 +280,9 @@ const AssignedEmail = ({
       <Popover placement="top">
         <PopoverTrigger className="cursor-pointer">
           <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-            <span className="font-medium">{email}⚠️</span>
+            <span className="text-xs sm:text-medium font-medium">
+              {email}⚠️
+            </span>
           </div>
         </PopoverTrigger>
         <PopoverContent>
@@ -297,7 +299,7 @@ const AssignedEmail = ({
 
   return (
     <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-      <span className="font-medium">{email} ✅</span>
+      <span className="text-xs sm:text-medium font-medium">{email} ✅</span>
     </div>
   );
 };

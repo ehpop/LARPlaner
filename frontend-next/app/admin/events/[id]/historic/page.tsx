@@ -122,8 +122,8 @@ const HistoricEventAdminDisplay = ({
                     id="admin.events.id.historic.page.scenarioLabel"
                   />
                 </span>
-                <div className="flex items-center gap-4">
-                  <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <span className="text-center sm:text-left font-medium text-zinc-800 dark:text-zinc-200">
                     {scenario.name}
                   </span>
                   <Button
@@ -153,7 +153,7 @@ const HistoricEventAdminDisplay = ({
             </div>
           </div>
         </CardBody>
-        <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 border-t border-zinc-200 dark:border-zinc-800">
+        <CardFooter className="flex flex-col-reverse xs:flex-row justify-between items-center gap-4 p-4 border-t border-zinc-200 dark:border-zinc-800">
           <Button
             color="danger"
             isDisabled={isPending}
@@ -166,11 +166,11 @@ const HistoricEventAdminDisplay = ({
               id="admin.events.id.historic.page.deleteEvent"
             />
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col-reverse xs:flex-row items-center gap-3">
             <Button
               as={Link}
-              href={`/admin/events/${event.id}/historic/chats`}
-              variant="light"
+              href={`/admin/events/${event.id}/active/chats`}
+              variant="bordered"
             >
               <FormattedMessage
                 defaultMessage="Review Chats"

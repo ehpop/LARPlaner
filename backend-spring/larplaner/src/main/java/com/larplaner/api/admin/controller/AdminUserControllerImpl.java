@@ -1,5 +1,6 @@
 package com.larplaner.api.admin.controller;
 
+import com.google.firebase.auth.UserInfo;
 import com.larplaner.api.admin.AdminUserController;
 import com.larplaner.service.admin.firebase.UserLookupService;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +23,11 @@ public class AdminUserControllerImpl implements AdminUserController {
   public ResponseEntity<List<String>> getAllUserEmails() {
     List<String> emails = userLookupService.getAllUserEmails();
     return ResponseEntity.ok(emails);
+  }
+
+  @Override
+  public ResponseEntity<UserInfo> getUserInfoById(String uid) {
+    UserInfo userInfo = userLookupService.getUserInfoById(uid);
+    return ResponseEntity.ok(userInfo);
   }
 }

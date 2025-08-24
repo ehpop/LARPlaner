@@ -98,14 +98,14 @@ const ActiveEventContent = ({
           </div>
         </CardHeader>
 
-        <CardBody className="space-y-6 p-6">
+        <CardBody className="space-y-6 p-3 sm:p-6">
           {/* Event Details Section */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
               <FormattedMessage defaultMessage="Details" id="global.details" />
             </h2>
             <div className="divide-y divide-zinc-200 dark:divide-zinc-800 border-y border-zinc-200 dark:border-zinc-800">
-              <div className="flex justify-between items-center p-3">
+              <div className="flex flex-col xs:flex-row justify-between items-center p-3">
                 <span className="text-zinc-600 dark:text-zinc-400">
                   {event.name}
                 </span>
@@ -121,7 +121,7 @@ const ActiveEventContent = ({
                   />
                 </Button>
               </div>
-              <div className="flex justify-between items-center p-3">
+              <div className="flex flex-col xs:flex-row justify-between items-center p-3">
                 <span className="text-zinc-600 dark:text-zinc-400">
                   {scenario.name}
                 </span>
@@ -152,7 +152,7 @@ const ActiveEventContent = ({
           </div>
         </CardBody>
 
-        <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 border-t border-zinc-200 dark:border-zinc-800">
+        <CardFooter className="flex flex-col-reverse xs:flex-row justify-between items-center gap-4 p-4 border-t border-zinc-200 dark:border-zinc-800">
           <Button
             color="danger"
             isDisabled={event.status === "historic"}
@@ -165,11 +165,11 @@ const ActiveEventContent = ({
               id="admin.events.id.active.page.archiveEvent"
             />
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col-reverse xs:flex-row items-center gap-3">
             <Button
               as={Link}
               href={`/admin/events/${event.id}/active/chats`}
-              variant="light"
+              variant="bordered"
             >
               <FormattedMessage
                 defaultMessage="Go to chats"

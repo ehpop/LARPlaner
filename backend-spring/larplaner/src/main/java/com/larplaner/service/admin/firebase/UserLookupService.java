@@ -4,8 +4,11 @@ import com.google.firebase.auth.ExportedUserRecord;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.ListUsersPage;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserRecord;
 import com.larplaner.exception.firebase.UserEmailWasNotRegistered;
+import jakarta.persistence.EntityNotFoundException;
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +82,25 @@ public class UserLookupService {
     } catch (FirebaseAuthException e) {
       log.error("Error listing users from Firebase", e);
       throw new RuntimeException("Failed to retrieve users from Firebase.", e);
+    }
+  }
+
+  public UserInfo getUserInfoById(String uid) {
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    try {
+      UserRecord userRecord = auth.getUser(uid);
+      log.debug("Found user {} for uid: {}", userRecord, userRecord.getUid());
+
+      return userRecord;
+    } catch (FirebaseAuthException e) {
+      if (e.getErrorCode().name().equals("auth/user-not-found")) {
+        log.error("No user found for uid: {}", uid);
+        throw new EntityNotFoundException("No user found for uid: " + uid);
+      } else {
+        log.error("Error fetching user by uid {}: {}", uid, e.getMessage());
+        throw new RuntimeException(
+            String.format("Error fetching user by uid %s: %s", uid, e.getMessage()));
+      }
     }
   }
 }

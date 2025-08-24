@@ -135,7 +135,10 @@ const ActiveAdminGameDisplay = ({
                 id="events.id.active.eventName"
                 values={{
                   eventName: (
-                    <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                    <span
+                      key={crypto.randomUUID()}
+                      className="font-medium text-zinc-800 dark:text-zinc-200"
+                    >
                       {event.name}
                     </span>
                   ),
@@ -148,7 +151,10 @@ const ActiveAdminGameDisplay = ({
                 id="events.id.active.scenarioName"
                 values={{
                   scenarioName: (
-                    <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                    <span
+                      key={crypto.randomUUID()}
+                      className="font-medium text-zinc-800 dark:text-zinc-200"
+                    >
                       {scenario.name}
                     </span>
                   ),

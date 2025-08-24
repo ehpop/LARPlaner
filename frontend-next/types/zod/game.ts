@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { parseZonedDateTime } from "@internationalized/date";
 
 import { zonedDateTimeString } from "@/types/zod/zod-date-utils";
 import { AppliedTagSchema } from "@/types/zod/tag";
@@ -62,8 +61,5 @@ export const GameSessionApiResponseSchema = z.object({
 
 export const GameSessionSchema = GameSessionApiResponseSchema.extend({
   startTime: zonedDateTimeString,
-  endTime: z
-    .string()
-    .nullable()
-    .transform((v) => (v ? parseZonedDateTime(v) : null)),
+  endTime: zonedDateTimeString.nullable(),
 });

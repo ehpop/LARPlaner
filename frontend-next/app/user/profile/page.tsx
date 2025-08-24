@@ -131,7 +131,7 @@ const ProfilePage: FC = () => {
 
   return user ? (
     <div className="w-full flex flex-row justify-center">
-      <div className="w-11/12 lg:w-3/4 flex flex-col justify-center items-center space-y-4 p-4 dark:bg-stone-950 rounded-lg shadow-md">
+      <div className="w-11/12 lg:w-3/4 flex flex-col justify-center items-center space-y-4 p-4 dark:bg-zinc-950 rounded-lg shadow-md">
         <p className="text-lg font-bold">
           <FormattedMessage
             defaultMessage="Display Name"

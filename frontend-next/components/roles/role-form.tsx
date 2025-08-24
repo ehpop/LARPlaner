@@ -239,7 +239,7 @@ export default function RoleForm({ initialRole }: { initialRole?: IRole }) {
             titleElement={
               <p className="text-xl font-bold">
                 <FormattedMessage
-                  defaultMessage="Character's tags:"
+                  defaultMessage="Character's starting tags:"
                   id="role.id.page.display.tags"
                 />
               </p>

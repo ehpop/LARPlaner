@@ -476,7 +476,7 @@ function ActionsListForm({ basePath, isBeingEdited }: ActionsListFormProps) {
           role="dialog"
         >
           <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-xl w-full h-full sm:max-w-7xl sm:h-auto sm:max-h-[95vh] flex flex-col">
-            <div className="p-4 border-b border-gray-200 dark:border-zinc-700">
+            <div className="p-4 border-b border-zinc-200 dark:border-zinc-700">
               <h2 className="text-xl font-semibold">
                 {intl.formatMessage(messages.actionDetailsTitle)}
               </h2>
@@ -591,7 +591,7 @@ function ActionsListForm({ basePath, isBeingEdited }: ActionsListFormProps) {
                 </div>
               </div>
             )}
-            <div className="p-4 border-t border-gray-200 dark:border-zinc-700 flex justify-end">
+            <div className="p-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-end">
               <div className="space-x-3">
                 {isBeingEdited ? (
                   <>

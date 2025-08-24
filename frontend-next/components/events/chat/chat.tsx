@@ -29,6 +29,7 @@ import FormTextarea from "@/components/forms/form-textarea";
 import { IEventPersisted } from "@/types/event.types";
 import { IGameRoleStateSummary } from "@/types/game.types";
 import { IRolePersisted } from "@/types/roles.types";
+import { useUserInfo } from "@/services/admin/useUsers";
 
 const Chat = ({
   userRole,
@@ -52,6 +53,15 @@ const Chat = ({
   const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot | null>(
     null,
   );
+
+  const {
+    data: fetchedUserInfo,
+    error,
+    isError,
+    isLoading: isUserLoading,
+  } = useUserInfo(userGameRoleState?.assignedUserID);
+
+  const isLoading = isUserLoading || auth.loading;
 
   const messagesRef = collection(db, "messages");
 
@@ -114,7 +124,7 @@ const Chat = ({
   };
 
   useEffect(() => {
-    if (auth.loading) return;
+    if (isLoading) return;
 
     const fetchTotalMessageCount = async () => {
       const count = await getCountMessages();
@@ -145,7 +155,7 @@ const Chat = ({
     );
 
     return () => unsubscribe();
-  }, [auth.loading, event]);
+  }, [isLoading, event]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -193,6 +203,9 @@ const Chat = ({
     };
 
     await addDoc(messagesRef, newMessageDoc);
+
+    const userForThisChat = userGameRoleState ? fetchedUserInfo : auth.user;
+
     const newChatDoc: IChat =
       totalMessages === 0
         ? {
@@ -200,12 +213,12 @@ const Chat = ({
             lastMessage: newMessageDoc,
             lastUpdatedAt: serverTimestamp() as Timestamp,
             createdAt: serverTimestamp() as Timestamp,
-            chatImage: auth.user?.photoURL || "",
+            chatImage: userForThisChat?.photoURL || "",
             userData: {
-              displayName: auth.user?.displayName || "",
-              email: auth.user?.email || "",
-              photoURL: auth.user?.photoURL || "",
-              uid: auth.user?.uid || "",
+              displayName: userForThisChat?.displayName || "",
+              email: userForThisChat?.email || "",
+              photoURL: userForThisChat?.photoURL || "",
+              uid: userForThisChat?.uid || "",
             },
           }
         : {
@@ -255,6 +268,19 @@ const Chat = ({
     </form>
   );
 
+  if (isError || (userGameRoleState && !fetchedUserInfo))
+    return (
+      <div className="w-full flex justify-center p-6 text-center">
+        <p className="text-lg text-danger-600">
+          <FormattedMessage
+            defaultMessage="Cannot load user data. User you started chat with may not exist or his account was deleted. Error: {error}"
+            id="events.chat.page.cannotLoad"
+            values={{ error: error?.message }}
+          />
+        </p>
+      </div>
+    );
+
   return (
     <LoadingOverlay
       isLoading={loading}
@@ -284,7 +310,7 @@ const Chat = ({
             values={{ eventName: event.name, userRoleName: userRole.name }}
           />
         )}
-        <div className="h-full flex flex-col-reverse border p-3 space-y-3 overflow-y-auto rounded-small">
+        <div className="h-full flex flex-col-reverse border p-3 space-y-3 space-y-reverse overflow-y-auto rounded-small">
           <div ref={messagesEndRef} />
           {messages.map((message: any, index) => (
             <Message key={index} message={message} />

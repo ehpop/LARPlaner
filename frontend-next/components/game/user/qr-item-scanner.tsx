@@ -256,7 +256,7 @@ const ItemDisplay = ({
         <Button variant="bordered" onPress={onScanAgain}>
           <FormattedMessage
             defaultMessage="Scan Another Item"
-            id="scanner.scanAgain"
+            id="scanner.scanAnotherItem"
           />
         </Button>
       </div>

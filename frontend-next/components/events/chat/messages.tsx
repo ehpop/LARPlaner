@@ -58,7 +58,7 @@ const MessageContent = ({
             <Image
               alt={"user photo"}
               as={NextImage}
-              className="border-2 dark:border-stone-300 border-stone-800"
+              className="border-2 dark:border-zinc-300 border-zinc-800"
               fallbackSrc={"/images/user-fallback.png"}
               height="40"
               radius="full"
