@@ -22,4 +22,8 @@ export const siteConfigMessages = defineMessages({
     id: "nav.scan",
     defaultMessage: "Scan",
   },
+  navTags: {
+    id: "nav.tags",
+    defaultMessage: "Tags",
+  },
 });

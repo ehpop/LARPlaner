@@ -8,7 +8,7 @@ import {
 } from "@heroui/react";
 import { useIntl } from "react-intl";
 import { SortDescriptor } from "@react-types/shared";
-import { ReactNode } from "react";
+import { Key, ReactNode } from "react";
 
 type Column = {
   key: string;
@@ -28,6 +28,7 @@ export const AdminTableDisplay = ({
   classNames = {
     wrapper: "max-h-[60vh] min-h-[60vh]",
   },
+  renderCell,
 }: {
   columns: Column[];
   rows: any[];
@@ -38,6 +39,7 @@ export const AdminTableDisplay = ({
   onSortChange: (descriptor: SortDescriptor) => void;
   isCompact?: boolean;
   classNames?: { wrapper: string };
+  renderCell?: (row: any, columnKey: Key) => ReactNode;
 }) => {
   const intl = useIntl();
 
@@ -86,7 +88,11 @@ export const AdminTableDisplay = ({
             }}
           >
             {(columnKey) => (
-              <TableCell>{row[columnKey as keyof typeof row]}</TableCell>
+              <TableCell>
+                {renderCell
+                  ? renderCell(row, columnKey)
+                  : row[columnKey as keyof typeof row]}
+              </TableCell>
             )}
           </TableRow>
         ))}

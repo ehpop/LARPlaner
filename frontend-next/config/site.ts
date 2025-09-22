@@ -9,6 +9,7 @@ export const siteConfig = {
       { label: "nav.events", href: "/admin/events" },
       { label: "nav.scenarios", href: "/admin/scenarios" },
       { label: "nav.roles", href: "/admin/roles" },
+      { label: "nav.tags", href: "/admin/tags" },
     ],
     user: [
       { label: "nav.home", href: "/" },
@@ -21,6 +22,7 @@ export const siteConfig = {
       { label: "nav.events", href: "/admin/events" },
       { label: "nav.scenarios", href: "/admin/scenarios" },
       { label: "nav.roles", href: "/admin/roles" },
+      { label: "nav.tags", href: "/admin/tags" },
     ],
     user: [
       { label: "nav.home", href: "/" },
