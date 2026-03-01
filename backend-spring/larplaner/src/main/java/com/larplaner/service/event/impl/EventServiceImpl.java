@@ -3,6 +3,7 @@ package com.larplaner.service.event.impl;
 import com.larplaner.dto.event.EventRequestDTO;
 import com.larplaner.dto.event.EventResponseDTO;
 import com.larplaner.dto.event.EventUpdateRequestDTO;
+import com.larplaner.dto.event.assignedRole.AssignedRoleRequestDTO;
 import com.larplaner.dto.event.assignedRole.AssignedRoleUpdateRequestDTO;
 import com.larplaner.exception.EntityCouldNotBeAdded;
 import com.larplaner.exception.EntityCouldNotBeDeleted;
@@ -23,6 +24,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -63,10 +65,11 @@ public class EventServiceImpl implements EventService {
   @Override
   public EventResponseDTO createEvent(EventRequestDTO eventDTO) {
     Event event = eventMapper.toEntity(eventDTO);
-
-    eventDTO.getAssignedRoles().forEach(
-        assignedRoleRequestDTO -> event.addAssignedRoleToEvent(
-            assignedRoleMapper.toEntity(assignedRoleRequestDTO)));
+    List<AssignedRoleRequestDTO> assignedRoles = eventDTO.getAssignedRoles();
+    if(!Objects.isNull(assignedRoles)){
+      assignedRoles.forEach(assignedRoleRequestDTO -> event.addAssignedRoleToEvent(
+                      assignedRoleMapper.toEntity(assignedRoleRequestDTO)));
+    }
 
     return eventMapper.toDTO(eventRepository.save(event));
   }

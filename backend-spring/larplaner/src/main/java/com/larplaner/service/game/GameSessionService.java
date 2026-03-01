@@ -35,9 +35,9 @@ public interface GameSessionService {
 
   GameActionLogSummaryResponseDTO createGameHistory(GameActionLog gameActionLogDTO);
 
-  GameActionLogSummaryResponseDTO performAction(UUID id, GameActionRequestDTO actionRequestDTO);
+  GameActionLogSummaryResponseDTO performActionAndNotify(UUID id, GameActionRequestDTO actionRequestDTO, String userName);
 
-  GameSessionDetailedResponseDTO updateRoleState(UUID roleStateID,
+  GameSessionDetailedResponseDTO updateRoleStateAndNotify(UUID roleStateID,
       UpdateGameRoleStateRequestDTO requestDTO);
 
   List<ScenarioActionResponseDTO> getAvailableActionsForUser(UUID gameSessionRoleId);

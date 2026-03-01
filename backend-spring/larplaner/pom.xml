@@ -31,12 +31,8 @@
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <!-- Removed: <spring-boot.version>3.2.3</spring-boot.version>
-         The parent POM now dictates this. No need to override if it's the same. -->
-    <maven.compiler.source>17</maven.compiler.source> <!-- Can also use ${java.version} -->
-    <maven.compiler.target>17</maven.compiler.target> <!-- Can also use ${java.version} -->
-    <!-- Added: Define lombok.version. Spring Boot 3.2.3 manages 1.18.30 -->
-    <!-- You can let Spring Boot manage this by not specifying in annotationProcessorPaths OR look up the version managed by your Spring Boot parent -->
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <lombok.version>1.18.30</lombok.version>
   </properties>
   <dependencies>
@@ -75,7 +71,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <optional>true</optional> <!-- Version will be managed by spring-boot-starter-parent -->
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

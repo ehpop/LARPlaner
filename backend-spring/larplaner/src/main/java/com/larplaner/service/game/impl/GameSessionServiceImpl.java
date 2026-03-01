@@ -14,6 +14,7 @@ import com.larplaner.mapper.game.action.GameActionLogMapper;
 import com.larplaner.mapper.game.role.GameRoleStateMapper;
 import com.larplaner.mapper.scenario.ScenarioActionMapper;
 import com.larplaner.mapper.scenario.ScenarioItemActionMapper;
+import com.larplaner.mapper.tag.AppliedTagMapper;
 import com.larplaner.model.action.Action;
 import com.larplaner.model.event.Event;
 import com.larplaner.model.game.GameActionLog;
@@ -37,6 +38,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +46,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,6 +68,8 @@ public class GameSessionServiceImpl implements GameSessionService {
   private final ScenarioItemActionMapper scenarioItemActionMapper;
   private final GameItemStateRepository gameItemStateRepository;
   private final GameRoleStateMapper gameRoleStateMapper;
+  private final SimpMessagingTemplate messagingTemplate;
+  private final AppliedTagMapper appliedTagMapper;
 
   @Override
   public List<GameSessionDetailedResponseDTO> getAllGameSessions() {
@@ -203,7 +208,39 @@ public class GameSessionServiceImpl implements GameSessionService {
     return gameActionLogMapper.toDTO(gameActionLogRepository.save(gameActionLog));
   }
 
-  public GameActionLogSummaryResponseDTO performAction(UUID gameSessionId,
+  public GameActionLogSummaryResponseDTO performActionAndNotify(
+          UUID gameSessionId,
+          GameActionRequestDTO actionRequestDTO,
+          String userName) {
+
+    // 1. Perform the core logic (your existing logic)
+    GameActionLogSummaryResponseDTO actionResult = performAction(gameSessionId, actionRequestDTO);
+
+    // 2. Fetch the role state
+    var gameSessionRole = gameRoleStateRepository.findById(actionResult.getPerformerRoleId())
+            .orElseThrow(() -> new EntityNotFoundException("Role state not found"));
+
+    // 3. Process tags
+    var sortedTagsDTOs = gameSessionRole.getAppliedTags().stream()
+            .sorted(Comparator.comparing(AppliedTag::getAppliedToUserAt).reversed())
+            .map(appliedTagMapper::toDTO)
+            .toList();
+
+    // 4. Send notifications
+    messagingTemplate.convertAndSend(
+            String.format("/topic/game/%s/action", actionResult.getGameSessionId()),
+            "User performed action"
+    );
+
+    messagingTemplate.convertAndSend(
+            String.format("/topic/game/%s/action/byUserId/%s", actionResult.getGameSessionId(), userName),
+            sortedTagsDTOs
+    );
+
+    return actionResult;
+  }
+
+  private GameActionLogSummaryResponseDTO performAction(UUID gameSessionId,
       GameActionRequestDTO gameActionRequestDTO) {
     var game = gameSessionRepository.findById(gameSessionId)
         .orElseThrow(EntityNotFoundException::new);
@@ -303,7 +340,7 @@ public class GameSessionServiceImpl implements GameSessionService {
         .anyMatch(actionToPerform.getForbiddenTagsToSucceed()::contains);
   }
 
-  public GameSessionDetailedResponseDTO updateRoleState(UUID roleStateID,
+  public GameSessionDetailedResponseDTO updateRoleStateAndNotify(UUID roleStateID,
       UpdateGameRoleStateRequestDTO requestDTO) {
     var userRole = gameRoleStateRepository.findById(roleStateID)
         .orElseThrow(EntityNotFoundException::new);
@@ -327,8 +364,16 @@ public class GameSessionServiceImpl implements GameSessionService {
     userRole.getAppliedTags().addAll(tagsToAdd);
     userRole.getAppliedTags().removeAll(tagsToRemove);
 
+    GameSession updatedGameSession = gameRoleStateRepository.save(userRole).getGameSession();
+    var gameSessionRole = gameRoleStateRepository.findById(roleStateID).orElseThrow(
+              EntityNotFoundException::new);
+
+    messagingTemplate.convertAndSendToUser(gameSessionRole.getAssignedUserID(),
+              "/topic/game/role",
+              "Admin modified role");
+
     return gameSessionMapper.toDetailedDTO(
-        gameRoleStateRepository.save(userRole).getGameSession()
+            updatedGameSession
     );
   }
 
