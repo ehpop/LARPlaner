@@ -1,10 +1,7 @@
 package com.larplaner.config.dev;
 
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
-
+import com.larplaner.config.FirebaseAuthParser;
 import com.larplaner.security.FirebaseTokenFilter;
-import java.util.Arrays;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,20 +18,25 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @Slf4j
-@Profile({"!prod"})
+@Profile({"dev", "dev-neondb", "loadtest"})
 public class DevelopmentSecurityConfig {
 
   @Bean
-  public FirebaseTokenFilter firebaseTokenFilter() {
-    return new FirebaseTokenFilter();
+  public FirebaseTokenFilter firebaseTokenFilter(FirebaseAuthParser firebaseAuthParser) {
+    return new FirebaseTokenFilter(firebaseAuthParser);
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, FirebaseAuthParser firebaseAuthParser) throws Exception {
     http
         // Disable CSRF for stateless APIs
         .csrf(AbstractHttpConfigurer::disable)
@@ -58,7 +60,7 @@ public class DevelopmentSecurityConfig {
         )
         // Allow frames for H2 console
         .headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin))
-        .addFilterBefore(firebaseTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(firebaseTokenFilter(firebaseAuthParser), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

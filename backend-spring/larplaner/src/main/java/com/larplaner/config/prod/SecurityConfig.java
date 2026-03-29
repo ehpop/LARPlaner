@@ -1,8 +1,8 @@
 package com.larplaner.config.prod;
 
+import com.larplaner.config.FirebaseAuthParser;
 import com.larplaner.security.FirebaseTokenFilter;
-import java.util.Arrays;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +18,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+import java.util.List;
+
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -25,10 +29,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Profile({"prod"})
 public class SecurityConfig {
 
-  @Bean
-  public FirebaseTokenFilter firebaseTokenFilter() {
-    return new FirebaseTokenFilter();
-  }
+  private final FirebaseAuthParser authParser;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -55,7 +56,7 @@ public class SecurityConfig {
             // Fallback: any other request must be authenticated
             .anyRequest().authenticated()
         )
-        .addFilterBefore(firebaseTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(new FirebaseTokenFilter(authParser), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

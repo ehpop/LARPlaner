@@ -76,8 +76,7 @@ public class GameSessionControllerImpl implements GameSessionController {
 
     @Override
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or @securityService.isUserAssignedToGameSession(#gameId)")
-    public ResponseEntity<List<GameActionLogSummaryResponseDTO>> getUserGameHistoryByGameId(
-            UUID gameId) {
+    public ResponseEntity<List<GameActionLogSummaryResponseDTO>> getUserGameHistoryByGameId(UUID gameId) {
         return ResponseEntity.ok(gameSessionService.getUserGameHistoryByGameId(gameId));
     }
 

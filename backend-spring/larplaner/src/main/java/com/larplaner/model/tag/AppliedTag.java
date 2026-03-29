@@ -6,15 +6,15 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.ZonedDateTime;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.ZonedDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "applied_tag")
@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @SuperBuilder
 @Getter
 @Setter
-@ToString
 @Slf4j
 public class AppliedTag extends BaseEntity {
 

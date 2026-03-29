@@ -35,6 +35,12 @@ import com.larplaner.service.admin.security.SecurityService;
 import com.larplaner.service.game.GameSessionService;
 import com.larplaner.service.tag.helper.TagHelper;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,11 +50,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -213,20 +214,16 @@ public class GameSessionServiceImpl implements GameSessionService {
           GameActionRequestDTO actionRequestDTO,
           String userName) {
 
-    // 1. Perform the core logic (your existing logic)
     GameActionLogSummaryResponseDTO actionResult = performAction(gameSessionId, actionRequestDTO);
 
-    // 2. Fetch the role state
     var gameSessionRole = gameRoleStateRepository.findById(actionResult.getPerformerRoleId())
             .orElseThrow(() -> new EntityNotFoundException("Role state not found"));
 
-    // 3. Process tags
     var sortedTagsDTOs = gameSessionRole.getAppliedTags().stream()
             .sorted(Comparator.comparing(AppliedTag::getAppliedToUserAt).reversed())
             .map(appliedTagMapper::toDTO)
             .toList();
 
-    // 4. Send notifications
     messagingTemplate.convertAndSend(
             String.format("/topic/game/%s/action", actionResult.getGameSessionId()),
             "User performed action"
@@ -240,8 +237,7 @@ public class GameSessionServiceImpl implements GameSessionService {
     return actionResult;
   }
 
-  private GameActionLogSummaryResponseDTO performAction(UUID gameSessionId,
-      GameActionRequestDTO gameActionRequestDTO) {
+  private GameActionLogSummaryResponseDTO performAction(UUID gameSessionId, GameActionRequestDTO gameActionRequestDTO) {
     var game = gameSessionRepository.findById(gameSessionId)
         .orElseThrow(EntityNotFoundException::new);
 

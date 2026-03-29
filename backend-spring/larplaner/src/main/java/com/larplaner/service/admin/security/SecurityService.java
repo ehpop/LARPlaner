@@ -14,15 +14,16 @@ import com.larplaner.repository.role.RoleRepository;
 import com.larplaner.repository.scenario.ScenarioRepository;
 import com.larplaner.security.FirebaseAuthenticationToken;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -71,7 +72,6 @@ public class SecurityService {
             .collect(Collectors.toSet())
             .contains(role));
   }
-
 
   public boolean isUserAssignedToScenario(UUID scenarioId) {
     Scenario scenario = scenarioRepository.findById(scenarioId)
