@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -20,8 +19,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @Configuration
 @EnableWebSecurity
@@ -48,7 +45,7 @@ public class DevelopmentSecurityConfig {
         // Apply authorization rules
         .authorizeHttpRequests(auth -> auth
             // --- Public endpoints ---
-            .requestMatchers(toH2Console()).permitAll()
+//            .requestMatchers(toH2Console()).permitAll()
             .requestMatchers("/", "/index.html", "/swagger-ui/**", "/v3/api-docs/**",
                 "/swagger-ui.html").permitAll()
             // --- WS Authorization Rules ---
@@ -59,7 +56,7 @@ public class DevelopmentSecurityConfig {
             .anyRequest().authenticated()
         )
         // Allow frames for H2 console
-        .headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin))
+//        .headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin))
         .addFilterBefore(firebaseTokenFilter(firebaseAuthParser), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
