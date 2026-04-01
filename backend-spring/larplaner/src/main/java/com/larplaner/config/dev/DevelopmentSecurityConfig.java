@@ -24,7 +24,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @Slf4j
-@Profile({"dev", "dev-neondb", "loadtest"})
+@Profile({"dev", "dev-neondb"})
 public class DevelopmentSecurityConfig {
 
   @Bean
