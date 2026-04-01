@@ -15,7 +15,7 @@ ARG JAR_FILE=target/*.jar
 
 COPY --from=builder /app/${JAR_FILE} app.jar
 
-ENV SPRING_PROFILES_ACTIVE=prod
+ENV SPRING_PROFILES_ACTIVE=loadtest
 
 EXPOSE 8080
 
