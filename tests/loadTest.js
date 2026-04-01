@@ -69,71 +69,87 @@ function generateScenarioTemplate(userCount) {
 export function setup() {
     console.log("--- Starting Setup Phase ---");
 
+    // 1. Generate a single unique suffix for this setup run to avoid collisions
+    // Uses current time + a random alphanumeric string (e.g., "lq4f9x-3ab")
+    const runSuffix = Date.now().toString(36) + "-" + Math.random().toString(36).substring(2, 6);
+
     let scenarioObj = generateScenarioTemplate(USER_COUNT);
     let scenarioStr = JSON.stringify(scenarioObj);
 
-    // Extract Placeholders
+    // 2. Extract Placeholders
     let matches = scenarioStr.match(/\{\{([^}]+)\}\}/g) || [];
     let uniquePlaceholders =[...new Set(matches)];
     let identifiers = uniquePlaceholders.map(p => p.replace('{{', '').replace('}}', ''));
 
-    // Create Tags in Bulk
+    // 3. Create Tags in Bulk (with globally unique values)
     console.log(`[Setup] Creating ${identifiers.length} tags...`);
     let tagPayloads = identifiers.map(identifier => {
-        let value = identifier.replace("tagId_", "").replace("roleId_", "");
-        let isUnique = value.startsWith("Clue_") || value.startsWith("Event_") || identifier.startsWith("roleId_");
-        return { value: value, isUnique: isUnique, expiresAfterMinutes: 0 };
+        let baseValue = identifier.replace("tagId_", "").replace("roleId_", "");
+        let uniqueValue = `${baseValue}_${runSuffix}`; // Append unique suffix safely
+        let isUnique = baseValue.startsWith("Clue_") || baseValue.startsWith("Event_") || identifier.startsWith("roleId_");
+
+        return { value: uniqueValue, isUnique: isUnique, expiresAfterMinutes: 0 };
     });
 
     let tagsRes = http.post(`${BASE_URL}/tags`, JSON.stringify(tagPayloads), { headers: adminHeaders });
     if (tagsRes.status !== 201) throw new Error(`Tag creation failed: ${tagsRes.body}`);
-    
+
     let createdTags = tagsRes.json();
     let idMap = {};
 
     identifiers.forEach(identifier => {
-        let tagValue = identifier.replace("tagId_", "").replace("roleId_", "");
-        let tagObj = createdTags.find(t => t.value === tagValue);
-        if (tagObj) idMap[`{{${identifier}}}`] = tagObj.id;
+        let baseValue = identifier.replace("tagId_", "").replace("roleId_", "");
+        let uniqueValue = `${baseValue}_${runSuffix}`;
+
+        // FIXED: Use EXACT match (===), not .startsWith(), to prevent Player1 from matching Player10!
+        let tagObj = createdTags.find(t => t.value === uniqueValue);
+        if (tagObj) {
+            idMap[`{{${identifier}}}`] = tagObj.id; // Map full placeholder -> Tag ID
+        } else {
+            console.error(`[Setup] Critical Error: Tag not found for value ${uniqueValue}`);
+        }
     });
 
-    // Create Roles
+    // 4. Create Roles (with globally unique names)
     console.log(`[Setup] Creating ${USER_COUNT} base roles...`);
     scenarioObj.roles.forEach(role => {
-        let placeholder = role.roleId;
+        let placeholder = role.roleId; // e.g., "{{roleId_Player1}}"
+        let roleName = placeholder.replace("{{roleId_", "").replace("}}", "");
+
         let rolePayload = {
-            name: placeholder.replace("{{roleId_", "").replace("}}", ""),
+            name: `${roleName}_${runSuffix}`, // Globally unique role name
             description: role.descriptionForGM,
-            tags: [idMap[placeholder]]
+            tags: [idMap[placeholder]] // FIXED: Use exact placeholder to get the Tag ID safely
         };
 
         let roleRes = http.post(`${BASE_URL}/roles`, JSON.stringify(rolePayload), { headers: adminHeaders });
         if (roleRes.status !== 201) throw new Error(`Role creation failed: ${roleRes.body}`);
-        
-        idMap[placeholder] = roleRes.json().id; 
+
+        // FIXED: Overwrite the Tag ID with the actual Role ID for final scenario replacement!
+        idMap[placeholder] = roleRes.json().id;
     });
 
-    // Replace Placeholders & Post Final Scenario
+    // 5. Replace Placeholders & Post Final Scenario
     console.log("[Setup] Posting final Scenario...");
-    for (let[placeholder, realId] of Object.entries(idMap)) {
+    for (let [placeholder, realId] of Object.entries(idMap)) {
         scenarioStr = scenarioStr.split(placeholder).join(realId);
     }
-    
+
     let scenarioRes = http.post(`${BASE_URL}/scenarios`, scenarioStr, { headers: adminHeaders });
     if (scenarioRes.status !== 201) throw new Error(`Scenario creation failed: ${scenarioRes.body}`);
-    
+
     let createdScenario = scenarioRes.json();
     let scenarioId    = createdScenario.id;
-    let itemId        = createdScenario.items && createdScenario.items.length > 0 ? createdScenario.items[0].id : null; 
-    let returnedRoles = createdScenario.roles; 
+    let itemId        = createdScenario.items && createdScenario.items.length > 0 ? createdScenario.items[0].id : null;
+    let returnedRoles = createdScenario.roles;
 
     if (!itemId) throw new Error("Backend did not return any items in the Scenario response!");
     if (!returnedRoles || returnedRoles.length === 0) throw new Error("Backend did not return generated roles in the Scenario response!");
 
-    // Create Event & Assign Users
+    // 6. Create Event & Assign Users
     console.log("[Setup] Creating Event and assigning users...");
     const assignedRoles = returnedRoles.map((roleObj, index) => ({
-        scenarioRoleId: roleObj.id, 
+        scenarioRoleId: roleObj.id,
         assignedEmail: `user-${index + 1}@loadtest.local`
     }));
 
