@@ -1,6 +1,7 @@
 package com.larplaner.security;
 
 import com.larplaner.config.FirebaseAuthParser;
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,9 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
+        if(StringUtils.isEmpty(header)){
+            header = request.getHeader("X-Mock-Token");
+        }
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
