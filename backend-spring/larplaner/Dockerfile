@@ -8,6 +8,7 @@ COPY src ./src
 RUN mvn clean install -DskipTests
 
 
+# THE FIX: Changed from 17-jre-jammy to 17-jdk-jammy
 FROM eclipse-temurin:17-jdk-jammy AS prod
 WORKDIR /app
 
@@ -20,9 +21,6 @@ ENV SPRING_PROFILES_ACTIVE=loadtest
 EXPOSE 8080
 
 RUN addgroup --system spring && adduser --system --ingroup spring spring
-# Accoring to docs this should be set to access secure files,
-# but it doesn't seem to work so it is disabled for now
-# RUN usermod -a -G 1000 spring
 USER spring:spring
 
-ENTRYPOINT["java","-jar","app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
