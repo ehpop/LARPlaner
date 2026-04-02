@@ -8,7 +8,7 @@ COPY src ./src
 RUN mvn clean install -DskipTests
 
 
-FROM eclipse-temurin:17-jre-jammy AS prod
+FROM eclipse-temurin:17-jdk-jammy AS prod
 WORKDIR /app
 
 ARG JAR_FILE=target/*.jar
@@ -25,4 +25,4 @@ RUN addgroup --system spring && adduser --system --ingroup spring spring
 # RUN usermod -a -G 1000 spring
 USER spring:spring
 
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT["java","-jar","app.jar"]
