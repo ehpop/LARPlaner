@@ -3,6 +3,7 @@ package com.larplaner.config.loadtest;
 import com.google.firebase.auth.FirebaseToken;
 import com.larplaner.config.FirebaseAuthParser;
 import com.larplaner.security.FirebaseAuthenticationToken;
+import lombok.extern.slf4j.Slf4j;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
@@ -15,12 +16,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @Profile("loadtest")
 public class LoadtestFirebaseAuthParser implements FirebaseAuthParser {
 
     @Override
     public Authentication getAuthentication(String idToken) {
+        log.warn("===============Loadtest Auth parser================");
+        log.warn("idToken = {}", idToken);
+
         FirebaseToken mockToken = Mockito.mock(FirebaseToken.class);
         Mockito.when(mockToken.getUid()).thenReturn(idToken);
         Mockito.when(mockToken.getEmail()).thenReturn(idToken + "@loadtest.local");
@@ -37,6 +42,11 @@ public class LoadtestFirebaseAuthParser implements FirebaseAuthParser {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
 
+        log.warn("mockToken = {}", mockToken);
+        log.warn("claims = {}", claims);
+        log.warn("authorities = {}", authorities);
+
+        log.warn("===============Loadtest Auth parser================");
         return new FirebaseAuthenticationToken(mockToken, authorities);
     }
 }
