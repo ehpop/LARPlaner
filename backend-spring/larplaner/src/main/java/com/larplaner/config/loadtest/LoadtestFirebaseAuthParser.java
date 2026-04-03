@@ -23,9 +23,6 @@ public class LoadtestFirebaseAuthParser implements FirebaseAuthParser {
 
     @Override
     public Authentication getAuthentication(String idToken) {
-        log.warn("===============Loadtest Auth parser================");
-        log.warn("idToken = {}", idToken);
-
         FirebaseToken mockToken = Mockito.mock(FirebaseToken.class);
         Mockito.when(mockToken.getUid()).thenReturn(idToken);
         Mockito.when(mockToken.getEmail()).thenReturn(idToken + "@loadtest.local");
@@ -42,11 +39,6 @@ public class LoadtestFirebaseAuthParser implements FirebaseAuthParser {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
 
-        log.warn("mockToken = {}", mockToken);
-        log.warn("claims = {}", claims);
-        log.warn("authorities = {}", authorities);
-
-        log.warn("===============Loadtest Auth parser================");
         return new FirebaseAuthenticationToken(mockToken, authorities);
     }
 }

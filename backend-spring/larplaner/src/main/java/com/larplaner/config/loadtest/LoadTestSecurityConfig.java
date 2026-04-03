@@ -20,7 +20,7 @@ import java.util.List;
 
 @Slf4j
 @Configuration
-@Profile("loadtest")
+@Profile("loadtest-neondb")
 public class LoadTestSecurityConfig {
 
     @Bean

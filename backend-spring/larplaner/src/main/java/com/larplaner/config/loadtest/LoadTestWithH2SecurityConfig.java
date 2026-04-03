@@ -1,0 +1,85 @@
+package com.larplaner.config.loadtest;
+
+import com.larplaner.config.FirebaseAuthParser;
+import com.larplaner.security.FirebaseTokenFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+
+@Configuration
+@Profile("loadtest-h2")
+public class LoadTestWithH2SecurityConfig {
+
+    @Bean
+    public FirebaseTokenFilter firebaseTokenFilter(FirebaseAuthParser firebaseAuthParser) {
+        return new FirebaseTokenFilter(firebaseAuthParser);
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, FirebaseAuthParser firebaseAuthParser) throws Exception {
+        http
+                // Disable CSRF for stateless APIs
+                .csrf(AbstractHttpConfigurer::disable)
+                // Configure CORS
+                .cors(customizer -> customizer.configurationSource(corsConfigurationSource()))
+                // Make session management stateless
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Apply authorization rules
+                .authorizeHttpRequests(auth -> auth
+                        // --- Public endpoints ---
+                        .requestMatchers(toH2Console()).permitAll()
+                        .requestMatchers("/", "/index.html", "/swagger-ui/**", "/v3/api-docs/**",
+                                "/swagger-ui.html").permitAll()
+                        // --- WS Authorization Rules ---
+                        .requestMatchers("/ws/**").permitAll()
+                        // --- API Authorization Rules ---
+                        .requestMatchers("/api/**").authenticated()
+                        // Fallback: any other request must be authenticated
+                        .anyRequest().authenticated()
+                )
+                // Allow frames for H2 console
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .addFilterBefore(firebaseTokenFilter(firebaseAuthParser), UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(List.of("http://localhost:9000"));
+
+        configuration.setAllowedMethods(
+                Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+
+        configuration.setAllowedHeaders(
+                Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept"));
+
+        configuration.setAllowCredentials(true);
+
+        // configuration.setExposedHeaders(List.of("Authorization"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**",
+                configuration); // Apply this configuration to all endpoints
+
+        return source;
+    }
+}
+

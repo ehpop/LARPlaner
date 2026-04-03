@@ -1,13 +1,17 @@
 import http from "k6/http";
 import { check, sleep } from "k6";
 import exec from "k6/execution";
+import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
 
 export const options = {
     insecureSkipTLSVerify: true,
     stages:[
-        { duration: '30s', target: 20 },
-        { duration: '2m',  target: 20 },
-        { duration: '30s', target: 0 },
+        // { duration: '30s', target: 20 },
+        // { duration: '2m',  target: 20 },
+        // { duration: '30s', target: 0 },
+        { duration: '1s', target: 20 },
+        { duration: '10s',  target: 20 },
+        { duration: '1s', target: 0 },
     ],
     thresholds: {
         http_req_duration:['p(95)<500'],
@@ -15,9 +19,10 @@ export const options = {
     },
 };
 
-const BASE_URL    = 'https://localhost:8443/api';
-const ADMIN_TOKEN = 'admin-setup'; 
-const USER_COUNT  = 50;
+const BASE_URL    = 'https://larplaner-loadtest.onrender.com/api';
+// const BASE_URL    = 'https://localhost:8443/api';
+const ADMIN_TOKEN = 'admin-setup';
+const USER_COUNT  = 20;
 
 const adminHeaders = { 
     'Authorization': `Bearer ${ADMIN_TOKEN}`, 
@@ -176,8 +181,18 @@ export function setup() {
     let gamesRes = http.get(`${BASE_URL}/game`, { headers: adminHeaders });
     let gamesList = gamesRes.json();
     if (!gamesList || gamesList.length === 0) throw new Error("No active games found!");
-    
-    let gameId = gamesList[0].id; 
+
+    // FIX: Find the exact game we just created instead of grabbing index 0.
+    // Adjust the property name ('scenarioId' or 'eventId') based on what your API returns in the Game object.
+    let targetGame = gamesList.find(g => g.scenarioId === scenarioId) || gamesList.find(g => g.eventId === eventId);
+
+    // Fallback: If your API doesn't expose scenario/event ID on the game list,
+    // grab the last one in the array (often the newest, but less safe than exact matching).
+    if (!targetGame) {
+        targetGame = gamesList[gamesList.length - 1];
+    }
+
+    let gameId = targetGame.id;
     if (!gameId) throw new Error("Extracted Game ID is undefined/null!");
 
     let mappedUsers =[];
@@ -232,6 +247,10 @@ export default function (data) {
 
     // Step 3: Scan Item Actions
     let itemActionsRes = http.get(`${BASE_URL}/game/roles/${user.gameSessionRoleId}/items/${data.itemId}/availableActions`, reqOptions);
+
+    if (itemActionsRes.status !== 200) {
+        console.error(`[VU-${exec.vu.idInTest}] Step 3 Failed! Status: ${itemActionsRes.status}, Body: ${itemActionsRes.body}`);
+    }
     check(itemActionsRes, { '[S3] Item Actions 200': (r) => r.status === 200 });
     
     let actionsToExecute = itemActionsRes.status === 200 ? itemActionsRes.json() :[];
@@ -263,4 +282,10 @@ export default function (data) {
 
     // End of loop cycle
     sleep(Math.random() * 3 + 2); 
+}
+
+export function handleSummary(data) {
+    return {
+        "summary.html": htmlReport(data),
+    };
 }
